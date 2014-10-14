@@ -7,42 +7,59 @@ defmodule Imagineer.Image.PNG do
   @idat_header <<73::size(8), 68::size(8), 65::size(8), 84::size(8)>>
   @iend_header <<73::size(8), 69::size(8), 78::size(8), 68::size(8)>>
 
+  #XXX -define(IHDR, "IHDR"). %% image header
+  # -define(PLTE, "PLTE"). %% palette
+  #XXX -define(IDAT, "IDAT"). %% image data
+  #XXX -define(IEND, "IEND"). %% image trailer
+
+  # -define(bKGD, "bKGD"). %% background color
+  # -define(cHRM, "cHRM"). %% primary chromaticites and white point
+  # -define(gAMA, "gAMA"). %% Image gamma
+  # -define(hIST, "hIST"). %% Image histogram
+  # -define(pHYs, "pHYs"). %% Physical pixel dimensions
+  # -define(sBIT, "sBIT"). %% Significant bits
+  # -define(tEXt, "tEXt"). %% Textual data
+  # -define(tIME, "tIME"). %% Image last modification time
+  # -define(tRNS, "tRNS"). %% Transparency
+  # -define(zTXt, "zTXt"). %% Compressed textual data
+
   def process(%Image{format: :png, raw: <<@png_signiture, rest::binary>>}=image) do
-    process_header(image, rest)
+    process(image, rest)
   end
 
-  def process_header(%Image{} = image, <<content_length::size(32), @ihdr_header, content::binary-size(content_length), _crc::size(32), rest::binary>>) do
+  def process(%Image{} = image, <<content_length::size(32), @ihdr_header, content::binary-size(content_length), _crc::size(32), rest::binary>>) do
     <<width::integer-size(32),
       height::integer-size(32), bit_depth::integer,
       color_type::integer, compression::integer, filter_method::integer,
       interface_method::integer>> = content
-    header = Map.merge image.header, %{
+
+    attributes = Map.merge image.attributes, %{
       color_type: detect_color_type(color_type, bit_depth),
       compression: compression,
       filter_method: filter_method,
       interface_method: interface_method
     }
 
-    image = %Image{ image | header: header, width: width, height: height, bit_depth: bit_depth }
-    process_header(image, rest)
+    image = %Image{ image | attributes: attributes, width: width, height: height, bit_depth: bit_depth }
+    process(image, rest)
   end
 
-  def process_header(%Image{} = image, <<_length::size(32), @iend_header, _rest::binary>>) do
+  def process(%Image{} = image, <<_length::size(32), @iend_header, _rest::binary>>) do
     image
   end
 
   # There can be multiple IDAT chunks to allow the encoding system to control
   # memory consumption. Append the content
-  def process_header(%Image{ header: header } = image, <<content_length::integer-size(32), @idat_header, content::binary-size(content_length), _crc::size(32), rest::binary >>) do
-    header = Map.merge header, %{ content: image.content <> content }
-    process_header(%Image{ image | header: header }, rest)
+  def process(%Image{ attributes: attributes } = image, <<content_length::integer-size(32), @idat_header, content::binary-size(content_length), _crc::size(32), rest::binary >>) do
+    attributes = Map.merge attributes, %{ content: image.content <> content }
+    process(%Image{ image | attributes: attributes }, rest)
   end
 
 
   # For headers that we don't understand, skip them
-  def process_header(%Image{} = image, <<content_length::size(32), _header::size(32),
+  def process(%Image{} = image, <<content_length::size(32), _header::size(32),
       _content::binary-size(content_length), _crc::size(32), rest::binary>>) do
-    process_header(image, rest)
+    process(image, rest)
   end
 
   defp detect_color_type(0, 1)  do
