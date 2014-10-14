@@ -7,14 +7,9 @@ defmodule Imagineer.Image.PNG do
   @idat_header <<73::size(8), 68::size(8), 65::size(8), 84::size(8)>>
   @iend_header <<73::size(8), 69::size(8), 78::size(8), 68::size(8)>>
 
-  def process(%Image{format: :png, raw: raw}=image) do
-    process_header(image, raw)
-  end
-
-  def process_header(image, <<@png_signiture, rest::binary>>) do
+  def process(%Image{format: :png, raw: <<@png_signiture, rest::binary>>}=image) do
     process_header(image, rest)
   end
-
 
   def process_header(%Image{} = image, <<content_length::size(32), @ihdr_header, content::binary-size(content_length), _crc::size(32), rest::binary>>) do
     <<width::integer-size(32),
