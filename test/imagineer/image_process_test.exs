@@ -25,8 +25,9 @@ defmodule Imagineer.ImageProcessTest do
     assert image.height == 96
   end
 
-  test "it sets the color type", %{image: image} do
-    assert image.header.color_type == :rgb
+  test "it sets the color type and bit_depth", %{image: image} do
+    assert image.bit_depth == 8
+    assert image.header.color_type == :rgb8
   end
 
 

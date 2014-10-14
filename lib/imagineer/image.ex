@@ -1,5 +1,5 @@
 defmodule Imagineer.Image do
-  defstruct alias: nil, width: nil, height: nil, mask: nil,
+  defstruct alias: nil, width: nil, height: nil, mask: nil, bit_depth: nil,
             uri: nil, format: nil, header: %{}, content: <<>>,
             raw: nil
   alias Imagineer.Image
