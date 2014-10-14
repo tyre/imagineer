@@ -21,8 +21,8 @@ defmodule Imagineer.ImageProcessTest do
   end
 
   test "it reads in the width and height", %{image: image} do
-    assert image.header.width == 96
-    assert image.header.height == 96
+    assert image.width == 96
+    assert image.height == 96
   end
 
   test "it sets the color type", %{image: image} do

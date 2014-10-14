@@ -21,10 +21,7 @@ defmodule Imagineer.Image.PNG do
       height::integer-size(32), data_precision::integer,
       color_type::integer, compression::integer, filter_method::integer,
       interface_method::integer>> = content
-
     header = Map.merge image.header, %{
-      width: width,
-      height: height,
       data_precision: data_precision,
       color_type: color_type_code(color_type),
       compression: compression,
@@ -32,7 +29,7 @@ defmodule Imagineer.Image.PNG do
       interface_method: interface_method
     }
 
-    process_header(%Image{ image | header: header }, rest)
+    process_header(%Image{ image | header: header, width: width, height: height }, rest)
   end
 
   def process_header(%Image{} = image, <<_length::size(32), @iend_header, _rest::binary>>) do
