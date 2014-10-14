@@ -1,6 +1,6 @@
 defmodule Imagineer.Image do
   defstruct alias: nil, width: nil, height: nil, mask: nil, bit_depth: nil,
-            uri: nil, format: nil, attributes: %{}, content: <<>>,
+            color_format: nil, uri: nil, format: nil, attributes: %{}, content: <<>>,
             raw: nil
   alias Imagineer.Image
   alias Imagineer.Image.PNG
@@ -27,26 +27,4 @@ defmodule Imagineer.Image do
   defp detect_format(<<@png_signature, _png_body::binary>>) do
     :png
   end
-
-  # defp detect_format(%Image{raw: raw}) do
-  #   :unknown
-  # end
-
-  # def process_header(%Image{} = image) do
-  #   case process_type(image.raw) do
-  #     :jpeg ->
-  #         %Image{format: :jpeg, header: jpeg_header()}
-  #     :png -> :ok
-  #     :unknown -> {:error, "Unknown image format"}
-  #   end
-  # end
-
-  # def process_type(<<@png_signature, png_body>>) do
-  #   :png
-  # end
-
-  # def process_type(<<@jpeg_header, png_body>>) do
-  #   :jpeg
-  # end
-
 end

@@ -25,11 +25,11 @@ defmodule Imagineer.ImageProcessTest do
     assert image.height == 96
   end
 
-  test "it sets the color type and bit_depth", %{image: image} do
+  test "it sets the color format, color type, and bit_depth", %{image: image} do
     assert image.bit_depth == 8
-    assert image.attributes.color_type == :rgb8
+    assert image.color_format == :rgb8
+    assert image.attributes.color_type == 2
   end
-
 
 # IO.puts inspect image.header.data_precision
 # IO.puts inspect image.header.compression
