@@ -12,8 +12,9 @@ defmodule Imagineer.Image.PNG do
 
   # Auxillary headers
   @bkgd_header <<98::size(8), 75::size(8), 82::size(8), 68::size(8)>>
-  @iccp_header <<105, 67, 67, 80>>
-  @phys_header <<112, 72, 89, 115>>
+  @iccp_header <<105::size(8), 67::size(8), 67::size(8), 80::size(8)>>
+  @phys_header <<112::size(8), 72::size(8), 89::size(8), 115::size(8)>>
+  @text_header <<105::size(8), 84::size(8), 88::size(8), 116::size(8)>>
 
   def process(%Image{format: :png, raw: <<@png_signiture, rest::binary>>}=image) do
     process(image, rest)
@@ -84,8 +85,13 @@ defmodule Imagineer.Image.PNG do
     process(image, rest)
   end
 
+  def process(%Image{} = image, <<content_length::size(32), @text_header,  content::binary-size(content_length), _crc::size(32), rest::binary>>) do
+    image = process_text_chunk(image, content)
+    process(image, rest)
+  end
+
   # For headers that we don't understand, skip them
-  def process(%Image{} = image, <<content_length::size(32), _h::size(8), _e::size(8), _a::size(8), _d::size(8),
+  def process(%Image{} = image, <<content_length::size(32), _header::binary-size(4),
       _content::binary-size(content_length), _crc::size(32), rest::binary>>) do
     process(image, rest)
   end
@@ -119,6 +125,48 @@ defmodule Imagineer.Image.PNG do
 
   defp read_pallete(<<red::size(8), green::size(8), blue::size(8), more_pallete::binary>>, acc) do
     read_pallete(more_pallete, [{red, green, blue}| acc])
+  end
+
+  defp process_text_chunk(image, content) do
+    case parse_text_pair(content, <<>>) do
+      {key, value} ->
+        set_text_attribute(image, key, value)
+      false ->
+        image
+    end
+  end
+
+  defp parse_text_pair(<<0, value::binary>>, key) do
+    {String.to_atom(key), strip_null_bytes(value)}
+  end
+
+  defp parse_text_pair(<<key_byte::binary-size(1), rest::binary>>, key) do
+    parse_text_pair(rest, key <> key_byte)
+  end
+
+  defp parse_text_pair(<<>>, _key) do
+    false
+  end
+
+  # Strip all leading null bytes (<<0>>) from the text
+  defp strip_null_bytes(<<0, rest::binary>>) do
+    strip_null_bytes rest
+  end
+
+  defp strip_null_bytes(content) do
+    content
+  end
+
+
+  # Sets the attribute relevant to whatever is held in the text chunk,
+  # returns the image
+  defp set_text_attribute(image, key, value) do
+    case key do
+      :Comment ->
+        %Image{image | comment: value}
+      _ ->
+        %Image{image | attributes: set_attribute(image, key, value)}
+    end
   end
 
 end
