@@ -31,8 +31,7 @@ defmodule Imagineer.ImageProcessTest do
     assert image.attributes.color_type == 2
   end
 
-# IO.puts inspect image.header.data_precision
-# IO.puts inspect image.header.compression
-# IO.puts inspect image.header.filter_method
-# IO.puts inspect image.header.interface_method
+  test "it reads the pixel dimensions", %{image: image} do
+    assert image.attributes.pixel_dimensions == {5669, 5669, :meter}
+  end
 end

@@ -6,27 +6,14 @@ defmodule Imagineer.Image.PNG do
 
   # Required headers
   @ihdr_header <<73::size(8), 72::size(8), 68::size(8), 82::size(8)>>
+  @plte_header <<80::size(8), 76::size(8), 84::size(8), 69::size(8)>>
   @idat_header <<73::size(8), 68::size(8), 65::size(8), 84::size(8)>>
   @iend_header <<73::size(8), 69::size(8), 78::size(8), 68::size(8)>>
 
   # Auxillary headers
   @bkgd_header <<98::size(8), 75::size(8), 82::size(8), 68::size(8)>>
-
-  #XXX -define(IHDR, "IHDR"). %% image header
-  # -define(PLTE, "PLTE"). %% palette
-  #XXX -define(IDAT, "IDAT"). %% image data
-  #XXX -define(IEND, "IEND"). %% image trailer
-
-  #XXX -define(bKGD, "bKGD"). %% background color
-  # -define(cHRM, "cHRM"). %% primary chromaticites and white point
-  # -define(gAMA, "gAMA"). %% Image gamma
-  # -define(hIST, "hIST"). %% Image histogram
-  # -define(pHYs, "pHYs"). %% Physical pixel dimensions
-  # -define(sBIT, "sBIT"). %% Significant bits
-  # -define(tEXt, "tEXt"). %% Textual data
-  # -define(tIME, "tIME"). %% Image last modification time
-  # -define(tRNS, "tRNS"). %% Transparency
-  # -define(zTXt, "zTXt"). %% Compressed textual data
+  @iccp_header <<105, 67, 67, 80>>
+  @phys_header <<112, 72, 89, 115>>
 
   def process(%Image{format: :png, raw: <<@png_signiture, rest::binary>>}=image) do
     process(image, rest)
@@ -50,6 +37,36 @@ defmodule Imagineer.Image.PNG do
     process(image, rest)
   end
 
+  # Process "PLTE" chunk
+  def process(%Image{} = image, <<content_length::integer-size(32), @plte_header, content::binary-size(content_length), _crc::size(32), rest::binary >>) do
+    image = %Image{ image | attributes: set_attribute(image, :palette, read_pallete(content))}
+    process(image, rest)
+  end
+
+  # Process "pHYs" chunk
+  def process(%Image{} = image, <<_content_length::integer-size(32), @phys_header,
+    <<x_pixels_per_unit::integer-size(32), y_pixels_per_unit::integer-size(32), _unit::binary-size(1)>>,
+    _crc::size(32), rest::binary >>) do
+    pixel_dimensions = {
+      x_pixels_per_unit,
+      y_pixels_per_unit,
+      :meter}
+    image = %Image{ image | attributes: set_attribute(image, :pixel_dimensions, pixel_dimensions)}
+    process(image, rest)
+  end
+
+  # There can be multiple IDAT chunks to allow the encoding system to control
+  # memory consumption. Append the content
+  def process(%Image{} = image, <<content_length::integer-size(32), @idat_header, content::binary-size(content_length), _crc::size(32), rest::binary >>) do
+    new_attributes = set_attribute(image, :content, image.content <> content)
+    process(%Image{ image | attributes: new_attributes }, rest)
+  end
+
+  # The end of the PNG
+  def process(%Image{} = image, <<_length::size(32), @iend_header, _rest::binary>>) do
+    image
+  end
+
   # process the auxillary "bKGD" chunk
   def process(%Image{} = image, <<content_length::size(32), @bkgd_header, content::binary-size(content_length), _crc::size(32), rest::binary>>) do
     color_type = image.attributes.color_type
@@ -68,39 +85,13 @@ defmodule Imagineer.Image.PNG do
     process(image, rest)
   end
 
-# scan_info(Fd, IMG, false, ?bKGD, Length) ->
-#     CT = attribute(IMG, 'ColorType', undefined),
-#     case read_chunk_crc(Fd, Length) of
-#         {ok, <<Index:8>>} when CT==3 ->
-#             scan_info(Fd, set_attribute(IMG, 'Background', Index), false);
-#         {ok, <<Gray:16>>} when CT==0; CT==4 ->
-#             scan_info(Fd, set_attribute(IMG, 'Background', Gray), false);
-#         {ok, <<R:16,G:16,B:16>>} when CT==2; CT==6 ->
-#             scan_info(Fd, set_attribute(IMG, 'Background', {R,G,B}), false);
-#         {ok, _Data} ->
-#             ?dbg("bKGD other=~p\n", [_Data]),
-#             scan_info(Fd, IMG, false);
-#         Error -> Error
-#     end;
-
-  # The end of the PNG
-  def process(%Image{} = image, <<_length::size(32), @iend_header, _rest::binary>>) do
-    image
-  end
-
-  # There can be multiple IDAT chunks to allow the encoding system to control
-  # memory consumption. Append the content
-  def process(%Image{} = image, <<content_length::integer-size(32), @idat_header, content::binary-size(content_length), _crc::size(32), rest::binary >>) do
-    new_attributes = set_attribute(image, :content, image.content <> content)
-    process(%Image{ image | attributes: new_attributes }, rest)
-  end
-
-
   # For headers that we don't understand, skip them
-  def process(%Image{} = image, <<content_length::size(32), _header::size(32),
+  def process(%Image{} = image, <<content_length::size(32), _h::size(8), _e::size(8), _a::size(8), _d::size(8),
       _content::binary-size(content_length), _crc::size(32), rest::binary>>) do
     process(image, rest)
   end
+
+  # Private helper functions
 
   defp set_attribute(%Image{} = image, attribute, value) do
     Map.put image.attributes, attribute, value
@@ -122,4 +113,13 @@ defmodule Imagineer.Image.PNG do
   defp color_format(4, 16), do: :grayscale_alpha16
   defp color_format(6, 8) , do: :rgb_alpha8
   defp color_format(6, 16), do: :rgb_alpha16
+
+  defp read_pallete(content) do
+    Enum.reverse read_pallete(content, [])
+  end
+
+  defp read_pallete(<<red::size(8), green::size(8), blue::size(8), more_pallete::binary>>, acc) do
+    read_pallete(more_pallete, [{red, green, blue}| acc])
+  end
+
 end
