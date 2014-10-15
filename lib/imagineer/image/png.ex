@@ -58,8 +58,7 @@ defmodule Imagineer.Image.PNG do
   # There can be multiple IDAT chunks to allow the encoding system to control
   # memory consumption. Append the content
   def process(%Image{} = image, <<content_length::integer-size(32), @idat_header, content::binary-size(content_length), _crc::size(32), rest::binary >>) do
-    new_attributes = set_attribute(image, :content, image.content <> content)
-    process(%Image{ image | attributes: new_attributes }, rest)
+    process(%Image{ image | content: image.content <> content}, rest)
   end
 
   # The end of the PNG
