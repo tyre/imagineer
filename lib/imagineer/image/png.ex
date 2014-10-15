@@ -56,18 +56,20 @@ defmodule Imagineer.Image.PNG do
     process(image, rest)
   end
 
+  # Process the "IDAT" chunk
   # There can be multiple IDAT chunks to allow the encoding system to control
   # memory consumption. Append the content
   def process(%Image{} = image, <<content_length::integer-size(32), @idat_header, content::binary-size(content_length), _crc::size(32), rest::binary >>) do
     process(%Image{ image | content: image.content <> content}, rest)
   end
 
+  # Process the "IEND" chunk
   # The end of the PNG
   def process(%Image{} = image, <<_length::size(32), @iend_header, _rest::binary>>) do
     image
   end
 
-  # process the auxillary "bKGD" chunk
+  # Process the auxillary "bKGD" chunk
   def process(%Image{} = image, <<content_length::size(32), @bkgd_header, content::binary-size(content_length), _crc::size(32), rest::binary>>) do
     color_type = image.attributes.color_type
     background_color = case content do
@@ -85,6 +87,7 @@ defmodule Imagineer.Image.PNG do
     process(image, rest)
   end
 
+  # Process the auxillary "tEXt" chunk
   def process(%Image{} = image, <<content_length::size(32), @text_header,  content::binary-size(content_length), _crc::size(32), rest::binary>>) do
     image = process_text_chunk(image, content)
     process(image, rest)
