@@ -7,9 +7,9 @@ Currently Imagineer only supports PNGs. To load an image, create a new `Imaginee
 
 ```elixir
 alias Imagineer.Image
-image = %Image{uri: "./test/support/images/alpaca.png"} |>
-  Image.load() |>
-  Image.process()
+image = %Image{uri: "./test/support/images/alpaca.png"} 
+  |> Image.load
+  |> Image.process
 # =>
 #  %Imagineer.Image{
 #    alias: nil,
