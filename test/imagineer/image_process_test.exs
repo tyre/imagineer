@@ -39,4 +39,11 @@ defmodule Imagineer.ImageProcessTest do
     {:ok, raw_file} = File.read(image.uri)
     assert raw_file == image.raw, "it should set the file's contents into `raw`"
   end
+
+  test "it can parse a jpg" do
+    image = %Image{uri: "./test/support/images/drowning_girl.jpg"} |>
+        Image.load() |>
+        Image.process()
+    assert image.format == :jpg
+  end
 end
