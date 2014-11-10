@@ -29,4 +29,11 @@ defmodule Imagineer.Image.PNGTest do
     assert image.attributes[:"XML:com.adobe.xmp"] == xmp_text_chunk,
            "it should pull arbitrary text chunks into attributes"
   end
+
+  test "it can parse a jpg" do
+    image = %Image{uri: "./test/support/images/drowning_girl.jpg"} |>
+        Image.load() |>
+        Image.process()
+    assert image.format == :jpg
+  end
 end
