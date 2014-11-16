@@ -7,10 +7,9 @@ defmodule Imagineer.Mixfile do
       version: "0.1.0",
       elixir: "~> 1.0",
       deps: deps,
-      description: "Image processing in Elixir",
       source_url: "https://github.com/SenecaSystems/imagineer",
-      contributors: contributors,
-      links: links
+      description: description,
+      package: package
     ]
   end
 
@@ -20,6 +19,20 @@ defmodule Imagineer.Mixfile do
 
   defp deps do
     []
+  end
+
+  defp description do
+    """
+    Image processing in Elixir
+    """
+  end
+
+  defp package do
+  [
+    contributors: contributors,
+    links: links,
+    licenses: ["MIT"]
+  ]
   end
 
   defp contributors do
