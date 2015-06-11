@@ -16,8 +16,12 @@ defmodule Imagineer.Image.PNG do
   @phys_header <<112::size(8), 72::size(8), 89::size(8), 115::size(8)>>
   @text_header <<105::size(8), 84::size(8), 88::size(8), 116::size(8)>>
 
+  @mime_type "image/png"
+
   def process(%Image{format: :png, raw: <<@png_signiture, rest::binary>>}=image) do
-    process(image, rest)
+    IO.puts("processing")
+    %Image{ image | mime_type: @mime_type }
+    |> process(rest)
   end
 
   # Processes the "IHDR" chunk
@@ -94,8 +98,9 @@ defmodule Imagineer.Image.PNG do
   end
 
   # For headers that we don't understand, skip them
-  def process(%Image{} = image, <<content_length::size(32), _header::binary-size(4),
+  def process(%Image{} = image, <<content_length::size(32), header::binary-size(4),
       _content::binary-size(content_length), _crc::size(32), rest::binary>>) do
+    IO.puts("Don't understand what to do with #{header}")
     process(image, rest)
   end
 
