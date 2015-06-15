@@ -16,12 +16,16 @@ defmodule Imagineer.Image.PNG do
   @phys_header <<112::size(8), 72::size(8), 89::size(8), 115::size(8)>>
   @text_header <<105::size(8), 84::size(8), 88::size(8), 116::size(8)>>
 
-  def process(%Image{format: :png, raw: <<@png_signiture, rest::binary>>}=image) do
-    process(image, rest)
+  def process(%Image{format: :png, raw: raw}=image) do
+    process(raw, image)
+  end
+
+  def process(<<@png_signiture, rest::binary>>, %Image{}=image) do
+    process(rest, image)
   end
 
   # Processes the "IHDR" chunk
-  def process(%Image{} = image, <<content_length::size(32), @ihdr_header, content::binary-size(content_length), _crc::size(32), rest::binary>>) do
+  def process(<<content_length::size(32), @ihdr_header, content::binary-size(content_length), _crc::size(32), rest::binary>>, %Image{} = image) do
     <<width::integer-size(32),
       height::integer-size(32), bit_depth::integer,
       color_type::integer, compression::integer, filter_method::integer,
@@ -35,68 +39,93 @@ defmodule Imagineer.Image.PNG do
     }
 
     image = %Image{ image | attributes: attributes, width: width, height: height, bit_depth: bit_depth, color_format: color_format(color_type, bit_depth) }
-    process(image, rest)
+    process(rest, image)
   end
 
   # Process "PLTE" chunk
-  def process(%Image{} = image, <<content_length::integer-size(32), @plte_header, content::binary-size(content_length), _crc::size(32), rest::binary >>) do
+  def process(<<content_length::integer-size(32), @plte_header, content::binary-size(content_length), _crc::size(32), rest::binary >>,%Image{}=image) do
     image = %Image{ image | attributes: set_attribute(image, :palette, read_pallete(content))}
-    process(image, rest)
+    process(rest, image)
   end
 
   # Process "pHYs" chunk
-  def process(%Image{} = image, <<_content_length::integer-size(32), @phys_header,
-    <<x_pixels_per_unit::integer-size(32), y_pixels_per_unit::integer-size(32), _unit::binary-size(1)>>,
-    _crc::size(32), rest::binary >>) do
+  def process(<<_content_length::integer-size(32), @phys_header,
+    x_pixels_per_unit::integer-size(32), y_pixels_per_unit::integer-size(32),
+    _unit::binary-size(1), _crc::size(32), rest::binary >>, %Image{}=image) do
     pixel_dimensions = {
       x_pixels_per_unit,
       y_pixels_per_unit,
       :meter}
     image = %Image{ image | attributes: set_attribute(image, :pixel_dimensions, pixel_dimensions)}
-    process(image, rest)
+    process(rest, image)
   end
 
   # Process the "IDAT" chunk
   # There can be multiple IDAT chunks to allow the encoding system to control
   # memory consumption. Append the content
-  def process(%Image{} = image, <<content_length::integer-size(32), @idat_header, content::binary-size(content_length), _crc::size(32), rest::binary >>) do
-    process(%Image{ image | content: image.content <> content}, rest)
+  def process(<<content_length::integer-size(32), @idat_header, content::binary-size(content_length), _crc::size(32), rest::binary >>, image) do
+    new_content = image.content <> content
+    process(rest, Map.put(image, :content, new_content))
   end
 
   # Process the "IEND" chunk
   # The end of the PNG
-  def process(%Image{} = image, <<_length::size(32), @iend_header, _rest::binary>>) do
+  def process(<<_length::size(32), @iend_header, _rest::binary>>, %Image{}=image) do
     image
   end
 
   # Process the auxillary "bKGD" chunk
-  def process(%Image{} = image, <<content_length::size(32), @bkgd_header, content::binary-size(content_length), _crc::size(32), rest::binary>>) do
-    color_type = image.attributes.color_type
-    background_color = case content do
-      <<index::size(8)>> when color_type == 3 ->
-        index
-      <<gray::size(16)>> when color_type == 0 or color_type == 4 ->
-        gray
-      <<red::size(16), green::size(16), blue::size(16)>> when color_type == 2 or color_type == 6 ->
-        {red, green, blue}
-      _ ->
-        :undefined
-    end
+  def process(
+    <<_content_length::size(32), @bkgd_header, index::size(8), _crc::size(32), rest::binary>>,
+    %Image{attributes: %{ color_type: 3} }=image)
+  do
+    process_with_background_color(image, index, rest)
+  end
 
-    image = %Image{ image | attributes: set_attribute(image, :background_color, background_color)}
-    process(image, rest)
+  def process(
+    <<_content_length::size(32), @bkgd_header, gray::size(16), _crc::size(32), rest::binary>>,
+    %Image{attributes: %{ color_type: 0}}=image)
+  do
+    process_with_background_color(image, gray, rest)
+  end
+
+  def process(
+    <<_content_length::size(32), @bkgd_header, gray::size(16), _crc::size(32), rest::binary>>,
+    %Image{attributes: %{ color_type: 4}}=image)
+  do
+    process_with_background_color(image, gray, rest)
+  end
+
+  def process(
+    <<_content_length::size(32), @bkgd_header, red::size(16), green::size(16), blue::size(16), _crc::size(32), rest::binary>>,
+    %Image{attributes: %{ color_type: 2}}=image)
+  do
+    process_with_background_color(image, {red, green, blue}, rest)
+  end
+
+  def process(
+    <<_content_length::size(32), @bkgd_header, red::size(16), green::size(16), blue::size(16), _crc::size(32), rest::binary>>,
+    %Image{attributes: %{ color_type: 6}}=image)
+  do
+    process_with_background_color(image, {red, green, blue}, rest)
   end
 
   # Process the auxillary "tEXt" chunk
-  def process(%Image{} = image, <<content_length::size(32), @text_header,  content::binary-size(content_length), _crc::size(32), rest::binary>>) do
+  def process(<<content_length::size(32), @text_header,  content::binary-size(content_length), _crc::size(32), rest::binary>>, %Image{}=image) do
     image = process_text_chunk(image, content)
-    process(image, rest)
+    process(rest, image)
   end
 
   # For headers that we don't understand, skip them
-  def process(%Image{} = image, <<content_length::size(32), _header::binary-size(4),
-      _content::binary-size(content_length), _crc::size(32), rest::binary>>) do
-    process(image, rest)
+  def process(<<content_length::size(32), _header::binary-size(4),
+      _content::binary-size(content_length), _crc::size(32), rest::binary>>,
+      %Image{}=image) do
+    process(rest, image)
+  end
+
+  defp process_with_background_color(background_color, image, rest) do
+    image = %Image{ image | attributes: set_attribute(image, :background_color, background_color)}
+    process(rest, image)
   end
 
   # Private helper functions
