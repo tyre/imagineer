@@ -22,12 +22,11 @@ defmodule Imagineer.Image do
     PNG.process(image)
   end
 
-  def process(%Image{format: :jpg}=image) do
-    JPG.process(image)
-  end
-
   def process(%Image{raw: raw}=image) when not is_nil(raw) do
-    process %Image{ image | format: detect_format(image.raw) }
+    case detect_format(image.raw) do
+      :png -> process(%Image{image | format: :png})
+      :jpg -> JPG.process(raw)
+    end
   end
 
   defp detect_format(<<@png_signature, _png_body::binary>>) do
