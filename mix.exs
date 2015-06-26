@@ -4,7 +4,7 @@ defmodule Imagineer.Mixfile do
   def project do
     [
       app: :imagineer,
-      version: "0.1.0",
+      version: "0.2.0-dev",
       elixir: "~> 1.0",
       deps: deps,
       source_url: "https://github.com/SenecaSystems/imagineer",
@@ -46,5 +46,5 @@ defmodule Imagineer.Mixfile do
       github: "https://github.com/SenecaSystems/imagineer"
     }
   end
-  
+
 end
