@@ -1,20 +1,20 @@
 defmodule Imagineer.Image.PNG do
   alias Imagineer.Image
 
-  @png_signiture <<137::size(8), 80::size(8), 78::size(8), 71::size(8),
+  @png_signiture <<137::size(8), ?P, ?N, ?G,
                    13::size(8),  10::size(8), 26::size(8), 10::size(8)>>
 
   # Required headers
-  @ihdr_header <<73::size(8), 72::size(8), 68::size(8), 82::size(8)>>
-  @plte_header <<80::size(8), 76::size(8), 84::size(8), 69::size(8)>>
-  @idat_header <<73::size(8), 68::size(8), 65::size(8), 84::size(8)>>
-  @iend_header <<73::size(8), 69::size(8), 78::size(8), 68::size(8)>>
+  @ihdr_header <<?I, ?H, ?D, ?R>>
+  @plte_header <<?P, ?L, ?T, ?E>>
+  @idat_header <<?I, ?D, ?A, ?T>>
+  @iend_header <<?I, ?E, ?N, ?D>>
 
   # Auxillary headers
-  @bkgd_header <<98::size(8), 75::size(8), 82::size(8), 68::size(8)>>
-  @iccp_header <<105::size(8), 67::size(8), 67::size(8), 80::size(8)>>
-  @phys_header <<112::size(8), 72::size(8), 89::size(8), 115::size(8)>>
-  @text_header <<105::size(8), 84::size(8), 88::size(8), 116::size(8)>>
+  @bkgd_header <<?b, ?K, ?G, ?D>>
+  @iccp_header <<?i, ?C, ?C, ?P>>
+  @phys_header <<?p, ?H, ?Y, ?s>>
+  @itxt_header <<?i, ?T, ?X, ?t>>
 
   def process(%Image{format: :png, raw: raw}=image) do
     process(raw, image)
@@ -110,14 +110,14 @@ defmodule Imagineer.Image.PNG do
     process_with_background_color(image, {red, green, blue}, rest)
   end
 
-  # Process the auxillary "tEXt" chunk
-  def process(<<content_length::size(32), @text_header,  content::binary-size(content_length), _crc::size(32), rest::binary>>, %Image{}=image) do
+  # Process the auxillary "iTXt" chunk
+  def process(<<content_length::size(32), @itxt_header,  content::binary-size(content_length), _crc::size(32), rest::binary>>, %Image{}=image) do
     image = process_text_chunk(image, content)
     process(rest, image)
   end
 
   # For headers that we don't understand, skip them
-  def process(<<content_length::size(32), _header::binary-size(4),
+  def process(<<content_length::size(32), header::binary-size(4),
       _content::binary-size(content_length), _crc::size(32), rest::binary>>,
       %Image{}=image) do
     process(rest, image)
