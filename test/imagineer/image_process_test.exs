@@ -4,11 +4,9 @@ defmodule Imagineer.ImageProcessTest do
 
   # Until ExUnit has contexts, we don't want to load all images on every `setup`
   test "it parses the alpaca" do
-    image = %Image{uri: "./test/support/images/png/alpaca.png"} |>
-            Image.load() |>
-            Image.process()
+    {:ok, image} = Imagineer.load("./test/support/images/png/alpaca.png")
 
-    {:ok, raw_file} = File.read(image.uri)
+    {:ok, raw_file} = File.read("./test/support/images/png/alpaca.png")
     assert raw_file == image.raw, "it should set the file's contents into `raw`"
 
     assert image.format == :png, "it should set the image format"
@@ -32,11 +30,9 @@ defmodule Imagineer.ImageProcessTest do
   end
 
   test "it parses the baby octopus" do
-    image = %Image{uri: "./test/support/images/png/baby_octopus.png"} |>
-            Image.load() |>
-            Image.process()
+    {:ok, image} = Imagineer.load("./test/support/images/png/baby_octopus.png")
 
-    {:ok, raw_file} = File.read(image.uri)
+    {:ok, raw_file} = File.read("./test/support/images/png/baby_octopus.png")
     assert raw_file == image.raw, "it should set the file's contents into `raw`"
   end
 end

@@ -1,5 +1,10 @@
 defmodule Imagineer.Image.PNG do
-  alias Imagineer.Image
+  alias Imagineer.Image.PNG
+  defstruct alias: nil, width: nil, height: nil, mask: nil, bit_depth: nil,
+            color_format: nil, uri: nil, format: :png, attributes: %{}, content: <<>>,
+            raw: nil, comment: nil
+
+  @behaviour Imagineer.Image
 
   @png_signiture <<137::size(8), ?P, ?N, ?G,
                    13::size(8),  10::size(8), 26::size(8), 10::size(8)>>
@@ -16,16 +21,20 @@ defmodule Imagineer.Image.PNG do
   @phys_header <<?p, ?H, ?Y, ?s>>
   @itxt_header <<?i, ?T, ?X, ?t>>
 
-  def process(%Image{format: :png, raw: raw}=image) do
+  def process(<<@png_signiture, rest::binary>>=raw) do
+    process(rest, %PNG{raw: raw})
+  end
+
+  def process(%PNG{format: :png, raw: raw}=image) do
     process(raw, image)
   end
 
-  def process(<<@png_signiture, rest::binary>>, %Image{}=image) do
+  def process(<<@png_signiture, rest::binary>>, %PNG{}=image) do
     process(rest, image)
   end
 
   # Processes the "IHDR" chunk
-  def process(<<content_length::size(32), @ihdr_header, content::binary-size(content_length), _crc::size(32), rest::binary>>, %Image{} = image) do
+  def process(<<content_length::size(32), @ihdr_header, content::binary-size(content_length), _crc::size(32), rest::binary>>, %PNG{} = image) do
     <<width::integer-size(32),
       height::integer-size(32), bit_depth::integer,
       color_type::integer, compression::integer, filter_method::integer,
@@ -38,25 +47,25 @@ defmodule Imagineer.Image.PNG do
       interface_method: interface_method
     }
 
-    image = %Image{ image | attributes: attributes, width: width, height: height, bit_depth: bit_depth, color_format: color_format(color_type, bit_depth) }
+    image = %PNG{ image | attributes: attributes, width: width, height: height, bit_depth: bit_depth, color_format: color_format(color_type, bit_depth) }
     process(rest, image)
   end
 
   # Process "PLTE" chunk
-  def process(<<content_length::integer-size(32), @plte_header, content::binary-size(content_length), _crc::size(32), rest::binary >>,%Image{}=image) do
-    image = %Image{ image | attributes: set_attribute(image, :palette, read_pallete(content))}
+  def process(<<content_length::integer-size(32), @plte_header, content::binary-size(content_length), _crc::size(32), rest::binary >>,%PNG{}=image) do
+    image = %PNG{ image | attributes: set_attribute(image, :palette, read_pallete(content))}
     process(rest, image)
   end
 
   # Process "pHYs" chunk
   def process(<<_content_length::integer-size(32), @phys_header,
     x_pixels_per_unit::integer-size(32), y_pixels_per_unit::integer-size(32),
-    _unit::binary-size(1), _crc::size(32), rest::binary >>, %Image{}=image) do
+    _unit::binary-size(1), _crc::size(32), rest::binary >>, %PNG{}=image) do
     pixel_dimensions = {
       x_pixels_per_unit,
       y_pixels_per_unit,
       :meter}
-    image = %Image{ image | attributes: set_attribute(image, :pixel_dimensions, pixel_dimensions)}
+    image = %PNG{ image | attributes: set_attribute(image, :pixel_dimensions, pixel_dimensions)}
     process(rest, image)
   end
 
@@ -70,48 +79,48 @@ defmodule Imagineer.Image.PNG do
 
   # Process the "IEND" chunk
   # The end of the PNG
-  def process(<<_length::size(32), @iend_header, _rest::binary>>, %Image{}=image) do
+  def process(<<_length::size(32), @iend_header, _rest::binary>>, %PNG{}=image) do
     image
   end
 
   # Process the auxillary "bKGD" chunk
   def process(
     <<_content_length::size(32), @bkgd_header, index::size(8), _crc::size(32), rest::binary>>,
-    %Image{attributes: %{ color_type: 3} }=image)
+    %PNG{attributes: %{ color_type: 3} }=image)
   do
     process_with_background_color(image, index, rest)
   end
 
   def process(
     <<_content_length::size(32), @bkgd_header, gray::size(16), _crc::size(32), rest::binary>>,
-    %Image{attributes: %{ color_type: 0}}=image)
+    %PNG{attributes: %{ color_type: 0}}=image)
   do
     process_with_background_color(image, gray, rest)
   end
 
   def process(
     <<_content_length::size(32), @bkgd_header, gray::size(16), _crc::size(32), rest::binary>>,
-    %Image{attributes: %{ color_type: 4}}=image)
+    %PNG{attributes: %{ color_type: 4}}=image)
   do
     process_with_background_color(image, gray, rest)
   end
 
   def process(
     <<_content_length::size(32), @bkgd_header, red::size(16), green::size(16), blue::size(16), _crc::size(32), rest::binary>>,
-    %Image{attributes: %{ color_type: 2}}=image)
+    %PNG{attributes: %{ color_type: 2}}=image)
   do
     process_with_background_color(image, {red, green, blue}, rest)
   end
 
   def process(
     <<_content_length::size(32), @bkgd_header, red::size(16), green::size(16), blue::size(16), _crc::size(32), rest::binary>>,
-    %Image{attributes: %{ color_type: 6}}=image)
+    %PNG{attributes: %{ color_type: 6}}=image)
   do
     process_with_background_color(image, {red, green, blue}, rest)
   end
 
   # Process the auxillary "iTXt" chunk
-  def process(<<content_length::size(32), @itxt_header,  content::binary-size(content_length), _crc::size(32), rest::binary>>, %Image{}=image) do
+  def process(<<content_length::size(32), @itxt_header,  content::binary-size(content_length), _crc::size(32), rest::binary>>, %PNG{}=image) do
     image = process_text_chunk(image, content)
     process(rest, image)
   end
@@ -119,18 +128,18 @@ defmodule Imagineer.Image.PNG do
   # For headers that we don't understand, skip them
   def process(<<content_length::size(32), header::binary-size(4),
       _content::binary-size(content_length), _crc::size(32), rest::binary>>,
-      %Image{}=image) do
+      %PNG{}=image) do
     process(rest, image)
   end
 
   defp process_with_background_color(background_color, image, rest) do
-    image = %Image{ image | attributes: set_attribute(image, :background_color, background_color)}
+    image = %PNG{ image | attributes: set_attribute(image, :background_color, background_color)}
     process(rest, image)
   end
 
   # Private helper functions
 
-  defp set_attribute(%Image{} = image, attribute, value) do
+  defp set_attribute(%PNG{} = image, attribute, value) do
     Map.put image.attributes, attribute, value
   end
 
@@ -195,9 +204,9 @@ defmodule Imagineer.Image.PNG do
   defp set_text_attribute(image, key, value) do
     case key do
       :Comment ->
-        %Image{image | comment: value}
+        %PNG{image | comment: value}
       _ ->
-        %Image{image | attributes: set_attribute(image, key, value)}
+        %PNG{image | attributes: set_attribute(image, key, value)}
     end
   end
 
