@@ -1,13 +1,33 @@
 defmodule Imagineer.Image.PNG do
+  require Logger
   alias Imagineer.Image.PNG
-  defstruct alias: nil, width: nil, height: nil, mask: nil, bit_depth: nil,
-            color_format: nil, uri: nil, format: :png, attributes: %{}, content: <<>>,
-            raw: nil, comment: nil
+  import Imagineer.Image.PNG.Helpers
+  defstruct alias: nil,
+            width: nil,
+            height: nil,
+            bit_depth: nil,
+            color_type: nil,
+            color_format: nil,
+            uri: nil,
+            format: :png,
+            attributes: %{},
+            data_content: <<>>,
+            raw: nil,
+            comment: nil,
+            mask: nil,
+            compression: :zlib,
+            decompressed_data: nil,
+            unfiltered_rows: nil,
+            scanlines: [],
+            filter_method: nil,
+            interface_method: nil,
+            gamma: nil,
+            palette: [],
+            pixels: []
 
   @behaviour Imagineer.Image
 
-  @png_signiture <<137::size(8), ?P, ?N, ?G,
-                   13::size(8),  10::size(8), 26::size(8), 10::size(8)>>
+  @png_signature <<137::size(8), ?P, ?N, ?G, ?\r,  ?\n, 26::size(8), ?\n>>
 
   # Required headers
   @ihdr_header <<?I, ?H, ?D, ?R>>
@@ -20,16 +40,41 @@ defmodule Imagineer.Image.PNG do
   @iccp_header <<?i, ?C, ?C, ?P>>
   @phys_header <<?p, ?H, ?Y, ?s>>
   @itxt_header <<?i, ?T, ?X, ?t>>
+  @gama_header <<?g, ?A, ?M, ?A>>
 
-  def process(<<@png_signiture, rest::binary>>=raw) do
+  # Compression
+  @zlib 0
+
+  # Filter Methods
+  @filter_five_basics 0
+
+  # Filter Types
+  # http://www.w3.org/TR/PNG-Filters.html
+  @filter_0 :none
+  @filter_1 :sub
+  @filter_2 :up
+  @filter_3 :average
+  @filter_4 :paeth
+
+  # Color Types
+  # Color type is a single-byte integer that describes the interpretation of the
+  # image data. Color type codes represent sums of the following values:
+  #   - 1 (palette used)
+  #   - 2 (color used)
+  #   - 4 (alpha channel used)
+  # Valid values are 0, 2, 3, 4, and 6.
+  @color_type_raw                     0
+  @color_type_palette                 1
+  @color_type_color                   2
+  @color_type_palette_and_color       3
+  @color_type_alpha                   4
+  @color_type_palette_color_and_alpha 6
+
+  def process(<<@png_signature, rest::binary>>=raw) do
     process(rest, %PNG{raw: raw})
   end
 
-  def process(%PNG{format: :png, raw: raw}=image) do
-    process(raw, image)
-  end
-
-  def process(<<@png_signiture, rest::binary>>, %PNG{}=image) do
+  def process(<<@png_signature, rest::binary>>, %PNG{}=image) do
     process(rest, image)
   end
 
@@ -40,20 +85,23 @@ defmodule Imagineer.Image.PNG do
       color_type::integer, compression::integer, filter_method::integer,
       interface_method::integer>> = content
 
-    attributes = Map.merge image.attributes, %{
+    image = %PNG{
+      image |
+      width: width,
+      height: height,
+      bit_depth: bit_depth,
+      color_format: color_format(color_type, bit_depth),
       color_type: color_type,
-      compression: compression,
-      filter_method: filter_method,
+      compression: compression_format(compression),
+      filter_method: filter_method(filter_method),
       interface_method: interface_method
     }
-
-    image = %PNG{ image | attributes: attributes, width: width, height: height, bit_depth: bit_depth, color_format: color_format(color_type, bit_depth) }
     process(rest, image)
   end
 
   # Process "PLTE" chunk
   def process(<<content_length::integer-size(32), @plte_header, content::binary-size(content_length), _crc::size(32), rest::binary >>,%PNG{}=image) do
-    image = %PNG{ image | attributes: set_attribute(image, :palette, read_pallete(content))}
+    image = %PNG{ image | palette: read_palette(content)}
     process(rest, image)
   end
 
@@ -72,51 +120,60 @@ defmodule Imagineer.Image.PNG do
   # Process the "IDAT" chunk
   # There can be multiple IDAT chunks to allow the encoding system to control
   # memory consumption. Append the content
-  def process(<<content_length::integer-size(32), @idat_header, content::binary-size(content_length), _crc::size(32), rest::binary >>, image) do
-    new_content = image.content <> content
-    process(rest, Map.put(image, :content, new_content))
+  def process(<<content_length::integer-size(32), @idat_header, data_content::binary-size(content_length), _crc::size(32), rest::binary >>, image) do
+    new_content = image.data_content <> data_content
+    process(rest, Map.put(image, :data_content, new_content))
   end
 
   # Process the "IEND" chunk
   # The end of the PNG
   def process(<<_length::size(32), @iend_header, _rest::binary>>, %PNG{}=image) do
-    image
+    PNG.DataContent.process(image)
   end
 
   # Process the auxillary "bKGD" chunk
+
+  def process(
+    <<_content_length::size(32), @bkgd_header, gray::size(16), _crc::size(32), rest::binary>>,
+    %PNG{color_type: @color_type_raw}=image)
+  do
+    process_with_background_color(image, gray, rest)
+  end
+
+  def process(
+    <<_content_length::size(32), @bkgd_header, red::size(16), green::size(16), blue::size(16), _crc::size(32), rest::binary>>,
+    %PNG{color_type: @color_type_color}=image)
+  do
+    process_with_background_color(image, {red, green, blue}, rest)
+  end
+
   def process(
     <<_content_length::size(32), @bkgd_header, index::size(8), _crc::size(32), rest::binary>>,
-    %PNG{attributes: %{ color_type: 3} }=image)
+    %PNG{color_type: @color_type_palette_and_color}=image)
   do
-    process_with_background_color(image, index, rest)
+    process_with_background_color(image, elem(image.palatte, index), rest)
   end
 
   def process(
     <<_content_length::size(32), @bkgd_header, gray::size(16), _crc::size(32), rest::binary>>,
-    %PNG{attributes: %{ color_type: 0}}=image)
-  do
-    process_with_background_color(image, gray, rest)
-  end
-
-  def process(
-    <<_content_length::size(32), @bkgd_header, gray::size(16), _crc::size(32), rest::binary>>,
-    %PNG{attributes: %{ color_type: 4}}=image)
+    %PNG{color_type: @color_type_alpha}=image)
   do
     process_with_background_color(image, gray, rest)
   end
 
   def process(
     <<_content_length::size(32), @bkgd_header, red::size(16), green::size(16), blue::size(16), _crc::size(32), rest::binary>>,
-    %PNG{attributes: %{ color_type: 2}}=image)
+    %PNG{color_type: @color_type_palette_color_and_alpha}=image)
   do
     process_with_background_color(image, {red, green, blue}, rest)
   end
 
+  # Process the auxillary "gAMA" chunk
   def process(
-    <<_content_length::size(32), @bkgd_header, red::size(16), green::size(16), blue::size(16), _crc::size(32), rest::binary>>,
-    %PNG{attributes: %{ color_type: 6}}=image)
+    <<_content_length::size(32), @gama_header, gamma::integer-size(32), _crc::size(32), rest::binary>>,
+    %PNG{}=image)
   do
-    process_with_background_color(image, {red, green, blue}, rest)
+    process(rest, %PNG{image| gamma: gamma/100_000})
   end
 
   # Process the auxillary "iTXt" chunk
@@ -129,6 +186,7 @@ defmodule Imagineer.Image.PNG do
   def process(<<content_length::size(32), header::binary-size(4),
       _content::binary-size(content_length), _crc::size(32), rest::binary>>,
       %PNG{}=image) do
+    Logger.debug("Skipping unknown header #{header}")
     process(rest, image)
   end
 
@@ -143,29 +201,21 @@ defmodule Imagineer.Image.PNG do
     Map.put image.attributes, attribute, value
   end
 
-  # Color formats, taking in the color_type and bit_depth
-  defp color_format(0, 1) , do: :grayscale1
-  defp color_format(0, 2) , do: :grayscale2
-  defp color_format(0, 4) , do: :grayscale4
-  defp color_format(0, 8) , do: :grayscale8
-  defp color_format(0, 16), do: :grayscale16
-  defp color_format(2, 8) , do: :rgb8
-  defp color_format(2, 16), do: :rgb16
-  defp color_format(3, 1) , do: :palette1
-  defp color_format(3, 2) , do: :palette2
-  defp color_format(3, 4) , do: :palette4
-  defp color_format(3, 8) , do: :palette8
-  defp color_format(4, 8) , do: :grayscale_alpha8
-  defp color_format(4, 16), do: :grayscale_alpha16
-  defp color_format(6, 8) , do: :rgb_alpha8
-  defp color_format(6, 16), do: :rgb_alpha16
+  # Check the compression byte. Purposefully raise if not zlib
+  defp compression_format(@zlib), do: :zlib
 
-  defp read_pallete(content) do
-    Enum.reverse read_pallete(content, [])
+  # Check for the filter method. Purposefully raise if not the only one defined
+  defp filter_method(@filter_five_basics), do: :five_basics
+
+  # We store as an array because we need to access by index
+  defp read_palette(content) do
+    read_palette(content, [])
+    |> Enum.reverse
+    |> :array.from_list
   end
 
-  defp read_pallete(<<red::size(8), green::size(8), blue::size(8), more_pallete::binary>>, acc) do
-    read_pallete(more_pallete, [{red, green, blue}| acc])
+  defp read_palette(<<red::size(8), green::size(8), blue::size(8), more_palette::binary>>, acc) do
+    read_palette(more_palette, [{red, green, blue}| acc])
   end
 
   defp process_text_chunk(image, content) do
@@ -197,7 +247,6 @@ defmodule Imagineer.Image.PNG do
   defp strip_null_bytes(content) do
     content
   end
-
 
   # Sets the attribute relevant to whatever is held in the text chunk,
   # returns the image
