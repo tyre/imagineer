@@ -1,4 +1,4 @@
-defmodule Imagineer.ImageProcessTest do
+defmodule Imagineer.Image.PNGTest do
   use ExUnit.Case, async: true
 
   # Until ExUnit has contexts, we don't want to load all images on every `setup`
