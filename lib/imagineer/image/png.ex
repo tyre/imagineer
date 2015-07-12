@@ -1,138 +1,221 @@
 defmodule Imagineer.Image.PNG do
-  alias Imagineer.Image
+  require Logger
+  alias Imagineer.Image.PNG
+  import Imagineer.Image.PNG.Helpers
+  defstruct alias: nil,
+            width: nil,
+            height: nil,
+            bit_depth: nil,
+            color_type: nil,
+            color_format: nil,
+            uri: nil,
+            format: :png,
+            attributes: %{},
+            data_content: <<>>,
+            raw: nil,
+            comment: nil,
+            mask: nil,
+            compression: :zlib,
+            decompressed_data: nil,
+            unfiltered_rows: nil,
+            scanlines: [],
+            filter_method: nil,
+            interface_method: nil,
+            gamma: nil,
+            palette: [],
+            pixels: []
 
-  @png_signiture <<137::size(8), 80::size(8), 78::size(8), 71::size(8),
-                   13::size(8),  10::size(8), 26::size(8), 10::size(8)>>
+  @behaviour Imagineer.Image
+
+  @png_signature <<137::size(8), ?P, ?N, ?G, ?\r,  ?\n, 26::size(8), ?\n>>
 
   # Required headers
-  @ihdr_header <<73::size(8), 72::size(8), 68::size(8), 82::size(8)>>
-  @plte_header <<80::size(8), 76::size(8), 84::size(8), 69::size(8)>>
-  @idat_header <<73::size(8), 68::size(8), 65::size(8), 84::size(8)>>
-  @iend_header <<73::size(8), 69::size(8), 78::size(8), 68::size(8)>>
+  @ihdr_header <<?I, ?H, ?D, ?R>>
+  @plte_header <<?P, ?L, ?T, ?E>>
+  @idat_header <<?I, ?D, ?A, ?T>>
+  @iend_header <<?I, ?E, ?N, ?D>>
 
   # Auxillary headers
-  @bkgd_header <<98::size(8), 75::size(8), 82::size(8), 68::size(8)>>
-  @iccp_header <<105::size(8), 67::size(8), 67::size(8), 80::size(8)>>
-  @phys_header <<112::size(8), 72::size(8), 89::size(8), 115::size(8)>>
-  @text_header <<105::size(8), 84::size(8), 88::size(8), 116::size(8)>>
+  @bkgd_header <<?b, ?K, ?G, ?D>>
+  @iccp_header <<?i, ?C, ?C, ?P>>
+  @phys_header <<?p, ?H, ?Y, ?s>>
+  @itxt_header <<?i, ?T, ?X, ?t>>
+  @gama_header <<?g, ?A, ?M, ?A>>
 
-  @mime_type "image/png"
+  # Compression
+  @zlib 0
 
-  def process(%Image{format: :png, raw: <<@png_signiture, rest::binary>>}=image) do
-    IO.puts("processing")
-    %Image{ image | mime_type: @mime_type }
-    |> process(rest)
+  # Filter Methods
+  @filter_five_basics 0
+
+  # Filter Types
+  # http://www.w3.org/TR/PNG-Filters.html
+  @filter_0 :none
+  @filter_1 :sub
+  @filter_2 :up
+  @filter_3 :average
+  @filter_4 :paeth
+
+  # Color Types
+  # Color type is a single-byte integer that describes the interpretation of the
+  # image data. Color type codes represent sums of the following values:
+  #   - 1 (palette used)
+  #   - 2 (color used)
+  #   - 4 (alpha channel used)
+  # Valid values are 0, 2, 3, 4, and 6.
+  @color_type_raw                     0
+  @color_type_palette                 1
+  @color_type_color                   2
+  @color_type_palette_and_color       3
+  @color_type_alpha                   4
+  @color_type_palette_color_and_alpha 6
+
+  def process(<<@png_signature, rest::binary>>=raw) do
+    process(rest, %PNG{raw: raw})
+  end
+
+  def process(<<@png_signature, rest::binary>>, %PNG{}=image) do
+    process(rest, image)
   end
 
   # Processes the "IHDR" chunk
-  def process(%Image{} = image, <<content_length::size(32), @ihdr_header, content::binary-size(content_length), _crc::size(32), rest::binary>>) do
+  def process(<<content_length::size(32), @ihdr_header, content::binary-size(content_length), _crc::size(32), rest::binary>>, %PNG{} = image) do
     <<width::integer-size(32),
       height::integer-size(32), bit_depth::integer,
       color_type::integer, compression::integer, filter_method::integer,
       interface_method::integer>> = content
 
-    attributes = Map.merge image.attributes, %{
+    image = %PNG{
+      image |
+      width: width,
+      height: height,
+      bit_depth: bit_depth,
+      color_format: color_format(color_type, bit_depth),
       color_type: color_type,
-      compression: compression,
-      filter_method: filter_method,
+      compression: compression_format(compression),
+      filter_method: filter_method(filter_method),
       interface_method: interface_method
     }
-
-    image = %Image{ image | attributes: attributes, width: width, height: height, bit_depth: bit_depth, color_format: color_format(color_type, bit_depth) }
-    process(image, rest)
+    process(rest, image)
   end
 
   # Process "PLTE" chunk
-  def process(%Image{} = image, <<content_length::integer-size(32), @plte_header, content::binary-size(content_length), _crc::size(32), rest::binary >>) do
-    image = %Image{ image | attributes: set_attribute(image, :palette, read_pallete(content))}
-    process(image, rest)
+  def process(<<content_length::integer-size(32), @plte_header, content::binary-size(content_length), _crc::size(32), rest::binary >>,%PNG{}=image) do
+    image = %PNG{ image | palette: read_palette(content)}
+    process(rest, image)
   end
 
   # Process "pHYs" chunk
-  def process(%Image{} = image, <<_content_length::integer-size(32), @phys_header,
-    <<x_pixels_per_unit::integer-size(32), y_pixels_per_unit::integer-size(32), _unit::binary-size(1)>>,
-    _crc::size(32), rest::binary >>) do
+  def process(<<_content_length::integer-size(32), @phys_header,
+    x_pixels_per_unit::integer-size(32), y_pixels_per_unit::integer-size(32),
+    _unit::binary-size(1), _crc::size(32), rest::binary >>, %PNG{}=image) do
     pixel_dimensions = {
       x_pixels_per_unit,
       y_pixels_per_unit,
       :meter}
-    image = %Image{ image | attributes: set_attribute(image, :pixel_dimensions, pixel_dimensions)}
-    process(image, rest)
+    image = %PNG{ image | attributes: set_attribute(image, :pixel_dimensions, pixel_dimensions)}
+    process(rest, image)
   end
 
   # Process the "IDAT" chunk
   # There can be multiple IDAT chunks to allow the encoding system to control
   # memory consumption. Append the content
-  def process(%Image{} = image, <<content_length::integer-size(32), @idat_header, content::binary-size(content_length), _crc::size(32), rest::binary >>) do
-    process(%Image{ image | content: image.content <> content}, rest)
+  def process(<<content_length::integer-size(32), @idat_header, data_content::binary-size(content_length), _crc::size(32), rest::binary >>, image) do
+    new_content = image.data_content <> data_content
+    process(rest, Map.put(image, :data_content, new_content))
   end
 
   # Process the "IEND" chunk
   # The end of the PNG
-  def process(%Image{} = image, <<_length::size(32), @iend_header, _rest::binary>>) do
-    image
+  def process(<<_length::size(32), @iend_header, _rest::binary>>, %PNG{}=image) do
+    PNG.DataContent.process(image)
   end
 
   # Process the auxillary "bKGD" chunk
-  def process(%Image{} = image, <<content_length::size(32), @bkgd_header, content::binary-size(content_length), _crc::size(32), rest::binary>>) do
-    color_type = image.attributes.color_type
-    background_color = case content do
-      <<index::size(8)>> when color_type == 3 ->
-        index
-      <<gray::size(16)>> when color_type == 0 or color_type == 4 ->
-        gray
-      <<red::size(16), green::size(16), blue::size(16)>> when color_type == 2 or color_type == 6 ->
-        {red, green, blue}
-      _ ->
-        :undefined
-    end
 
-    image = %Image{ image | attributes: set_attribute(image, :background_color, background_color)}
-    process(image, rest)
+  def process(
+    <<_content_length::size(32), @bkgd_header, gray::size(16), _crc::size(32), rest::binary>>,
+    %PNG{color_type: @color_type_raw}=image)
+  do
+    process_with_background_color(image, gray, rest)
   end
 
-  # Process the auxillary "tEXt" chunk
-  def process(%Image{} = image, <<content_length::size(32), @text_header,  content::binary-size(content_length), _crc::size(32), rest::binary>>) do
+  def process(
+    <<_content_length::size(32), @bkgd_header, red::size(16), green::size(16), blue::size(16), _crc::size(32), rest::binary>>,
+    %PNG{color_type: @color_type_color}=image)
+  do
+    process_with_background_color(image, {red, green, blue}, rest)
+  end
+
+  def process(
+    <<_content_length::size(32), @bkgd_header, index::size(8), _crc::size(32), rest::binary>>,
+    %PNG{color_type: @color_type_palette_and_color}=image)
+  do
+    process_with_background_color(image, elem(image.palatte, index), rest)
+  end
+
+  def process(
+    <<_content_length::size(32), @bkgd_header, gray::size(16), _crc::size(32), rest::binary>>,
+    %PNG{color_type: @color_type_alpha}=image)
+  do
+    process_with_background_color(image, gray, rest)
+  end
+
+  def process(
+    <<_content_length::size(32), @bkgd_header, red::size(16), green::size(16), blue::size(16), _crc::size(32), rest::binary>>,
+    %PNG{color_type: @color_type_palette_color_and_alpha}=image)
+  do
+    process_with_background_color(image, {red, green, blue}, rest)
+  end
+
+  # Process the auxillary "gAMA" chunk
+  def process(
+    <<_content_length::size(32), @gama_header, gamma::integer-size(32), _crc::size(32), rest::binary>>,
+    %PNG{}=image)
+  do
+    process(rest, %PNG{image| gamma: gamma/100_000})
+  end
+
+  # Process the auxillary "iTXt" chunk
+  def process(<<content_length::size(32), @itxt_header,  content::binary-size(content_length), _crc::size(32), rest::binary>>, %PNG{}=image) do
     image = process_text_chunk(image, content)
-    process(image, rest)
+    process(rest, image)
   end
 
   # For headers that we don't understand, skip them
-  def process(%Image{} = image, <<content_length::size(32), header::binary-size(4),
-      _content::binary-size(content_length), _crc::size(32), rest::binary>>) do
-    IO.puts("Don't understand what to do with #{header}")
-    process(image, rest)
+  def process(<<content_length::size(32), header::binary-size(4),
+      _content::binary-size(content_length), _crc::size(32), rest::binary>>,
+      %PNG{}=image) do
+    Logger.debug("Skipping unknown header #{header}")
+    process(rest, image)
+  end
+
+  defp process_with_background_color(background_color, image, rest) do
+    image = %PNG{ image | attributes: set_attribute(image, :background_color, background_color)}
+    process(rest, image)
   end
 
   # Private helper functions
 
-  defp set_attribute(%Image{} = image, attribute, value) do
+  defp set_attribute(%PNG{} = image, attribute, value) do
     Map.put image.attributes, attribute, value
   end
 
-  # Color formats, taking in the color_type and bit_depth
-  defp color_format(0, 1) , do: :grayscale1
-  defp color_format(0, 2) , do: :grayscale2
-  defp color_format(0, 4) , do: :grayscale4
-  defp color_format(0, 8) , do: :grayscale8
-  defp color_format(0, 16), do: :grayscale16
-  defp color_format(2, 8) , do: :rgb8
-  defp color_format(2, 16), do: :rgb16
-  defp color_format(3, 1) , do: :palette1
-  defp color_format(3, 2) , do: :palette2
-  defp color_format(3, 4) , do: :palette4
-  defp color_format(3, 8) , do: :palette8
-  defp color_format(4, 8) , do: :grayscale_alpha8
-  defp color_format(4, 16), do: :grayscale_alpha16
-  defp color_format(6, 8) , do: :rgb_alpha8
-  defp color_format(6, 16), do: :rgb_alpha16
+  # Check the compression byte. Purposefully raise if not zlib
+  defp compression_format(@zlib), do: :zlib
 
-  defp read_pallete(content) do
-    Enum.reverse read_pallete(content, [])
+  # Check for the filter method. Purposefully raise if not the only one defined
+  defp filter_method(@filter_five_basics), do: :five_basics
+
+  # We store as an array because we need to access by index
+  defp read_palette(content) do
+    read_palette(content, [])
+    |> Enum.reverse
+    |> :array.from_list
   end
 
-  defp read_pallete(<<red::size(8), green::size(8), blue::size(8), more_pallete::binary>>, acc) do
-    read_pallete(more_pallete, [{red, green, blue}| acc])
+  defp read_palette(<<red::size(8), green::size(8), blue::size(8), more_palette::binary>>, acc) do
+    read_palette(more_palette, [{red, green, blue}| acc])
   end
 
   defp process_text_chunk(image, content) do
@@ -165,15 +248,14 @@ defmodule Imagineer.Image.PNG do
     content
   end
 
-
   # Sets the attribute relevant to whatever is held in the text chunk,
   # returns the image
   defp set_text_attribute(image, key, value) do
     case key do
       :Comment ->
-        %Image{image | comment: value}
+        %PNG{image | comment: value}
       _ ->
-        %Image{image | attributes: set_attribute(image, key, value)}
+        %PNG{image | attributes: set_attribute(image, key, value)}
     end
   end
 

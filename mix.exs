@@ -2,29 +2,49 @@ defmodule Imagineer.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :imagineer,
-     version: "0.0.1",
-     elixir: "~> 1.0",
-     deps: deps]
+    [
+      app: :imagineer,
+      version: "0.2.0-dev",
+      elixir: "~> 1.0",
+      deps: deps,
+      source_url: "https://github.com/SenecaSystems/imagineer",
+      description: description,
+      package: package
+    ]
   end
 
-  # Configuration for the OTP application
-  #
-  # Type `mix help compile.app` for more information
   def application do
     [applications: [:logger]]
   end
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:mydep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
-  #
-  # Type `mix help deps` for more examples and options
   defp deps do
     []
   end
+
+  defp description do
+    """
+    Image processing in Elixir
+    """
+  end
+
+  defp package do
+  [
+    contributors: contributors,
+    links: links,
+    licenses: ["MIT"]
+  ]
+  end
+
+  defp contributors do
+    [
+      "Chris Maddox"
+    ]
+  end
+
+  defp links do
+    %{
+      github: "https://github.com/SenecaSystems/imagineer"
+    }
+  end
+
 end

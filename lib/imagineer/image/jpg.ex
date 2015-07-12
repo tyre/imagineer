@@ -1,5 +1,31 @@
 defmodule Imagineer.Image.JPG do
-  alias Imagineer.Image
+  require Logger
+  alias Imagineer.Image.JPG
+  defstruct alias: nil,
+            width: nil,
+            height: nil,
+            bit_depth: nil,
+            color_type: nil,
+            color_format: nil,
+            uri: nil,
+            format: :jpg,
+            attributes: %{},
+            data_content: <<>>,
+            raw: nil,
+            comment: "",
+            mask: nil,
+            compression: :dct,
+            decompressed_data: nil,
+            unfiltered_rows: nil,
+            scanlines: [],
+            filter_method: nil,
+            interface_method: nil,
+            gamma: nil,
+            palette: [],
+            pixels: [],
+            components: nil
+
+  @behaviour Imagineer.Image
 
   @moduledoc """
   YCbCr
@@ -31,10 +57,23 @@ defmodule Imagineer.Image.JPG do
 
   @comment             <<255::size(8), 254::size(8)>>
 
-  @start_of_baseline_frame      <<255::size(8), 192::size(8)>>
+  @start_of_baseline_frame   <<255::size(8), 192::size(8)>>
+  @start_of_progressive_frame   <<255::size(8), 194::size(8)>>
   @define_huffman_table      <<255::size(8), 196::size(8)>>
   @define_quantization_table <<255::size(8), 219::size(8)>>
   @start_of_scan             <<255::size(8), 218::size(8)>>
+
+  @restart_interval   <<255::size(8), 221::size(8)>>
+  @restart0           <<255::size(8), 208::size(8)>>
+  @restart1           <<255::size(8), 209::size(8)>>
+  @restart2           <<255::size(8), 210::size(8)>>
+  @restart3           <<255::size(8), 211::size(8)>>
+  @restart4           <<255::size(8), 212::size(8)>>
+  @restart5           <<255::size(8), 213::size(8)>>
+  @restart6           <<255::size(8), 214::size(8)>>
+  @restart7           <<255::size(8), 215::size(8)>>
+
+  @padding            <<0::size(8), 4::size(8)>>
 
   @jfif_identifier  <<74::size(8), 70::size(8), 73::size(8), 70::size(8)>>
 
@@ -43,33 +82,136 @@ defmodule Imagineer.Image.JPG do
   @kr 0.299
   @kb 0.114
 
-  def process(%Image{format: :jpg}=image) do
-    IO.puts inspect image.raw
-    process image, image.raw
+  def process(<<@start_of_image, rest::binary>>=raw) do
+    IO.puts "START"
+    process(rest, %JPG{raw: raw})
   end
 
-  defp process(image, <<@start_of_image, rest::binary>>) do
-    process(image, rest)
+  def process(<<@start_of_image, rest::binary>>, %JPG{}=image) do
+    process(rest, image)
   end
 
-  defp process(image, <<@start_of_baseline_frame, rest::binary>>) do
+  def process(<<@start_of_baseline_frame, rest::binary>>, image) do
+    IO.puts "BASELINE"
     {content, rest} = marker_content(rest)
-    process_start_of_frame(content, image)
-    |> process(rest)
+    image = process_start_of_frame(content, image)
+    process(rest, image)
   end
 
-  defp process(image, <<@app0, rest::binary>>) do
+  def process(<<@start_of_progressive_frame, rest::binary>>, image) do
+    IO.puts "PROGRESSIVE"
+    {content, rest} = marker_content(rest)
+    image = process_start_of_frame(content, image)
+    process(rest, image)
+  end
+
+  def process(<<@app0, rest::binary>>, image) do
     IO.puts "APP0"
+    Logger.debug("APP0")
     {marker_content, rest} = marker_content(rest)
-    process_app0(image, marker_content)
-    |> process(rest)
+    image = process_app0(image, marker_content)
+    process(rest, image)
   end
 
-  defp process(%Image{}=image, <<@define_quantization_table, rest::binary>>) do
-    IO.puts("DQT...skipping...")
+  def process(<<@define_quantization_table, rest::binary>>, %JPG{}=image) do
+    IO.puts "DQT"
+    Logger.debug("DQT...skipping...")
     {marker_content, rest} = marker_content(rest)
-    process_quantization_table(image, marker_content)
-    |> process(rest)
+    image = process_quantization_table(image, marker_content)
+    process(rest, image)
+  end
+
+  def process(<<@app13, rest::binary>>, image) do
+    IO.puts "APP13"
+    Logger.debug("APP13!")
+    process(process_app13(rest, image), image)
+  end
+
+  def process(<<@comment, rest::binary>>, image) do
+    IO.puts "COMMENT"
+    {marker_content, rest} = marker_content(rest)
+    image = %JPG{image | comment: image.comment <> marker_content}
+    process(rest, image)
+  end
+
+  def process(<<@padding, rest::binary>>, image) do
+    IO.puts "PADDING"
+    {marker_content, rest} = marker_content(rest)
+    process(rest, image)
+  end
+
+  def process(<<@define_huffman_table, rest::binary>>, image) do
+    IO.puts "DFT"
+    {marker_content, rest} = marker_content(rest)
+    Logger.debug(marker_content, raw: true)
+    image = process_huffman_table(marker_content, image)
+    process(rest, image)
+  end
+
+  def process(<<@restart_interval, marker::size(32), rest::binary>>, image) do
+    IO.puts "RESTART INTERVAL"
+    # IO.puts marker
+    process(rest, image)
+  end
+
+  def process(<<@restart0, rest::binary>>, image) do
+    IO.puts "RESTART0"
+    process(rest, image)
+  end
+
+  def process(<<@restart1, rest::binary>>, image) do
+    IO.puts "RESTART1"
+    process(rest, image)
+  end
+
+  def process(<<@restart2, rest::binary>>, image) do
+    IO.puts "RESTART2"
+    process(rest, image)
+  end
+
+  def process(<<@restart3, rest::binary>>, image) do
+    IO.puts "RESTART3"
+    process(rest, image)
+  end
+
+  def process(<<@restart4, rest::binary>>, image) do
+    IO.puts "RESTART4"
+    process(rest, image)
+  end
+
+  def process(<<@restart5, rest::binary>>, image) do
+    IO.puts "RESTART5"
+    process(rest, image)
+  end
+
+  def process(<<@restart6, rest::binary>>, image) do
+    IO.puts "RESTART6"
+    process(rest, image)
+  end
+
+  def process(<<@restart7, rest::binary>>, image) do
+    IO.puts "RESTART7"
+    process(rest, image)
+  end
+
+  def process(<<@start_of_scan, rest::binary>>, image) do
+    IO.puts "START SCAN"
+    {marker_content, rest} = marker_content(rest)
+    process_start_of_scan(marker_content, image)
+    process(rest, image)
+  end
+
+  def process(<<@end_of_image>>, image) do
+    IO.puts "END"
+    image
+  end
+
+  def process(<<255::size(8), marker::size(8), rest::binary>>, image) do
+    IO.puts "UNKNOWN"
+    IO.puts marker
+    Logger.debug("Skipping unknown marker #{marker}")
+    # {marker_content, rest} = marker_content(rest)
+    process(rest, image)
   end
 
   # From [Wikipedia](http://en.wikibooks.org/wiki/JPEG_-_Idea_and_Practice/The_header_part#The_Quantization_table_segment_DQT):
@@ -81,36 +223,8 @@ defmodule Imagineer.Image.JPG do
   # > identifier of the table (0-3), for instance 0 for the Y component and 1 for the
   # > colour components. Next follow the 64 numbers of the table (bytes).
   defp process_quantization_table(image, content) do
+    IO.puts "PQT"
     image
-  end
-
-  defp process(image, <<@app13, rest::binary>>) do
-    IO.puts "APP13!"
-
-    process(image, process_app13(image, rest))
-  end
-
-  defp process(image, <<@comment, rest::binary>>) do
-    {marker_content, rest} = marker_content(rest)
-    %Image{image | comment: marker_content}
-    |> process(rest)
-  end
-
-  defp process(image, <<@define_huffman_table, rest::binary>>) do
-    {marker_content, rest} = marker_content(rest)
-    IO.puts inspect(marker_content, raw: true)
-    process_huffman_table(marker_content, image)
-    |> process(rest)
-  end
-
-  defp process(image, <<@end_of_image>>) do
-    image
-  end
-
-  defp process(image, <<255::size(8), marker::size(8), rest::binary>>) do
-    IO.puts "Skipping unknown marker #{marker}"
-    {marker_content, rest} = marker_content(rest)
-    process image, rest
   end
 
   # The leading byte tells us the number of bits to a color value. 8 is normal (
@@ -121,8 +235,18 @@ defmodule Imagineer.Image.JPG do
     image)
   do
     components = parse_components(components)
-    IO.puts "components: " <> inspect(components)
-    %Image{image | height: height, width: width, components: components}
+    %JPG{image | height: height, width: width, components: components}
+  end
+
+  defp process_start_of_scan(<<num_components::size(8), sos_rest::binary>>, image) do
+    IO.puts "SoS"
+    # <<3, 1, 0, 2, 17, 3, 17, 0, 63, 0>>
+    component_size = num_components * 16
+    <<components::size(component_size), spectral_start::size(8), spectral_end::size(8), pos_high::size(4), pos_low::size(4)>> = sos_rest
+    IO.puts spectral_start
+    IO.puts spectral_end
+    # components = parse_components(components)
+    # %JPG{image | components: components}
   end
 
   defp parse_components(components) do
@@ -144,11 +268,12 @@ defmodule Imagineer.Image.JPG do
 
 ## DC Y Component
   defp process_huffman_table(<<0::size(4), 0::size(4), rest::binary>>, image) do
+    image
   end
 
 ## DC Color Component
   defp process_huffman_table(<<0::size(4), 1::size(4), rest::binary>>, image) do
-
+    image
   end
 
 ## AC Y Component
@@ -156,15 +281,14 @@ defmodule Imagineer.Image.JPG do
     image
   end
 
-
 ## DC Color component
   defp process_huffman_table(<<1::size(4), 1::size(4), rest::binary>>, image) do
     image
   end
 
-  defp process_app13(image, bin) do
-    IO.puts "skipping APP13"
-    {_marker_content, rest} = marker_content(bin)
+  defp process_app13(rest, image) do
+    Logger.debug("skipping APP13")
+    {_marker_content, rest} = marker_content(rest)
     rest
   end
 
@@ -175,15 +299,6 @@ defmodule Imagineer.Image.JPG do
                       rest::binary>>) do
     thumbnail_data_size = 3 * thumbnail_width * thumbnail_height
     <<thumbnail_data::binary-size(thumbnail_data_size), rest::binary>> = rest
-    IO.puts "Data in app0:" <> inspect %{
-      version_major: version_major,
-      version_minor: version_minor,
-      density_units: density_units,
-      x_density:     x_density,
-      y_density:     y_density,
-      thumbnail_data_size: thumbnail_data_size,
-      thumbnail_data: thumbnail_data
-    }
     image
   end
 
@@ -192,6 +307,8 @@ defmodule Imagineer.Image.JPG do
   # two to get the length of the actual content
   defp marker_content(<<total_length::size(2)-unit(8), rest::binary>>) do
     content_length = total_length - 2
+    IO.puts "CONTENT LENGTH"
+    IO.puts content_length
     <<content::binary-size(content_length), rest::binary>> = rest
     {content, rest}
   end
