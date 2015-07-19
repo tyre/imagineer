@@ -2,10 +2,6 @@ defmodule Imagineer.Image.PNG.Pixels do
   alias Imagineer.Image.PNG
   import Imagineer.Image.PNG.Helpers, only: [channels_per_pixel: 1]
 
-  def load_row do
-
-  end
-
   @doc """
   Extracts the pixels from all of the unfiltered rows. Sets the `pixels` field
   on the image and returns it.
@@ -53,20 +49,20 @@ defmodule Imagineer.Image.PNG.Pixels do
   end
 
   defp extract_pixels_from_row(row, channels_per_pixel, bit_depth) do
-    extract_pixels_from_row(row, channels_per_pixel, bit_depth, [])
+    pixel_size = channels_per_pixel * bit_depth
+    extract_pixels_from_row(row, channels_per_pixel, bit_depth, pixel_size, [])
   end
 
   # In the base case, we have pulled everything from the row and are left with
   # a reversed list of pixels
-  defp extract_pixels_from_row(<<>>, _channels_per_pixel, _bit_depth, pixels) do
+  defp extract_pixels_from_row(<<>>, _channels_per_pixel, _bit_depth, _pixel_size, pixels) do
     Enum.reverse pixels
   end
 
-  defp extract_pixels_from_row(row, channels_per_pixel, bit_depth, pixels) do
-    pixel_size = channels_per_pixel * bit_depth
-    <<pixel_bits::bits-size(pixel_size), rest_of_row::binary>> = row
+  defp extract_pixels_from_row(row, channels_per_pixel, bit_depth, pixel_size, pixels) do
+    <<pixel_bits::bits-size(pixel_size), rest_of_row::bits>> = row
     pixel = extract_pixel(pixel_bits, bit_depth, channels_per_pixel)
-    extract_pixels_from_row(rest_of_row, channels_per_pixel, bit_depth, [pixel | pixels])
+    extract_pixels_from_row(rest_of_row, channels_per_pixel, bit_depth, pixel_size, [pixel | pixels])
   end
 
   defp extract_pixel(pixel_bits, bit_depth, channels_per_pixel) do

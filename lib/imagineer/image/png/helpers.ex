@@ -23,21 +23,41 @@ defmodule Imagineer.Image.PNG.Helpers do
   Given a color format and the width of an image, tells us how many bytes are
   are present per scanline (a row of pixels).
   """
-  def bytes_per_row(:grayscale1, width),          do: div(width, 8)
-  def bytes_per_row(:grayscale2, width),          do: div(width, 4)
-  def bytes_per_row(:grayscale4, width),          do: div(width, 2)
+  def bytes_per_row(:grayscale1, width),          do: div(width + 7, 8)
+  def bytes_per_row(:grayscale2, width),          do: div(width + 3, 4)
+  def bytes_per_row(:grayscale4, width),          do: div(width + 1, 2)
   def bytes_per_row(:grayscale8, width),          do: width
   def bytes_per_row(:grayscale16, width),         do: width * 2
   def bytes_per_row(:rgb8, width),                do: width * 3
   def bytes_per_row(:rgb16, width),               do: width * 6
-  def bytes_per_row(:palette1, width),            do: div(width, 8)
-  def bytes_per_row(:palette2, width),            do: div(width, 4)
-  def bytes_per_row(:palette4, width),            do: div(width, 2)
+  def bytes_per_row(:palette1, width),            do: div(width + 7, 8)
+  def bytes_per_row(:palette2, width),            do: div(width + 3, 4)
+  def bytes_per_row(:palette4, width),            do: div(width + 1, 2)
   def bytes_per_row(:palette8, width),            do: width
   def bytes_per_row(:grayscale_alpha8, width),    do: width * 2
   def bytes_per_row(:grayscale_alpha16, width),   do: width * 4
   def bytes_per_row(:rgb_alpha8, width),          do: width * 4
   def bytes_per_row(:rgb_alpha16, width),         do: width * 8
+
+  @doc """
+  Gives how many bits comprise a pixel
+  """
+  def bits_per_pixel(:grayscale1),          do: 1
+  def bits_per_pixel(:grayscale2),          do: 2
+  def bits_per_pixel(:grayscale4),          do: 4
+  def bits_per_pixel(:grayscale8),          do: 8
+  def bits_per_pixel(:grayscale16),         do: 16
+  def bits_per_pixel(:rgb8),                do: 8
+  def bits_per_pixel(:rgb16),               do: 16
+  def bits_per_pixel(:palette1),            do: 1
+  def bits_per_pixel(:palette2),            do: 2
+  def bits_per_pixel(:palette4),            do: 4
+  def bits_per_pixel(:palette8),            do: 8
+  def bits_per_pixel(:grayscale_alpha8),    do: 8
+  def bits_per_pixel(:grayscale_alpha16),   do: 16
+  def bits_per_pixel(:rgb_alpha8),          do: 8
+  def bits_per_pixel(:rgb_alpha16),         do: 16
+
 
   @doc """
   Given a color format, tells us how many bytes are needed to store a pixel
