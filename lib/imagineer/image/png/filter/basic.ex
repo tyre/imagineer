@@ -14,10 +14,11 @@ defmodule Imagineer.Image.PNG.Filter.Basic do
 
   Types are defined [here](http://www.w3.org/TR/PNG-Filters.html).
   """
-  def unfilter(%PNG{scanlines: scanlines}=image) when is_list(scanlines) do
+  def unfilter(scanlines, color_format, width)
+  when is_list(scanlines) and is_atom(color_format) and is_integer(width) do
     # For unfiltering, the row prior to the first is assumed to be all 0s
-    ghost_row = null_binary(bytes_per_row(image.color_format, image.width))
-    unfilter(scanlines, ghost_row, 0, bytes_per_pixel(image.color_format), [])
+    ghost_row = null_binary(bytes_per_row(color_format, width))
+    unfilter(scanlines, ghost_row, 0, bytes_per_pixel(color_format), [])
   end
 
   defp unfilter([], _prior_row, _current_index, _bytes_per_pixel, unfiltered) do
@@ -29,23 +30,23 @@ defmodule Imagineer.Image.PNG.Filter.Basic do
     unfilter(filtered_rows, unfiltered_row, row_index+1, bytes_per_pixel, [{row_index, unfiltered_row} | unfiltered])
   end
 
-  defp unfilter_scanline(<<@none::size(8), row_content::binary>>, _bytes_per_pixel, _prior) do
+  defp unfilter_scanline(<<@none::integer-size(8), row_content::binary>>, _bytes_per_pixel, _prior) do
     row_content
   end
 
-  defp unfilter_scanline(<<@sub::size(8), row_content::binary>>, bytes_per_pixel, _prior) do
+  defp unfilter_scanline(<<@sub::integer-size(8), row_content::binary>>, bytes_per_pixel, _prior) do
     Basic.Sub.unfilter(row_content, bytes_per_pixel)
   end
 
-  defp unfilter_scanline(<<@up::size(8), row_content::binary>>, _bytes_per_pixel, prior_row) do
+  defp unfilter_scanline(<<@up::integer-size(8), row_content::binary>>, _bytes_per_pixel, prior_row) do
     Basic.Up.unfilter(row_content, prior_row)
   end
 
-  defp unfilter_scanline(<<@average::size(8), row_content::binary>>, bytes_per_pixel, prior_row) do
+  defp unfilter_scanline(<<@average::integer-size(8), row_content::binary>>, bytes_per_pixel, prior_row) do
     Basic.Average.unfilter(row_content, prior_row, bytes_per_pixel)
   end
 
-  defp unfilter_scanline(<<@paeth::size(8), row_content::binary>>, bytes_per_pixel, prior_row) do
+  defp unfilter_scanline(<<@paeth::integer-size(8), row_content::binary>>, bytes_per_pixel, prior_row) do
     Basic.Paeth.unfilter(row_content, prior_row, bytes_per_pixel)
   end
 end

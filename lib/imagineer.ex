@@ -16,6 +16,11 @@ defmodule Imagineer do
     end
   end
 
+  def write(image, destination) do
+    image_module = image.__struct__
+    File.write(destination, image_module.to_binary(image))
+  end
+
   defp detect_type_and_process(content) do
     case FormatDetector.detect(content) do
       :png ->

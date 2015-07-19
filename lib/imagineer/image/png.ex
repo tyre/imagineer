@@ -2,6 +2,9 @@ defmodule Imagineer.Image.PNG do
   require Logger
   alias Imagineer.Image.PNG
   import Imagineer.Image.PNG.Helpers
+
+  @mime_type "image/png"
+
   defstruct alias: nil,
             width: nil,
             height: nil,
@@ -20,10 +23,11 @@ defmodule Imagineer.Image.PNG do
             unfiltered_rows: nil,
             scanlines: [],
             filter_method: nil,
-            interface_method: nil,
+            interlace_method: nil,
             gamma: nil,
             palette: [],
-            pixels: []
+            pixels: [],
+            mime_type: @mime_type
 
   @behaviour Imagineer.Image
 
@@ -83,7 +87,7 @@ defmodule Imagineer.Image.PNG do
     <<width::integer-size(32),
       height::integer-size(32), bit_depth::integer,
       color_type::integer, compression::integer, filter_method::integer,
-      interface_method::integer>> = content
+      interlace_method::integer>> = content
 
     image = %PNG{
       image |
@@ -94,7 +98,7 @@ defmodule Imagineer.Image.PNG do
       color_type: color_type,
       compression: compression_format(compression),
       filter_method: filter_method(filter_method),
-      interface_method: interface_method
+      interlace_method: interlace_method
     }
     process(rest, image)
   end
@@ -195,23 +199,84 @@ defmodule Imagineer.Image.PNG do
     process(rest, image)
   end
 
+  def to_binary(%PNG{}=png) do
+    to_binary(<<@png_signature>>, png)
+  end
+
+  def to_binary(bin, png) do
+    write_header(bin, png)
+    |> write_palette(png)
+    # |> write_data_content(png)
+  end
+
+  defp write_header(bin, png) do
+    encoded_compression_format = encoded_compression_format(png.compression)
+    encoded_filter_method = encoded_filter_method(png.filter_method)
+
+    bin <> make_chunk(@ihdr_header, <<
+      png.width::integer-size(32),
+      png.height::integer-size(32),
+      png.bit_depth::integer,
+      png.color_type::integer,
+      encoded_compression_format::integer,
+      encoded_filter_method::integer,
+      png.interlace_method::integer
+    >>)
+  end
+
+  # if the palette is empty, skip the chunk
+  defp write_palette(bin, %PNG{palette: []}) do
+    bin
+  end
+
+  defp write_palette(bin, %PNG{}=png) do
+    bin <> make_chunk(@plte_header, encode_palette(png.palette, <<>>))
+  end
+
+  defp encode_palette([], encoded_palette) do
+    encoded_palette
+  end
+
+  defp encode_palette([{red, green, blue} | more_palette], encoded_palette) do
+    new_encoded_palette = <<encoded_palette, red::size(8), green::size(8), blue::size(8)>>
+    encode_palette(more_palette, new_encoded_palette)
+  end
+
   # Private helper functions
 
   defp set_attribute(%PNG{} = image, attribute, value) do
     Map.put image.attributes, attribute, value
   end
 
+  defp make_chunk(header, chunk_content) do
+    content_length = byte_size(chunk_content)
+    cyclic_redundency_check = :erlang.crc32(chunk_content)
+    <<
+      content_length::integer-unit(1)-size(32),
+      header::binary-size(4),
+      chunk_content::binary,
+      cyclic_redundency_check::size(32)
+    >>
+  end
+
   # Check the compression byte. Purposefully raise if not zlib
   defp compression_format(@zlib), do: :zlib
+  defp encoded_compression_format(:zlib), do: @zlib
 
   # Check for the filter method. Purposefully raise if not the only one defined
   defp filter_method(@filter_five_basics), do: :five_basics
+  defp encoded_filter_method(:five_basics), do: @filter_five_basics
+
 
   # We store as an array because we need to access by index
   defp read_palette(content) do
     read_palette(content, [])
-    |> Enum.reverse
     |> :array.from_list
+  end
+
+  # In the base case, we have a list of palatte colors
+  defp read_palette(<<>>, palette) do
+    Enum.reverse palette
   end
 
   defp read_palette(<<red::size(8), green::size(8), blue::size(8), more_palette::binary>>, acc) do

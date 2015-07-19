@@ -14,7 +14,7 @@ defmodule Imagineer.Image.PNGTest do
     assert image.width == 96, "it should set the width"
     assert image.height == 96, "it should set the height"
 
-    # It should set the color format, color type, and bit_depth
+    # It should set the color format, color type, and 1it_depth
     assert image.bit_depth == 8, "it should set the bit depth"
     assert image.color_format == :rgb8, "it should set the color format"
     assert image.color_type == 2, "it should set the color type"
@@ -38,5 +38,16 @@ defmodule Imagineer.Image.PNGTest do
 
     {:ok, raw_file} = File.read("./test/support/images/png/baby_octopus.png")
     assert raw_file == image.raw, "it should set the file's contents into `raw`"
+  end
+
+
+  test "writing out to a file" do
+    {:ok, image} = Imagineer.load("./test/support/images/png/alpaca.png")
+    :ok = Imagineer.write(image, "./tmp/alpaca_write_test.png")
+
+  end
+
+  test "png_suite 1" do
+    # IO.puts inspect Imagineer.load("./test/support/images/pngsuite/interlaced/basi0g01.png")
   end
 end
