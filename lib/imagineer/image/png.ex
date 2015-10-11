@@ -274,7 +274,7 @@ defmodule Imagineer.Image.PNG do
     |> :array.from_list
   end
 
-  # In the base case, we have a list of palatte colors
+  # In the base case, we have a list of palette colors
   defp read_palette(<<>>, palette) do
     Enum.reverse palette
   end

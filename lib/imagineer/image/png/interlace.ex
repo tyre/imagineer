@@ -1,7 +1,6 @@
 defmodule Imagineer.Image.PNG.Interlace do
   alias Imagineer.Image.PNG
-  alias Imagineer.Image.PNG.Interlace.None
-  alias Imagineer.Image.PNG.Interlace.Adam7
+  alias Imagineer.Image.PNG.Helpers
 
   @moduledoc """
   A module for extracting and storing scanlines from images based on their
@@ -9,20 +8,33 @@ defmodule Imagineer.Image.PNG.Interlace do
   """
 
   @doc """
-  Extracts scanlines for an image with no interlacing.
+  Extracts scanlines for an image based on its interlace method.
   """
   def extract_pixels(%PNG{interlace_method: 0}=image) do
-    %PNG{image | scanlines: None.extract_scanlines(image)}
+    %PNG{image | scanlines: Interlace.None.extract_scanlines(image)}
     |> PNG.Filter.unfilter
     |> PNG.Pixels.extract
     |> handle_palette
   end
 
   def extract_pixels(%PNG{interlace_method: 1}=image) do
-    scanlines = Adam7.extract_scanlines(image)
-    %PNG{image | scanlines: scanlines}
+    %PNG{image | scanlines: adam7_scanlines(image)}
+    |> log_scanlines
     |> PNG.Filter.unfilter
+    |> log_unfiltered_rows
+    |> PNG.Pixels.extract
     |> handle_palette
+  end
+
+  defp log_scanlines(image) do
+    Apex.ap inspect {image.width, image.height}
+    Apex.ap inspect image.scanlines
+    image
+  end
+
+  defp log_unfiltered_rows(image) do
+    Apex.ap inspect image.unfiltered_rows
+    image
   end
 
   defp handle_palette(%PNG{color_type: 3, palette: palette, pixels: pixels}=image) do
@@ -58,5 +70,13 @@ defmodule Imagineer.Image.PNG.Interlace do
   defp extract_pixels_from_palette_row([{palette_index} | palette_indices], palette, pixels) do
     pixel = :array.get(palette_index, palette)
     extract_pixels_from_palette_row(palette_indices, palette, [pixel | pixels])
+  end
+
+  defp adam7_scanlines(
+    %PNG{width: width, height: height, color_format: color_format,
+      decompressed_data: decompressed_data}
+  ) do
+    {width, height, Helpers.bits_per_pixel(color_format)}
+    |> Adam7.PNG.extract_images(decompressed_data)
   end
 end
