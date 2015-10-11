@@ -12,6 +12,8 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
       ...>  color_format: :rgb8,
       ...>  bit_depth: 8,
       ...>  interlace_method: 0,
+      ...>  width: 2,
+      ...>  height: 5,
       ...>  unfiltered_rows: [
       ...>    <<127, 138, 255, 147, 159, 106>>,
       ...>    <<233, 1, 77, 78, 191, 144>>,
