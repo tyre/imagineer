@@ -1,6 +1,5 @@
 defmodule Imagineer.Image.PNG.Interlace do
   alias Imagineer.Image.PNG
-  alias Imagineer.Image.PNG.Helpers
 
   @moduledoc """
   A module for extracting and storing scanlines from images based on their

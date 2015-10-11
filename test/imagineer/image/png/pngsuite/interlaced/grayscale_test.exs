@@ -170,6 +170,42 @@ defmodule Imagineer.Image.PNG.PngSuite.Interlaced.GrayscaleTest do
     assert_pixels_match(extract_single_channel_pixels(image), @actual_pixels)
   end
 
+  test "eight bit grayscale" do
+    {:ok, image} = Imagineer.load(@test_path <> "basi0g08.png")
+
+    assert image.height == 32
+    assert image.width == 32
+
+    assert image.color_format == :grayscale8
+    assert image.compression == :zlib
+    assert image.color_type == 0
+    assert image.interlace_method == 1
+    assert image.gamma == 1.0
+    assert image.bit_depth == 8
+    assert image.mask == nil
+    assert image.format == :png
+    assert image.mime_type == "image/png"
+    assert image.palette == []
+  end
+
+  test "sixteen bit grayscale" do
+    {:ok, image} = Imagineer.load(@test_path <> "basi0g16.png")
+
+    assert image.height == 32
+    assert image.width == 32
+
+    assert image.color_format == :grayscale16
+    assert image.compression == :zlib
+    assert image.color_type == 0
+    assert image.interlace_method == 1
+    assert image.gamma == 1.0
+    assert image.bit_depth == 16
+    assert image.mask == nil
+    assert image.format == :png
+    assert image.mime_type == "image/png"
+    assert image.palette == []
+  end
+
   defp assert_pixels_match(parsed_pixels, actual_pixels) do
     Enum.zip(parsed_pixels, actual_pixels)
     |> Enum.with_index
