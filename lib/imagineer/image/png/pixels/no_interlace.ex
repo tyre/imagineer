@@ -13,11 +13,11 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
       ...>  bit_depth: 8,
       ...>  interlace_method: 0,
       ...>  unfiltered_rows: [
-      ...>    {0, <<127, 138, 255, 147, 159, 106>>},
-      ...>    {1, <<233, 1, 77, 78, 191, 144>>},
-      ...>    {2, <<234, 78, 93, 56, 169, 42>>},
-      ...>    {3, <<184, 162, 144, 6, 26, 96>>},
-      ...>    {4, <<32, 206, 231, 39, 117, 76>>}
+      ...>    <<127, 138, 255, 147, 159, 106>>,
+      ...>    <<233, 1, 77, 78, 191, 144>>,
+      ...>    <<234, 78, 93, 56, 169, 42>>,
+      ...>    <<184, 162, 144, 6, 26, 96>>,
+      ...>    <<32, 206, 231, 39, 117, 76>>
       ...>  ]
       ...> }
       iex> PNG.Pixels.extract(image).pixels
@@ -30,17 +30,11 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
       ]
 
   """
-  def extract(%PNG{
-      unfiltered_rows: unfiltered_rows,
-      interlace_method: 0
-    }=image)
-  do
-    pixels = extract_pixels(unfiltered_rows, image)
-    Map.put(image, :pixels, pixels)
+  def extract(%PNG{unfiltered_rows: unfiltered_rows}=image) do
+    extract_pixels(unfiltered_rows, image)
   end
 
   def extract_pixels(rows, %PNG{color_format: color_format, bit_depth: bit_depth, width: width}) do
-    IO.puts inspect rows
     extract_pixels(rows, width, channels_per_pixel(color_format), bit_depth, [])
   end
 
@@ -72,7 +66,7 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
     extract_pixels_from_row(rest_of_row, width - 1, channels_per_pixel, bit_depth, pixel_size, [pixel | pixels])
   end
 
-  defp extract_pixel(pixel_bits, bit_depth, channels_per_pixel) do
+  def extract_pixel(pixel_bits, bit_depth, channels_per_pixel) do
     extract_pixel(pixel_bits, bit_depth, [], channels_per_pixel)
   end
 

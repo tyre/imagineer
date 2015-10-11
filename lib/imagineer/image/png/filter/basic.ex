@@ -26,7 +26,8 @@ defmodule Imagineer.Image.PNG.Filter.Basic do
   end
 
   defp unfilter([filtered_row | filtered_rows], prior_row, bytes_per_pixel, unfiltered) do
-    unfiltered_row = unfilter_scanline(filtered_row, bytes_per_pixel, prior_row)
+    unfiltered_row = pad_row(filtered_row)
+    |> unfilter_scanline(bytes_per_pixel, prior_row)
     unfilter(filtered_rows, unfiltered_row, bytes_per_pixel, [unfiltered_row | unfiltered])
   end
 
@@ -48,5 +49,13 @@ defmodule Imagineer.Image.PNG.Filter.Basic do
 
   defp unfilter_scanline(<<@paeth::integer-size(8), row_content::binary>>, bytes_per_pixel, prior_row) do
     Basic.Paeth.unfilter(row_content, prior_row, bytes_per_pixel)
+  end
+
+  defp pad_row(row) when rem(bit_size(row), 8) != 0 do
+    pad_row <<row::bits, 0::1>>
+  end
+
+  defp pad_row(row) do
+    row
   end
 end

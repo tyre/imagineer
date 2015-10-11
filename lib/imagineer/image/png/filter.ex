@@ -18,9 +18,9 @@ defmodule Imagineer.Image.PNG.Filter do
 
   # With adam7 interlacing, we unfilter each pass' scanlines as a chunk
   defp unfilter(:five_basics, 1, %PNG{}=image) do
-    Enum.reduce(image.scanlines, [], fn (pass, acc) ->
+    Enum.reduce(image.scanlines, [], fn (pass, unfiltered_passes) ->
       unfiltered_pass = PNG.Filter.Basic.unfilter(pass, image.color_format, image.width)
-      [unfiltered_pass | acc]
+      [unfiltered_pass | unfiltered_passes]
     end) |> Enum.reverse
   end
 end
