@@ -57,8 +57,6 @@ defmodule Imagineer.Image.PNG.PngSuite.Interlaced.GrayscaleTest do
 
     pixels = extract_single_channel_pixels(image)
 
-    Enum.each(image.pixels, fn (pixel_row) -> IO.puts inspect(pixel_row) end)
-
     assert_pixels_match(pixels, @actual_pixels)
   end
 

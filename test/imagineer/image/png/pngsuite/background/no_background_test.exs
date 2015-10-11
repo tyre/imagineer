@@ -47,7 +47,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Background.NoBackgroundTest do
     assert image.color_format == :grayscale_alpha8
     assert image.compression == :zlib
     assert image.color_type == 4
-    assert image.interlace_method == 0
+    assert image.interlace_method == 1
     assert image.gamma == 1.0
     assert image.bit_depth == 8
     assert image.mask == nil
