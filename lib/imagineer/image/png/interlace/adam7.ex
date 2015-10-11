@@ -39,10 +39,6 @@ defmodule Imagineer.Image.PNG.Interlace.Adam7 do
     |> extract_scanlines(image)
   end
 
-  defp extract_pixels(scanlines_and_pixel_counts, %PNG{color_format: color_format}) do
-    bits_per_pixel = bits_per_pixel(color_format)
-  end
-
   # We'll get a list of `{bytes_per_scanline, number_of_scanlines}` ordered by
   # their pass number.
   # For each one, we'll end up extracting  the first
