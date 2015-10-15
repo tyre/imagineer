@@ -2,7 +2,7 @@ Imagineer
 =========
 
 **N.B.**
-Until 1.0 is reached, each beta release my include backwards incompatible changes.
+Until 1.0 is reached, each beta release might include backwards incompatible changes.
 1.0 will include parsing and writing of PNGs and JPEGs.
 
 Image parsing in Elixir.
