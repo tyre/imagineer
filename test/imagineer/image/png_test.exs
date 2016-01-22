@@ -46,8 +46,4 @@ defmodule Imagineer.Image.PNGTest do
     :ok = Imagineer.write(image, "./tmp/alpaca_write_test.png")
 
   end
-
-  test "png_suite 1" do
-    # IO.puts inspect Imagineer.load("./test/support/images/pngsuite/interlaced/basi0g01.png")
-  end
 end

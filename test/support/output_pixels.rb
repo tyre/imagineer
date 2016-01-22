@@ -4,7 +4,6 @@
 # It will be a list of lists, whose sublists contain tuples of the image's
 # channels.
 # This is useful to test parsing.
-# This
 
 X_COORDINATE = "x_coordinate".freeze
 Y_COORDINATE = "y_coordinate".freeze
