@@ -8,7 +8,7 @@ defmodule Imagineer.Image.PNG.DataContent do
   def process(%PNG{}=image) do
     PNG.Compression.decompress(image)
     |> PNG.Interlace.extract_pixels
-    # |> cleanup
+    |> cleanup
   end
 
   # Removes fields that are used in intermediate steps that don't make sense
