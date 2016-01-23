@@ -40,23 +40,23 @@ defmodule Imagineer.Image.PNG.Helpers do
   def bytes_per_row(:rgb_alpha16, width),         do: width * 8
 
   @doc """
-  Gives how many bits comprise a pixel
+  Gives how many bits comprise a channel, based on the color format
   """
-  def bits_per_pixel(:grayscale1),          do: 1
-  def bits_per_pixel(:grayscale2),          do: 2
-  def bits_per_pixel(:grayscale4),          do: 4
-  def bits_per_pixel(:grayscale8),          do: 8
-  def bits_per_pixel(:grayscale16),         do: 16
-  def bits_per_pixel(:rgb8),                do: 8
-  def bits_per_pixel(:rgb16),               do: 16
-  def bits_per_pixel(:palette1),            do: 1
-  def bits_per_pixel(:palette2),            do: 2
-  def bits_per_pixel(:palette4),            do: 4
-  def bits_per_pixel(:palette8),            do: 8
-  def bits_per_pixel(:grayscale_alpha8),    do: 8
-  def bits_per_pixel(:grayscale_alpha16),   do: 16
-  def bits_per_pixel(:rgb_alpha8),          do: 8
-  def bits_per_pixel(:rgb_alpha16),         do: 16
+  def bits_per_channel(:grayscale1),          do: 1
+  def bits_per_channel(:grayscale2),          do: 2
+  def bits_per_channel(:grayscale4),          do: 4
+  def bits_per_channel(:grayscale8),          do: 8
+  def bits_per_channel(:grayscale16),         do: 16
+  def bits_per_channel(:rgb8),                do: 8
+  def bits_per_channel(:rgb16),               do: 16
+  def bits_per_channel(:palette1),            do: 1
+  def bits_per_channel(:palette2),            do: 2
+  def bits_per_channel(:palette4),            do: 4
+  def bits_per_channel(:palette8),            do: 8
+  def bits_per_channel(:grayscale_alpha8),    do: 8
+  def bits_per_channel(:grayscale_alpha16),   do: 16
+  def bits_per_channel(:rgb_alpha8),          do: 8
+  def bits_per_channel(:rgb_alpha16),         do: 16
 
 
   @doc """

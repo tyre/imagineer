@@ -9,8 +9,7 @@ defmodule Imagineer.Image.PNG.Filter.Basic do
   @paeth   4
 
   @doc """
-  Takes an image and its decompressed content. Returns the rows unfiltered with
-  their respective index.
+  Takes an image's scanlines and returns the rows unfiltered
 
   Types are defined [here](http://www.w3.org/TR/PNG-Filters.html).
   """
@@ -57,5 +56,29 @@ defmodule Imagineer.Image.PNG.Filter.Basic do
 
   defp pad_row(row) do
     row
+  end
+
+  @doc """
+  Filters scanlines. Right now does a naïve pass (AKA no filtering.)
+  """
+  def filter(%PNG{unfiltered_rows: unfiltered_rows}) do
+    filter_rows(unfiltered_rows)
+  end
+
+  defp filter_rows(unfiltered_rows) do
+    filter_rows(unfiltered_rows, [])
+  end
+
+  defp filter_rows([], filtered_rows) do
+    Enum.reverse filtered_rows
+  end
+
+  defp filter_rows([unfiltered_row | rest_unfiltered], filtered_rows) do
+    filter_rows(rest_unfiltered, [filter_row(unfiltered_row) | filtered_rows])
+  end
+
+  # Proprietary optimization technique
+  defp filter_row(unfiltered_row) do
+    <<@none::integer-size(8), unfiltered_row::bits>>
   end
 end

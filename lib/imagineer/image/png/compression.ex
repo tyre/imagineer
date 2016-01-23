@@ -1,5 +1,6 @@
 defmodule Imagineer.Image.PNG.Compression do
   alias Imagineer.Image.PNG
+  alias PNG.Compression.Zlib
   @moduledoc """
     Handles
   """
@@ -9,12 +10,17 @@ defmodule Imagineer.Image.PNG.Compression do
 
   Currently only zlib is supported.
   """
-  def decompress(%PNG{compression: compression}=image) do
-    decompressed_data = decompress(compression, image)
-    Map.put(image, :decompressed_data, decompressed_data)
+  def decompress(%PNG{compression: :zlib}=image) do
+    %PNG{image | decompressed_data: Zlib.decompress(image) }
   end
 
-  defp decompress(:zlib, image) do
-    PNG.Compression.Zlib.decompress(image)
+  @doc """
+  Compress PNG data based on compression method.
+
+  Currently only zlib is supported.
+  """
+  def compress(%PNG{compression: :zlib}=image) do
+    IO.puts inspect image.decompressed_data
+    %PNG{image | data_content: Zlib.compress(image) }
   end
 end

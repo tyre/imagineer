@@ -49,4 +49,8 @@ defmodule Imagineer.Image.PNG.Interlace.None do
   defp bytes_per_scanline(%PNG{color_format: color_format, width: width}) do
     bytes_per_row(color_format, width) + 1
   end
+
+  def encode_scanlines(%PNG{interlace_method: 0, scanlines: scanlines}) do
+    Enum.join(scanlines)
+  end
 end
