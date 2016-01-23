@@ -2,6 +2,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.RGBAlphaTest do
   use ExUnit.Case, async: true
 
   @test_path "test/support/images/pngsuite/basic/"
+  @tmp_path "./tmp/"
 
   @actual_pixels [
     [{255, 0, 8, 0}, {255, 0, 8, 8}, {255, 0, 8, 16}, {255, 0, 8, 24}, {255, 0, 8, 32}, {255, 0, 8, 41}, {255, 0, 8, 49}, {255, 0, 8, 57}, {255, 0, 8, 65}, {255, 0, 8, 74}, {255, 0, 8, 82}, {255, 0, 8, 90}, {255, 0, 8, 98}, {255, 0, 8, 106}, {255, 0, 8, 115}, {255, 0, 8, 123}, {255, 0, 8, 131}, {255, 0, 8, 139}, {255, 0, 8, 148}, {255, 0, 8, 156}, {255, 0, 8, 164}, {255, 0, 8, 172}, {255, 0, 8, 180}, {255, 0, 8, 189}, {255, 0, 8, 197}, {255, 0, 8, 205}, {255, 0, 8, 213}, {255, 0, 8, 222}, {255, 0, 8, 230}, {255, 0, 8, 238}, {255, 0, 8, 246}, {255, 0, 8, 255}],
@@ -39,6 +40,25 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.RGBAlphaTest do
   ]
   test "8 bit rgb with alpha channel" do
     {:ok, image} = Imagineer.load(@test_path <> "basn6a08.png")
+
+    assert image.height == 32
+    assert image.width == 32
+
+    assert image.color_format == :rgb_alpha8
+    assert image.compression == :zlib
+    assert image.color_type == 6
+    assert image.interlace_method == 0
+    assert image.gamma == 1.0
+    assert image.bit_depth == 8
+    assert image.mask == nil
+    assert image.format == :png
+    assert image.mime_type == "image/png"
+    assert image.palette == []
+
+    assert_pixels_match(image.pixels, @actual_pixels)
+
+    :ok = Imagineer.write(image, @tmp_path <> "basn6a08_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "basn6a08_test.png")
 
     assert image.height == 32
     assert image.width == 32
