@@ -20,7 +20,6 @@ defmodule Imagineer.Image.PNG.Compression do
   Currently only zlib is supported.
   """
   def compress(%PNG{compression: :zlib}=image) do
-    IO.puts inspect image.decompressed_data
     %PNG{image | data_content: Zlib.compress(image) }
   end
 end

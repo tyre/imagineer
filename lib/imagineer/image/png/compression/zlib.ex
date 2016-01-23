@@ -47,9 +47,9 @@ defmodule Imagineer.Image.PNG.Compression.Zlib do
   def compress(%PNG{decompressed_data: decompressed_data}) do
     zlib_stream = :zlib.open()
     :ok = :zlib.deflateInit(zlib_stream)
-    [compressed_data] = :zlib.deflate(zlib_stream, decompressed_data, :finish)
+    compressed_data = :zlib.deflate(zlib_stream, decompressed_data, :finish)
     :ok = :zlib.deflateEnd(zlib_stream)
     :ok = :zlib.close(zlib_stream)
-    compressed_data
+    Enum.join compressed_data
   end
 end
