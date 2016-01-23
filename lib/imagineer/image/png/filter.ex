@@ -23,4 +23,8 @@ defmodule Imagineer.Image.PNG.Filter do
       [unfiltered_pass | unfiltered_passes]
     end) |> Enum.reverse
   end
+
+  def filter(%PNG{filter_method: :five_basics, interlace_method: 0}=image) do
+    %PNG{image | scanlines: PNG.Filter.Basic.filter(image)}
+  end
 end

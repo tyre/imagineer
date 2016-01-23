@@ -23,7 +23,7 @@ defmodule Imagineer.Image.PNG do
             unfiltered_rows: nil,
             scanlines: [],
             filter_method: nil,
-            interlace_method: nil,
+            interlace_method: 0,
             gamma: nil,
             palette: [],
             pixels: [],
@@ -204,9 +204,22 @@ defmodule Imagineer.Image.PNG do
   end
 
   def to_binary(bin, png) do
-    write_header(bin, png)
+    write_header(bin, build_data_content(png))
     |> write_palette(png)
-    # |> write_data_content(png)
+    |> write_data_content(png)
+    |> write_end_header
+  end
+
+  defp write_end_header(bin) do
+    bin <> make_chunk(@iend_header, <<>>)
+  end
+
+  defp write_data_content(bin, %PNG{data_content: data_content}) do
+    bin <> make_chunk(@idat_header, data_content)
+  end
+
+  def build_data_content(image) do
+    PNG.DataContent.encode(image)
   end
 
   defp write_header(bin, png) do
@@ -250,7 +263,7 @@ defmodule Imagineer.Image.PNG do
 
   defp make_chunk(header, chunk_content) do
     content_length = byte_size(chunk_content)
-    cyclic_redundency_check = :erlang.crc32(chunk_content)
+    cyclic_redundency_check = :erlang.crc32(header <> chunk_content)
     <<
       content_length::integer-unit(1)-size(32),
       header::binary-size(4),
