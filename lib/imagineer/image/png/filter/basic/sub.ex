@@ -25,7 +25,7 @@ defmodule Imagineer.Image.PNG.Filter.Basic.Sub do
 
       iex> filtered = <<1, 77, 16, 234, 234, 154>>
       iex> Imagineer.Image.PNG.Filter.Basic.Sub.unfilter(filtered, 2)
-      <<1, 77, 17, 55, 250, 132>>
+      <<1, 77, 17, 55, 251, 209>>
   """
   def unfilter(row, bytes_per_pixel) do
     # the pixel data before the first pixel is assumed to be all bagels
@@ -41,23 +41,24 @@ defmodule Imagineer.Image.PNG.Filter.Basic.Sub do
   end
 
   defp unfilter(row, prior_pixel, bytes_per_pixel, unfiltered_pixels) do
-      <<pixel::bytes-size(bytes_per_pixel), rest::binary>> = row
-      unfiltered_pixel = unfilter_pixel(prior_pixel, pixel, [])
-      unfilter(rest, pixel, bytes_per_pixel, [ unfiltered_pixel | unfiltered_pixels])
+      <<pixel_bytes::bytes-size(bytes_per_pixel), rest::binary>> = row
+      unfiltered_pixel_bytes = unfilter_pixel_bytes(prior_pixel, pixel_bytes, [])
+      unfiltered_pixel = Enum.join(unfiltered_pixel_bytes)
+      unfilter(rest, unfiltered_pixel, bytes_per_pixel, [ unfiltered_pixel_bytes | unfiltered_pixels])
   end
 
   # In the base case, we'll have a reversed list of a bunch of unfiltered bytes
-  defp unfilter_pixel(<<>>, <<>>, unfiltered_bytes) do
+  defp unfilter_pixel_bytes(<<>>, <<>>, unfiltered_bytes) do
     Enum.reverse(unfiltered_bytes)
   end
 
   # Adds the corresponding byte values of the current pixel and the previous one
-  defp unfilter_pixel(
+  defp unfilter_pixel_bytes(
     <<prior_byte::integer-size(8), rest_prior::binary>>,
     <<pixel_byte::integer-size(8), rest_pixel::binary>>,
     unfiltered_bytes)
   do
     unfiltered_byte = <<prior_byte + pixel_byte>>
-    unfilter_pixel(rest_prior, rest_pixel, [unfiltered_byte | unfiltered_bytes])
+    unfilter_pixel_bytes(rest_prior, rest_pixel, [unfiltered_byte | unfiltered_bytes])
   end
 end

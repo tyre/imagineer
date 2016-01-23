@@ -9,43 +9,76 @@ defmodule Imagineer.Image.PNG.Filter.Basic do
   @paeth   4
 
   @doc """
-  Takes an image and its decompressed content. Returns the rows unfiltered with
-  their respective index.
+  Takes an image's scanlines and returns the rows unfiltered
 
   Types are defined [here](http://www.w3.org/TR/PNG-Filters.html).
   """
-  def unfilter(%PNG{scanlines: scanlines}=image) when is_list(scanlines) do
+  def unfilter(scanlines, color_format, width)
+  when is_list(scanlines) and is_atom(color_format) and is_integer(width) do
     # For unfiltering, the row prior to the first is assumed to be all 0s
-    ghost_row = null_binary(bytes_per_row(image.color_format, image.width))
-    unfilter(scanlines, ghost_row, 0, bytes_per_pixel(image.color_format), [])
+    ghost_row = null_binary(bytes_per_row(color_format, width))
+    unfilter(scanlines, ghost_row, bytes_per_pixel(color_format), [])
   end
 
-  defp unfilter([], _prior_row, _current_index, _bytes_per_pixel, unfiltered) do
+  defp unfilter([], _prior_row, _bytes_per_pixel, unfiltered) do
     Enum.reverse unfiltered
   end
 
-  defp unfilter([filtered_row | filtered_rows], prior_row, row_index, bytes_per_pixel, unfiltered) do
-    unfiltered_row = unfilter_scanline(filtered_row, bytes_per_pixel, prior_row)
-    unfilter(filtered_rows, unfiltered_row, row_index+1, bytes_per_pixel, [{row_index, unfiltered_row} | unfiltered])
+  defp unfilter([filtered_row | filtered_rows], prior_row, bytes_per_pixel, unfiltered) do
+    unfiltered_row = pad_row(filtered_row)
+    |> unfilter_scanline(bytes_per_pixel, prior_row)
+    unfilter(filtered_rows, unfiltered_row, bytes_per_pixel, [unfiltered_row | unfiltered])
   end
 
-  defp unfilter_scanline(<<@none::size(8), row_content::binary>>, _bytes_per_pixel, _prior) do
+  defp unfilter_scanline(<<@none::integer-size(8), row_content::binary>>, _bytes_per_pixel, _prior) do
     row_content
   end
 
-  defp unfilter_scanline(<<@sub::size(8), row_content::binary>>, bytes_per_pixel, _prior) do
+  defp unfilter_scanline(<<@sub::integer-size(8), row_content::binary>>, bytes_per_pixel, _prior) do
     Basic.Sub.unfilter(row_content, bytes_per_pixel)
   end
 
-  defp unfilter_scanline(<<@up::size(8), row_content::binary>>, _bytes_per_pixel, prior_row) do
+  defp unfilter_scanline(<<@up::integer-size(8), row_content::binary>>, _bytes_per_pixel, prior_row) do
     Basic.Up.unfilter(row_content, prior_row)
   end
 
-  defp unfilter_scanline(<<@average::size(8), row_content::binary>>, bytes_per_pixel, prior_row) do
+  defp unfilter_scanline(<<@average::integer-size(8), row_content::binary>>, bytes_per_pixel, prior_row) do
     Basic.Average.unfilter(row_content, prior_row, bytes_per_pixel)
   end
 
-  defp unfilter_scanline(<<@paeth::size(8), row_content::binary>>, bytes_per_pixel, prior_row) do
+  defp unfilter_scanline(<<@paeth::integer-size(8), row_content::binary>>, bytes_per_pixel, prior_row) do
     Basic.Paeth.unfilter(row_content, prior_row, bytes_per_pixel)
+  end
+
+  defp pad_row(row) when rem(bit_size(row), 8) != 0 do
+    pad_row <<row::bits, 0::1>>
+  end
+
+  defp pad_row(row) do
+    row
+  end
+
+  @doc """
+  Filters scanlines. Right now does a naïve pass (AKA no filtering.)
+  """
+  def filter(%PNG{unfiltered_rows: unfiltered_rows}) do
+    filter_rows(unfiltered_rows)
+  end
+
+  defp filter_rows(unfiltered_rows) do
+    filter_rows(unfiltered_rows, [])
+  end
+
+  defp filter_rows([], filtered_rows) do
+    Enum.reverse filtered_rows
+  end
+
+  defp filter_rows([unfiltered_row | rest_unfiltered], filtered_rows) do
+    filter_rows(rest_unfiltered, [filter_row(unfiltered_row) | filtered_rows])
+  end
+
+  # Proprietary optimization technique
+  defp filter_row(unfiltered_row) do
+    <<@none::integer-size(8), unfiltered_row::bits>>
   end
 end
