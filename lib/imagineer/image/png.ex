@@ -206,8 +206,15 @@ defmodule Imagineer.Image.PNG do
   def to_binary(bin, png) do
     write_header(bin, build_data_content(png))
     |> write_palette(png)
+    |> write_gamma(png)
     |> write_data_content(png)
     |> write_end_header
+  end
+
+  defp write_gamma(bin, %PNG{gamma: nil}), do: bin
+  defp write_gamma(bin, %PNG{gamma: gamma}) do
+    normalized_gamma = round(gamma * 100_000)
+    bin <> make_chunk(@gama_header, <<normalized_gamma::integer-size(32)>>)
   end
 
   defp write_end_header(bin) do

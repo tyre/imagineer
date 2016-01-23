@@ -2,6 +2,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.RGBTest do
   use ExUnit.Case, async: true
 
   @test_path "test/support/images/pngsuite/basic/"
+  @tmp_path "./tmp/"
 
   @actual_pixels [
     [{255,255,255},{255,255,254},{255,255,253},{255,255,252},{255,255,251},{255,255,250},{255,255,249},{255,255,248},{255,255,247},{255,255,246},{255,255,245},{255,255,244},{255,255,243},{255,255,242},{255,255,241},{255,255,240},{255,255,239},{255,255,238},{255,255,237},{255,255,236},{255,255,235},{255,255,234},{255,255,233},{255,255,232},{255,255,231},{255,255,230},{255,255,229},{255,255,228},{255,255,227},{255,255,226},{255,255,225},{255,255,224}],
@@ -39,6 +40,25 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.RGBTest do
   ]
   test "8 bit rgb" do
     {:ok, image} = Imagineer.load(@test_path <> "basn2c08.png")
+
+    assert image.height == 32
+    assert image.width == 32
+
+    assert image.color_format == :rgb8
+    assert image.compression == :zlib
+    assert image.color_type == 2
+    assert image.interlace_method == 0
+    assert image.gamma == 1.0
+    assert image.bit_depth == 8
+    assert image.mask == nil
+    assert image.format == :png
+    assert image.mime_type == "image/png"
+    assert image.palette == []
+
+    assert_pixels_match(image.pixels, @actual_pixels)
+
+    :ok = Imagineer.write(image, @tmp_path <> "basn2c08_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "basn2c08_test.png")
 
     assert image.height == 32
     assert image.width == 32
@@ -93,6 +113,25 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.RGBTest do
   ]
   test "16 bit rgb" do
     {:ok, image} = Imagineer.load(@test_path <> "basn2c16.png")
+
+    assert image.height == 32
+    assert image.width == 32
+
+    assert image.color_format == :rgb16
+    assert image.compression == :zlib
+    assert image.color_type == 2
+    assert image.interlace_method == 0
+    assert image.gamma == 1.0
+    assert image.bit_depth == 16
+    assert image.mask == nil
+    assert image.format == :png
+    assert image.mime_type == "image/png"
+    assert image.palette == []
+
+    assert_pixels_match(image.pixels, @actual_pixels)
+
+    :ok = Imagineer.write(image, @tmp_path <> "basn2c16_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "basn2c16_test.png")
 
     assert image.height == 32
     assert image.width == 32
