@@ -1,19 +1,26 @@
 Imagineer
 =========
 
-**N.B.**
+Image parsing in Elixir. No external dependencies.
+
+## Status
+
 Until 1.0 is reached, each beta release might include backwards incompatible changes.
 1.0 will include parsing and writing of PNGs and JPEGs.
 
-Image parsing in Elixir.
+Currently Imagineer only supports reading and writing a subset of PNGs.
 
-Currently Imagineer only supports PNGs. To load an image, create a new `Imagineer.Image` and pass it to the load function. Once the image is processed (or the raw binary is placed in the `raw` field by some other means), passing it to `process` will parse all of its data.
+**If you run into an image that Imagineer cannot handle, please open an issue
+and include the image.** There are a ridiculous number of possiblities, not all
+of which are yet supported. With your help, we can get there.
+
+## Loading an image
+
+To load an image, call `Imagineer.load(path_to_file)`.
 
 ```elixir
 alias Imagineer.Image
-image = %Image{uri: "./test/support/images/alpaca.png"}
-  |> Image.load
-  |> Image.process
+Imagineer.load("./test/support/images/alpaca.png")
 # =>
 {:ok,
  %Imagineer.Image.PNG{alias: nil,
@@ -24,7 +31,43 @@ image = %Image{uri: "./test/support/images/alpaca.png"}
      66, 66, 18, 32, 178, 49, 57, 216, 132, 193, 9, 99, 96, 108, 6, 131, 3, 14, 51, 255, 97, ...>>,
    decompressed_data: nil, filter_method: :five_basics, format: :png, gamma: nil,
    height: 96, interface_method: 0, mask: nil, palette: [],
-   pixels: [], # 96 rows of 96 3-element tuples each omitted for sanity.
+   pixels: [{238, 233, 224}, {241, 236, 227}, {238, 234, 225}, {238, 233, 225},
+    {234, 228, 218}, {228, 222, 210}, {237, 231, 218}, {239, 234, 220}, ...], # 96 rows of 96 3-element tuples each omitted for sanity.
    raw: <<137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 96, 0, 0, 0, 96, 8, 2, 0, 0, #0, 109, 250, ...>>,
    scanlines: [], unfiltered_rows: [], uri: nil, width: 96}}
 ```
+
+## Writing an image
+
+To write an image to disk, simply pass an image and a location to
+`Imagineer.write`.
+
+```elixir
+{:ok, png} = Imagineer.load("./test/support/images/alpaca.png")
+:ok = Imagineer.write(png, "./tmp/alpaca-copy.png")
+```
+
+Image modules also respond to `to_binary`, which will give you the equivalent
+of the file contents:
+
+```elixir
+{:ok, png} = Imagineer.load("./test/support/images/alpaca.png")
+Imagineer.Image.PNG.to_binary(png)
+```
+
+## Image structure
+
+You probably only care about the following fields:
+
+  + `width`
+  + `height`
+  + `pixels`
+  + `color_format`
+  + `format`
+  + `palette`
+  + `gamma`
+
+The color format tells you how pixels are structured. `rgb8` indicates
+that each pixel will be a three value tuple (red, blue, and green channels.) The
+`8` signifies the size of each channel, in this case fitting inside 8 bits,
+translating to values between 0-255.
