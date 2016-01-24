@@ -2,6 +2,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.PaletteTest do
   use ExUnit.Case, async: true
 
   @test_path "test/support/images/pngsuite/basic/"
+  @tmp_path "./tmp/"
 
   @actual_pixels [
     [{238, 255, 34}, {238, 255, 34}, {238, 255, 34}, {238, 255, 34}, {34, 102, 255}, {34, 102, 255}, {34, 102, 255}, {34, 102, 255}, {238, 255, 34}, {238, 255, 34}, {238, 255, 34}, {238, 255, 34}, {34, 102, 255}, {34, 102, 255}, {34, 102, 255}, {34, 102, 255}, {238, 255, 34}, {238, 255, 34}, {238, 255, 34}, {238, 255, 34}, {34, 102, 255}, {34, 102, 255}, {34, 102, 255}, {34, 102, 255}, {238, 255, 34}, {238, 255, 34}, {238, 255, 34}, {238, 255, 34}, {34, 102, 255}, {34, 102, 255}, {34, 102, 255}, {34, 102, 255}],
@@ -39,6 +40,25 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.PaletteTest do
   ]
   test "1 bit palatte" do
     {:ok, image} = Imagineer.load(@test_path <> "basn3p01.png")
+
+    assert image.height == 32
+    assert image.width == 32
+
+    assert image.color_format == :palette1
+    assert image.compression == :zlib
+    assert image.color_type == 3
+    assert image.interlace_method == 0
+    assert image.gamma == 1.0
+    assert image.bit_depth == 1
+    assert image.mask == nil
+    assert image.format == :png
+    assert image.mime_type == "image/png"
+    assert :array.to_list(image.palette) == [{238, 255, 34}, {34, 102, 255}]
+
+    assert_pixels_match(image.pixels, @actual_pixels)
+
+    :ok = Imagineer.write(image, @tmp_path <> "basn3p01_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "basn3p01_test.png")
 
     assert image.height == 32
     assert image.width == 32
@@ -109,6 +129,26 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.PaletteTest do
     assert :array.to_list(image.palette) == [{0, 255, 0}, {255, 0, 0}, {255, 255, 0}, {0, 0, 255}]
 
     assert_pixels_match(image.pixels, @actual_pixels)
+
+    :ok = Imagineer.write(image, @tmp_path <> "basn3p02_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "basn3p02_test.png")
+
+    assert image.height == 32
+    assert image.width == 32
+
+    assert image.color_format == :palette2
+    assert image.compression == :zlib
+    assert image.color_type == 3
+    assert image.interlace_method == 0
+    assert image.gamma == 1.0
+    assert image.bit_depth == 2
+    assert image.mask == nil
+    assert image.format == :png
+    assert image.mime_type == "image/png"
+    assert Enum.sort(:array.to_list(image.palette)) == Enum.sort(
+        [{0, 255, 0}, {255, 0, 0}, {255, 255, 0}, {0, 0, 255}])
+
+    assert_pixels_match(image.pixels, @actual_pixels)
   end
 
   @actual_pixels [
@@ -164,6 +204,28 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.PaletteTest do
             {255, 187, 0}, {0, 68, 255}, {0, 255, 68}]
 
     assert_pixels_match(image.pixels, @actual_pixels)
+
+    :ok = Imagineer.write(image, @tmp_path <> "basn3p04_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "basn3p04_test.png")
+
+    assert image.height == 32
+    assert image.width == 32
+
+    assert image.color_format == :palette4
+    assert image.compression == :zlib
+    assert image.color_type == 3
+    assert image.interlace_method == 0
+    assert image.gamma == 1.0
+    assert image.bit_depth == 4
+    assert image.mask == nil
+    assert image.format == :png
+    assert image.mime_type == "image/png"
+    assert Enum.sort(:array.to_list(image.palette)) == Enum.sort(
+        [{34, 0, 255}, {0, 255, 255}, {136, 0, 255}, {34, 255, 0}, {0, 153, 255},
+        {255, 102, 0}, {221, 0, 255}, {119, 255, 0}, {255, 0, 0}, {0, 255, 153},
+        {221, 255, 0}, {255, 0, 187}, {255, 187, 0}, {0, 68, 255}, {0, 255, 68}])
+
+    assert_pixels_match(image.pixels, @actual_pixels)
   end
 
   @actual_pixels [
@@ -202,6 +264,25 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.PaletteTest do
   ]
   test "8 bit palatte" do
     {:ok, image} = Imagineer.load(@test_path <> "basn3p08.png")
+
+    assert image.height == 32
+    assert image.width == 32
+
+    assert image.color_format == :palette8
+    assert image.compression == :zlib
+    assert image.color_type == 3
+    assert image.interlace_method == 0
+    assert image.gamma == 1.0
+    assert image.bit_depth == 8
+    assert image.mask == nil
+    assert image.format == :png
+    assert image.mime_type == "image/png"
+    assert Enum.sort(:array.to_list(image.palette)) == Enum.sort(Enum.uniq(List.flatten(@actual_pixels)))
+
+    assert_pixels_match(image.pixels, @actual_pixels)
+
+    :ok = Imagineer.write(image, @tmp_path <> "basn3p08_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "basn3p08_test.png")
 
     assert image.height == 32
     assert image.width == 32

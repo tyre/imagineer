@@ -3,12 +3,12 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
   import PNG.Helpers, only: [channels_per_pixel: 1]
 
   @single_null_bit  <<0::1>>
-  @double_null_bits <<0::1, 0::1>>
-  @triple_null_bits <<0::1, 0::1, 0::1>>
-  @quad_null_bits   <<0::1, 0::1, 0::1, 0::1>>
-  @quint_null_bits  <<0::1, 0::1, 0::1, 0::1, 0::1>>
-  @hex_null_bits    <<0::1, 0::1, 0::1, 0::1, 0::1, 0::1>>
-  @sept_null_bits   <<0::1, 0::1, 0::1, 0::1, 0::1, 0::1, 0::1>>
+  @double_null_bits <<0::2>>
+  @triple_null_bits <<0::3>>
+  @quad_null_bits   <<0::4>>
+  @quint_null_bits  <<0::5>>
+  @hex_null_bits    <<0::6>>
+  @sept_null_bits   <<0::7>>
 
   @doc """
   Extracts the pixels from all of the unfiltered rows. Sets the `pixels` field
@@ -116,30 +116,34 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
   end
 
   defp encode_pixel_row([], _image, encoded_pixels) do
-    encoded_pixels
+    pad_bits(encoded_pixels)
   end
 
   defp encode_pixel_row([pixel | rest_pixels], image, encoded_pixels) do
-    new_encoded_pixels = encoded_pixels <> encode_pixel(pixel, image)
+    pixel_bits = encode_pixel(pixel, image)
+    new_encoded_pixels = <<encoded_pixels::bits, pixel_bits::bits>>
     encode_pixel_row(rest_pixels, image, new_encoded_pixels)
+  end
+
+  defp pad_bits(bits) do
+    # Pad the end of the bits so we have bytes
+    case rem(bit_size(bits), 8) do
+      0 -> bits
+      1 -> <<bits::bits, @sept_null_bits>>
+      2 -> <<bits::bits, @hex_null_bits>>
+      3 -> <<bits::bits, @quint_null_bits>>
+      4 -> <<bits::bits, @quad_null_bits>>
+      5 -> <<bits::bits, @triple_null_bits>>
+      6 -> <<bits::bits, @double_null_bits>>
+      7 -> <<bits::bits, @single_null_bit>>
+    end
   end
 
   # Pixels are translated to bytes, sized based on the bit depth of the PNG.
   # If this leaves an incomplete byte (e.g. :grayscale1), fill the rest with
   # 0s.
   defp encode_pixel(pixel, image) do
-    encoded_bits = encode_pixel_bits(pixel, image.bit_depth)
-    # Pad the end of the bits so we have bytes
-    case rem(bit_size(encoded_bits), 8) do
-      0 -> encoded_bits
-      1 -> encoded_bits <> @sept_null_bits
-      2 -> encoded_bits <> @hex_null_bits
-      3 -> encoded_bits <> @quint_null_bits
-      4 -> encoded_bits <> @quad_null_bits
-      5 -> encoded_bits <> @triple_null_bits
-      6 -> encoded_bits <> @double_null_bits
-      7 -> encoded_bits <> @single_null_bit
-    end
+    encode_pixel_bits(pixel, image.bit_depth)
   end
 
   # Single channel pixel (e.g. grayscale)

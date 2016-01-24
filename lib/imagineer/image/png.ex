@@ -204,10 +204,18 @@ defmodule Imagineer.Image.PNG do
   end
 
   def to_binary(bin, png) do
-    write_header(bin, build_data_content(png))
-    |> write_palette(png)
-    |> write_data_content(png)
+    processed_png = build_data_content(png)
+    write_header(bin, processed_png)
+    |> write_palette(processed_png)
+    |> write_gamma(processed_png)
+    |> write_data_content(processed_png)
     |> write_end_header
+  end
+
+  defp write_gamma(bin, %PNG{gamma: nil}), do: bin
+  defp write_gamma(bin, %PNG{gamma: gamma}) do
+    normalized_gamma = round(gamma * 100_000)
+    bin <> make_chunk(@gama_header, <<normalized_gamma::integer-size(32)>>)
   end
 
   defp write_end_header(bin) do
@@ -251,7 +259,7 @@ defmodule Imagineer.Image.PNG do
   end
 
   defp encode_palette([{red, green, blue} | more_palette], encoded_palette) do
-    new_encoded_palette = <<encoded_palette, red::size(8), green::size(8), blue::size(8)>>
+    new_encoded_palette = <<encoded_palette::binary, red::8, green::8, blue::8>>
     encode_palette(more_palette, new_encoded_palette)
   end
 
