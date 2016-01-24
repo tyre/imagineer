@@ -55,7 +55,6 @@ defmodule Imagineer.Image.PNG.PngSuite.Background.NoBackgroundTest do
     assert image.mime_type == "image/png"
     assert image.palette == []
 
-
     assert_pixels_match(image.pixels, @actual_pixels)
   end
 
