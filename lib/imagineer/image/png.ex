@@ -27,7 +27,8 @@ defmodule Imagineer.Image.PNG do
             gamma: nil,
             palette: [],
             pixels: [],
-            mime_type: @mime_type
+            mime_type: @mime_type,
+            background: nil
 
   @behaviour Imagineer.Image
 
@@ -67,12 +68,11 @@ defmodule Imagineer.Image.PNG do
   #   - 2 (color used)
   #   - 4 (alpha channel used)
   # Valid values are 0, 2, 3, 4, and 6.
-  @color_type_raw                     0
-  @color_type_palette                 1
+  @color_type_grayscale               0
   @color_type_color                   2
   @color_type_palette_and_color       3
-  @color_type_alpha                   4
-  @color_type_palette_color_and_alpha 6
+  @color_type_grayscale_with_alpha    4
+  @color_type_color_and_alpha         6
 
   def process(<<@png_signature, rest::binary>>=raw) do
     process(rest, %PNG{raw: raw})
@@ -137,39 +137,44 @@ defmodule Imagineer.Image.PNG do
 
   # Process the auxillary "bKGD" chunk
 
-  def process(
-    <<_content_length::size(32), @bkgd_header, gray::size(16), _crc::size(32), rest::binary>>,
-    %PNG{color_type: @color_type_raw}=image)
-  do
-    process_with_background_color(image, gray, rest)
-  end
-
-  def process(
-    <<_content_length::size(32), @bkgd_header, red::size(16), green::size(16), blue::size(16), _crc::size(32), rest::binary>>,
-    %PNG{color_type: @color_type_color}=image)
-  do
-    process_with_background_color(image, {red, green, blue}, rest)
-  end
-
+  ## Indexed color has 1 byte containing the index in the palette
   def process(
     <<_content_length::size(32), @bkgd_header, index::size(8), _crc::size(32), rest::binary>>,
     %PNG{color_type: @color_type_palette_and_color}=image)
   do
-    process_with_background_color(image, elem(image.palatte, index), rest)
+    process_with_background({elem(image.palette, index)}, image, rest)
   end
 
+  ## Grayscale (any bit depth) contains 2 bytes
   def process(
     <<_content_length::size(32), @bkgd_header, gray::size(16), _crc::size(32), rest::binary>>,
-    %PNG{color_type: @color_type_alpha}=image)
+    %PNG{color_type: @color_type_grayscale}=image)
   do
-    process_with_background_color(image, gray, rest)
+    process_with_background({gray}, image, rest)
   end
 
+  ## Grayscale with alpha (any bit depth) contains 2 bytes
+  def process(
+    <<_content_length::size(32), @bkgd_header, gray::size(16), _crc::size(32), rest::binary>>,
+    %PNG{color_type: @color_type_grayscale_with_alpha}=image)
+  do
+    process_with_background({gray}, image, rest)
+  end
+
+  ## RGB has 3 2-byte colors
   def process(
     <<_content_length::size(32), @bkgd_header, red::size(16), green::size(16), blue::size(16), _crc::size(32), rest::binary>>,
-    %PNG{color_type: @color_type_palette_color_and_alpha}=image)
+    %PNG{color_type: @color_type_color}=image)
   do
-    process_with_background_color(image, {red, green, blue}, rest)
+    process_with_background({red, green, blue}, image, rest)
+  end
+
+  ## RGB with alpha has 3 2-byte colors
+  def process(
+    <<_content_length::size(32), @bkgd_header, red::size(16), green::size(16), blue::size(16), _crc::size(32), rest::binary>>,
+    %PNG{color_type: @color_type_color_and_alpha}=image)
+  do
+    process_with_background({red, green, blue}, image, rest)
   end
 
   # Process the auxillary "gAMA" chunk
@@ -181,7 +186,7 @@ defmodule Imagineer.Image.PNG do
   end
 
   # Process the auxillary "iTXt" chunk
-  def process(<<content_length::size(32), @itxt_header,  content::binary-size(content_length), _crc::size(32), rest::binary>>, %PNG{}=image) do
+  def process(<<content_length::size(32), @itxt_header, content::binary-size(content_length), _crc::size(32), rest::binary>>, %PNG{}=image) do
     image = process_text_chunk(image, content)
     process(rest, image)
   end
@@ -194,8 +199,8 @@ defmodule Imagineer.Image.PNG do
     process(rest, image)
   end
 
-  defp process_with_background_color(background_color, image, rest) do
-    image = %PNG{ image | attributes: set_attribute(image, :background_color, background_color)}
+  defp process_with_background(background, image, rest) do
+    image = %PNG{ image | background: background}
     process(rest, image)
   end
 
@@ -206,10 +211,48 @@ defmodule Imagineer.Image.PNG do
   def to_binary(bin, png) do
     processed_png = build_data_content(png)
     write_header(bin, processed_png)
-    |> write_palette(processed_png)
     |> write_gamma(processed_png)
+    |> write_palette(processed_png)
+    |> write_background(processed_png)
     |> write_data_content(processed_png)
     |> write_end_header
+  end
+
+  # If there is no background, just don't write anything!
+  defp write_background(bin, %PNG{background: nil}), do: bin
+
+  # If there is no background and we are paletting, find that index!
+  defp write_background(bin, %PNG{
+    background: background,
+    color_type: @color_type_palette_and_color,
+    palette: palette}=image)
+  do
+    background_color = Enum.find_index(palette, background)
+    bin <> make_chunk(@bkgd_header,
+      encoded_background_color(image, background_color))
+  end
+
+  # Write, the pixel, write write, the pixel!
+  defp write_background(bin, %PNG{background: background}=image) do
+    bin <> make_chunk(@bkgd_header,
+      encoded_background_color(image, background))
+  end
+
+  defp encoded_background_color(image, background_color) do
+    case {image.color_type, background_color} do
+      {@color_type_grayscale, {gray}} ->
+        <<gray::integer-size(16)>>
+      {@color_type_color, {red, green, blue}} ->
+        <<red::size(16), green::size(16), blue::size(16)>>
+      {@color_type_palette_and_color, index} when is_integer(index) ->
+        <<index::integer-size(8)>>
+      {@color_type_grayscale_with_alpha, {gray}} ->
+        <<gray::integer-size(16)>>
+      {@color_type_color_and_alpha, {red, green, blue}} ->
+        <<red::size(16), green::size(16), blue::size(16)>>
+      {color_type, background_color} ->
+        raise "Invalid background color #{inspect(background_color)} for color type #{inspect color_type}"
+    end
   end
 
   defp write_gamma(bin, %PNG{gamma: nil}), do: bin

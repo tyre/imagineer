@@ -142,7 +142,7 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
   # Pixels are translated to bytes, sized based on the bit depth of the PNG.
   # If this leaves an incomplete byte (e.g. :grayscale1), fill the rest with
   # 0s.
-  defp encode_pixel(pixel, image) do
+  def encode_pixel(pixel, image) do
     encode_pixel_bits(pixel, image.bit_depth)
   end
 
