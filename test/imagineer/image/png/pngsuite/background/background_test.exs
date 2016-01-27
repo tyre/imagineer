@@ -1,7 +1,8 @@
-defmodule Imagineer.Image.PNG.PngSuite.Background.NoBackgroundTest do
+defmodule Imagineer.Image.PNG.PngSuite.Background.BackgroundTest do
   use ExUnit.Case, async: true
 
   @test_path "test/support/images/pngsuite/background/"
+  @tmp_path "./tmp/"
 
   @actual_pixels [
     [{255, 0}, {255, 8}, {255, 16}, {255, 24}, {255, 32}, {255, 41}, {255, 49}, {255, 57}, {255, 65}, {255, 74}, {255, 82}, {255, 90}, {255, 98}, {255, 106}, {255, 115}, {255, 123}, {255, 131}, {255, 139}, {255, 148}, {255, 156}, {255, 164}, {255, 172}, {255, 180}, {255, 189}, {255, 197}, {255, 205}, {255, 213}, {255, 222}, {255, 230}, {255, 238}, {255, 246}, {255, 255}],
@@ -38,8 +39,8 @@ defmodule Imagineer.Image.PNG.PngSuite.Background.NoBackgroundTest do
     [{0, 0}, {0, 8}, {0, 16}, {0, 24}, {0, 32}, {0, 41}, {0, 49}, {0, 57}, {0, 65}, {0, 74}, {0, 82}, {0, 90}, {0, 98}, {0, 106}, {0, 115}, {0, 123}, {0, 131}, {0, 139}, {0, 148}, {0, 156}, {0, 164}, {0, 172}, {0, 180}, {0, 189}, {0, 197}, {0, 205}, {0, 213}, {0, 222}, {0, 230}, {0, 238}, {0, 246}, {0, 255}]
   ]
 
-  test "8 bit grayscale with alpha channel" do
-    {:ok, image} = Imagineer.load(@test_path <> "bgai4a08.png")
+  test "8 bit grayscale with alpha channel, black background" do
+    {:ok, image} = Imagineer.load(@test_path <> "bgbn4a08.png")
 
     assert image.height == 32
     assert image.width == 32
@@ -47,15 +48,81 @@ defmodule Imagineer.Image.PNG.PngSuite.Background.NoBackgroundTest do
     assert image.color_format == :grayscale_alpha
     assert image.compression == :zlib
     assert image.color_type == 4
-    assert image.interlace_method == 1
+    assert image.interlace_method == 0
     assert image.gamma == 1.0
     assert image.bit_depth == 8
     assert image.mask == nil
     assert image.format == :png
     assert image.mime_type == "image/png"
     assert image.palette == []
+    assert image.background == {0}
 
     assert_pixels_match(image.pixels, @actual_pixels)
+
+    :ok = Imagineer.write(image, @tmp_path <> "bgbn4a08_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "bgbn4a08_test.png")
+
+    assert image.height == 32
+    assert image.width == 32
+
+    assert image.color_format == :grayscale_alpha
+    assert image.compression == :zlib
+    assert image.color_type == 4
+    assert image.interlace_method == 0
+    assert image.gamma == 1.0
+    assert image.bit_depth == 8
+    assert image.mask == nil
+    assert image.format == :png
+    assert image.mime_type == "image/png"
+    assert image.palette == []
+    assert image.background == {0}
+
+    assert_pixels_match(image.pixels, @actual_pixels)
+  end
+
+  test "16 grayscale with alpha channel, black background" do
+    {:ok, image} = Imagineer.load(@test_path <> "bggn4a16.png")
+
+    assert image.color_format == :grayscale_alpha
+    assert image.bit_depth == 16
+    assert image.background == {43908}
+
+    :ok = Imagineer.write(image, @tmp_path <> "bggn4a16_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "bggn4a16_test.png")
+
+    assert image.color_format == :grayscale_alpha
+    assert image.bit_depth == 16
+    assert image.background == {43908}
+  end
+
+  test "8 rgb with alpha channel, white background" do
+    {:ok, image} = Imagineer.load(@test_path <> "bgwn6a08.png")
+
+    assert image.color_format == :rgb_alpha
+    assert image.bit_depth == 8
+    assert image.background == {255, 255, 255}
+
+    :ok = Imagineer.write(image, @tmp_path <> "bgwn6a08_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "bgwn6a08_test.png")
+
+    assert image.color_format == :rgb_alpha
+    assert image.bit_depth == 8
+    assert image.background == {255, 255, 255}
+  end
+
+  test "16 rgb with alpha channel, yellow background" do
+    {:ok, image} = Imagineer.load(@test_path <> "bgyn6a16.png")
+
+    assert image.color_format == :rgb_alpha
+    assert image.bit_depth == 16
+    assert image.background == {65535, 65535, 0}
+
+    :ok = Imagineer.write(image, @tmp_path <> "bgyn6a16_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "bgyn6a16_test.png")
+
+    assert image.color_format == :rgb_alpha
+    assert image.bit_depth == 16
+    assert image.background == {65535, 65535, 0}
   end
 
   defp assert_pixels_match(parsed_pixels, actual_pixels) do

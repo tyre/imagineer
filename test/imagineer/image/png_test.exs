@@ -16,7 +16,7 @@ defmodule Imagineer.Image.PNGTest do
 
     # It should set the color format, color type, and 1it_depth
     assert image.bit_depth == 8, "it should set the bit depth"
-    assert image.color_format == :rgb8, "it should set the color format"
+    assert image.color_format == :rgb, "it should set the color format"
     assert image.color_type == 2, "it should set the color type"
 
     assert image.attributes.pixel_dimensions == {5669, 5669, :meter},

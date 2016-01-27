@@ -10,7 +10,7 @@ defmodule Imagineer.Image.PNG.Interlace.Adam7.ScanlinesTest do
       width: 3,
       height: 3,
       decompressed_data: test_image_content,
-      color_format: :rgb8,
+      color_format: :rgb,
       bit_depth: 8
     }
     assert Adam7.Scanlines.extract(test_image) == [

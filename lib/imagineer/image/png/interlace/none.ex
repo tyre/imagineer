@@ -1,6 +1,6 @@
 defmodule Imagineer.Image.PNG.Interlace.None do
   alias Imagineer.Image.PNG
-  import Imagineer.Image.PNG.Helpers, only: [bytes_per_row: 2]
+  import Imagineer.Image.PNG.Helpers, only: [bytes_per_row: 3]
 
   @doc """
   Takes in a PNG whose decompressed data is not interlaced and splits up the
@@ -17,7 +17,8 @@ defmodule Imagineer.Image.PNG.Interlace.None do
         ...> 117, 3, 4, 104, 44, 87, 33, 91, 188>>
         iex> %PNG{
         ...>   decompressed_data: decompressed_data,
-        ...>   color_format: :rgb8,
+        ...>   color_format: :rgb,
+        ...>   bit_depth: 8,
         ...>   width: 2,
         ...>   height: 5,
         ...>   interlace_method: 0
@@ -46,8 +47,8 @@ defmodule Imagineer.Image.PNG.Interlace.None do
 
   # The number of bytes per scanline is equal to the number of bytes per row
   # plus one byte for the filter method.
-  defp bytes_per_scanline(%PNG{color_format: color_format, width: width}) do
-    bytes_per_row(color_format, width) + 1
+  defp bytes_per_scanline(%PNG{color_format: color_format, bit_depth: bit_depth, width: width}) do
+    bytes_per_row(color_format, bit_depth, width) + 1
   end
 
   def encode_scanlines(%PNG{interlace_method: 0, scanlines: scanlines}) do

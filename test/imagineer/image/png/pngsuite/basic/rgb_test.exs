@@ -44,7 +44,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.RGBTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :rgb8
+    assert image.color_format == :rgb
     assert image.compression == :zlib
     assert image.color_type == 2
     assert image.interlace_method == 0
@@ -63,7 +63,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.RGBTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :rgb8
+    assert image.color_format == :rgb
     assert image.compression == :zlib
     assert image.color_type == 2
     assert image.interlace_method == 0
@@ -117,7 +117,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.RGBTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :rgb16
+    assert image.color_format == :rgb
     assert image.compression == :zlib
     assert image.color_type == 2
     assert image.interlace_method == 0
@@ -136,7 +136,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.RGBTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :rgb16
+    assert image.color_format == :rgb
     assert image.compression == :zlib
     assert image.color_type == 2
     assert image.interlace_method == 0
