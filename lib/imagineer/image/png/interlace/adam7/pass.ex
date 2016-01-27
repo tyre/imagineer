@@ -62,16 +62,20 @@ defmodule Imagineer.Image.PNG.Interlace.Adam7.Pass do
   def merge(pass, {original_width, original_height}, pass_pixels, image_pixels) do
     {sub_width, sub_height} = size(pass, original_width, original_height)
     {x_shift, x_offset, y_shift, y_offset} = multiplier_offset(pass)
-    Enum.reduce(0..(sub_height-1), image_pixels, fn(sub_y, filled_image_pixels) ->
-      image_y = (sub_y <<< y_shift) ||| y_offset
-      sub_image_row = Enum.at(pass_pixels, sub_y)
-      current_row = :array.get(image_y, filled_image_pixels)
-      new_row = Enum.reduce(0..(sub_width-1), current_row, fn(sub_x, updated_row) ->
-        image_x = (sub_x <<< x_shift) ||| x_offset
-        :array.set(image_x, Enum.at(sub_image_row, sub_x), updated_row)
+    if sub_height > 0 and sub_width > 0 do
+      Enum.reduce(0..(sub_height-1), image_pixels, fn(sub_y, filled_image_pixels) ->
+        image_y = (sub_y <<< y_shift) ||| y_offset
+        sub_image_row = Enum.at(pass_pixels, sub_y)
+        current_row = :array.get(image_y, filled_image_pixels)
+        new_row = Enum.reduce(0..(sub_width-1), current_row, fn(sub_x, updated_row) ->
+          image_x = (sub_x <<< x_shift) ||| x_offset
+          :array.set(image_x, Enum.at(sub_image_row, sub_x), updated_row)
+        end)
+        :array.set(image_y, new_row, filled_image_pixels)
       end)
-      :array.set(image_y, new_row, filled_image_pixels)
-    end)
+    else
+      image_pixels
+    end
   end
 
   # Returns a tuple with the x-shift, x-offset, y-shift and y-offset for the
