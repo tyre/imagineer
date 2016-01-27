@@ -44,7 +44,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.RGBAlphaTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :rgb_alpha8
+    assert image.color_format == :rgb_alpha
     assert image.compression == :zlib
     assert image.color_type == 6
     assert image.interlace_method == 0
@@ -63,7 +63,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.RGBAlphaTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :rgb_alpha8
+    assert image.color_format == :rgb_alpha
     assert image.compression == :zlib
     assert image.color_type == 6
     assert image.interlace_method == 0

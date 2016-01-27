@@ -9,7 +9,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 32
     assert image.width == 32
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 1
@@ -19,7 +19,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     # assert image.height == 32
     # assert image.width == 32
-    # assert image.color_format == :palette4
+    # assert image.color_format == :palette
     # assert image.color_type == 3
     # assert image.bit_depth == 4
     # assert image.interlace_method == 1
@@ -30,7 +30,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 32
     assert image.width == 32
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -40,7 +40,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 32
     assert image.width == 32
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -51,7 +51,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 33
     assert image.width == 33
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 1
@@ -61,7 +61,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     # assert image.height == 33
     # assert image.width == 33
-    # assert image.color_format == :palette4
+    # assert image.color_format == :palette
     # assert image.color_type == 3
     # assert image.bit_depth == 4
     # assert image.interlace_method == 1
@@ -72,7 +72,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 33
     assert image.width == 33
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -82,7 +82,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 33
     assert image.width == 33
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -93,7 +93,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 34
     assert image.width == 34
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 1
@@ -103,7 +103,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     # assert image.height == 34
     # assert image.width == 34
-    # assert image.color_format == :palette4
+    # assert image.color_format == :palette
     # assert image.color_type == 3
     # assert image.bit_depth == 4
     # assert image.interlace_method == 1
@@ -114,7 +114,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 34
     assert image.width == 34
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -124,7 +124,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 34
     assert image.width == 34
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -135,7 +135,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 35
     assert image.width == 35
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 1
@@ -145,7 +145,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     # assert image.height == 35
     # assert image.width == 35
-    # assert image.color_format == :palette4
+    # assert image.color_format == :palette
     # assert image.color_type == 3
     # assert image.bit_depth == 4
     # assert image.interlace_method == 1
@@ -156,7 +156,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 35
     assert image.width == 35
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -166,7 +166,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 35
     assert image.width == 35
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -177,7 +177,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 36
     assert image.width == 36
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 1
@@ -187,7 +187,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     # assert image.height == 36
     # assert image.width == 36
-    # assert image.color_format == :palette4
+    # assert image.color_format == :palette
     # assert image.color_type == 3
     # assert image.bit_depth == 4
     # assert image.interlace_method == 1
@@ -198,7 +198,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 36
     assert image.width == 36
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -208,7 +208,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 36
     assert image.width == 36
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -219,7 +219,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 37
     assert image.width == 37
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 1
@@ -229,7 +229,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     # assert image.height == 37
     # assert image.width == 37
-    # assert image.color_format == :palette4
+    # assert image.color_format == :palette
     # assert image.color_type == 3
     # assert image.bit_depth == 4
     # assert image.interlace_method == 1
@@ -240,7 +240,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 37
     assert image.width == 37
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -250,7 +250,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 37
     assert image.width == 37
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -261,7 +261,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 38
     assert image.width == 38
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 1
@@ -271,7 +271,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     # assert image.height == 38
     # assert image.width == 38
-    # assert image.color_format == :palette4
+    # assert image.color_format == :palette
     # assert image.color_type == 3
     # assert image.bit_depth == 4
     # assert image.interlace_method == 1
@@ -282,7 +282,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 38
     assert image.width == 38
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -292,7 +292,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 38
     assert image.width == 38
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -303,7 +303,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 39
     assert image.width == 39
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 1
@@ -313,7 +313,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     # assert image.height == 39
     # assert image.width == 39
-    # assert image.color_format == :palette4
+    # assert image.color_format == :palette
     # assert image.color_type == 3
     # assert image.bit_depth == 4
     # assert image.interlace_method == 1
@@ -324,7 +324,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 39
     assert image.width == 39
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -334,7 +334,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 39
     assert image.width == 39
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -345,7 +345,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 40
     assert image.width == 40
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 1
@@ -355,7 +355,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     # assert image.height == 40
     # assert image.width == 40
-    # assert image.color_format == :palette4
+    # assert image.color_format == :palette
     # assert image.color_type == 3
     # assert image.bit_depth == 4
     # assert image.interlace_method == 1
@@ -366,7 +366,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 40
     assert image.width == 40
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0
@@ -376,7 +376,7 @@ defmodule Imagineer.Image.PNG.PngSuite.BigAndOddTest do
 
     assert image.height == 40
     assert image.width == 40
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.color_type == 3
     assert image.bit_depth == 4
     assert image.interlace_method == 0

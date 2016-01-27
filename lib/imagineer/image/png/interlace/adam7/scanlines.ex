@@ -65,7 +65,7 @@ defmodule Imagineer.Image.PNG.Interlace.Adam7.Scanlines do
 
   # The number of bytes per scanline is equal to the number of bytes per row
   # plus one byte for the filter method.
-  defp bytes_per_scanline(%PNG{color_format: color_format}, pass_width) do
-    bytes_per_row(color_format, pass_width) + 1
+  defp bytes_per_scanline(%PNG{color_format: color_format, bit_depth: bit_depth}, pass_width) do
+    bytes_per_row(color_format, bit_depth, pass_width) + 1
   end
 end

@@ -94,7 +94,7 @@ defmodule Imagineer.Image.PNG do
       width: width,
       height: height,
       bit_depth: bit_depth,
-      color_format: color_format(color_type, bit_depth),
+      color_format: color_format(color_type),
       color_type: color_type,
       compression: compression_format(compression),
       filter_method: filter_method(filter_method),

@@ -44,7 +44,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Interlaced.GrayscaleTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :grayscale1
+    assert image.color_format == :grayscale
     assert image.compression == :zlib
     assert image.color_type == 0
     assert image.interlace_method == 1
@@ -101,7 +101,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Interlaced.GrayscaleTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :grayscale2
+    assert image.color_format == :grayscale
     assert image.compression == :zlib
     assert image.color_type == 0
     assert image.interlace_method == 1
@@ -156,7 +156,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Interlaced.GrayscaleTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :grayscale4
+    assert image.color_format == :grayscale
     assert image.compression == :zlib
     assert image.color_type == 0
     assert image.interlace_method == 1
@@ -176,7 +176,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Interlaced.GrayscaleTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :grayscale8
+    assert image.color_format == :grayscale
     assert image.compression == :zlib
     assert image.color_type == 0
     assert image.interlace_method == 1
@@ -194,7 +194,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Interlaced.GrayscaleTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :grayscale16
+    assert image.color_format == :grayscale
     assert image.compression == :zlib
     assert image.color_type == 0
     assert image.interlace_method == 1

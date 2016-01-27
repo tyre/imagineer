@@ -1,7 +1,7 @@
 defmodule Imagineer.Image.PNG.Filter.Basic do
   alias Imagineer.Image.PNG
   alias PNG.Filter.Basic
-  import PNG.Helpers, only: [ bytes_per_pixel: 1, bytes_per_row: 2, null_binary: 1 ]
+  import PNG.Helpers, only: [ bytes_per_pixel: 2, bytes_per_row: 3, null_binary: 1 ]
   @none    0
   @sub     1
   @up      2
@@ -13,11 +13,12 @@ defmodule Imagineer.Image.PNG.Filter.Basic do
 
   Types are defined [here](http://www.w3.org/TR/PNG-Filters.html).
   """
-  def unfilter(scanlines, color_format, width)
-  when is_list(scanlines) and is_atom(color_format) and is_integer(width) do
+  def unfilter(scanlines, %PNG{
+    color_format: color_format, bit_depth: bit_depth, width: width
+  }) do
     # For unfiltering, the row prior to the first is assumed to be all 0s
-    ghost_row = null_binary(bytes_per_row(color_format, width))
-    unfilter(scanlines, ghost_row, bytes_per_pixel(color_format), [])
+    ghost_row = null_binary(bytes_per_row(color_format, bit_depth, width))
+    unfilter(scanlines, ghost_row, bytes_per_pixel(color_format, bit_depth), [])
   end
 
   defp unfilter([], _prior_row, _bytes_per_pixel, unfiltered) do

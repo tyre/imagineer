@@ -1,104 +1,65 @@
 defmodule Imagineer.Image.PNG.Helpers do
 
   @doc """
-  Given a PNG's color type and bit depth, returns its color format
+  Given a PNG's color type, returns its color format
   """
-  def color_format(0, 1) , do: :grayscale1
-  def color_format(0, 2) , do: :grayscale2
-  def color_format(0, 4) , do: :grayscale4
-  def color_format(0, 8) , do: :grayscale8
-  def color_format(0, 16), do: :grayscale16
-  def color_format(2, 8) , do: :rgb8
-  def color_format(2, 16), do: :rgb16
-  def color_format(3, 1) , do: :palette1
-  def color_format(3, 2) , do: :palette2
-  def color_format(3, 4) , do: :palette4
-  def color_format(3, 8) , do: :palette8
-  def color_format(4, 8) , do: :grayscale_alpha8
-  def color_format(4, 16), do: :grayscale_alpha16
-  def color_format(6, 8) , do: :rgb_alpha8
-  def color_format(6, 16), do: :rgb_alpha16
+  def color_format(0) , do: :grayscale
+  def color_format(2) , do: :rgb
+  def color_format(3) , do: :palette
+  def color_format(4) , do: :grayscale_alpha
+  def color_format(6) , do: :rgb_alpha
 
   @doc """
-  Given a color format and the width of an image, tells us how many bytes are
-  are present per scanline (a row of pixels).
+  Given a color format, bit depth, and the width of an image, tells us how many
+  bytes are are present per scanline (a row of pixels).
   """
-  def bytes_per_row(:grayscale1, width),          do: div(width + 7, 8)
-  def bytes_per_row(:grayscale2, width),          do: div(width + 3, 4)
-  def bytes_per_row(:grayscale4, width),          do: div(width + 1, 2)
-  def bytes_per_row(:grayscale8, width),          do: width
-  def bytes_per_row(:grayscale16, width),         do: width * 2
-  def bytes_per_row(:rgb8, width),                do: width * 3
-  def bytes_per_row(:rgb16, width),               do: width * 6
-  def bytes_per_row(:palette1, width),            do: div(width + 7, 8)
-  def bytes_per_row(:palette2, width),            do: div(width + 3, 4)
-  def bytes_per_row(:palette4, width),            do: div(width + 1, 2)
-  def bytes_per_row(:palette8, width),            do: width
-  def bytes_per_row(:grayscale_alpha8, width),    do: width * 2
-  def bytes_per_row(:grayscale_alpha16, width),   do: width * 4
-  def bytes_per_row(:rgb_alpha8, width),          do: width * 4
-  def bytes_per_row(:rgb_alpha16, width),         do: width * 8
+  def bytes_per_row(:grayscale, 1, width),          do: div(width + 7, 8)
+  def bytes_per_row(:grayscale, 2, width),          do: div(width + 3, 4)
+  def bytes_per_row(:grayscale, 4, width),          do: div(width + 1, 2)
+  def bytes_per_row(:grayscale, 8, width),          do: width
+  def bytes_per_row(:grayscale, 16, width),         do: width * 2
+  def bytes_per_row(:rgb, 8, width),                do: width * 3
+  def bytes_per_row(:rgb, 16, width),               do: width * 6
+  def bytes_per_row(:palette, 1, width),            do: div(width + 7, 8)
+  def bytes_per_row(:palette, 2, width),            do: div(width + 3, 4)
+  def bytes_per_row(:palette, 4, width),            do: div(width + 1, 2)
+  def bytes_per_row(:palette, 8, width),            do: width
+  def bytes_per_row(:grayscale_alpha, 8, width),    do: width * 2
+  def bytes_per_row(:grayscale_alpha, 16, width),   do: width * 4
+  def bytes_per_row(:rgb_alpha, 8, width),          do: width * 4
+  def bytes_per_row(:rgb_alpha, 16, width),         do: width * 8
 
   @doc """
-  Gives how many bits comprise a channel, based on the color format
+  Given a color format and bit depth, tells us how many bytes are needed to
+  store a pixel
   """
-  def bits_per_channel(:grayscale1),          do: 1
-  def bits_per_channel(:grayscale2),          do: 2
-  def bits_per_channel(:grayscale4),          do: 4
-  def bits_per_channel(:grayscale8),          do: 8
-  def bits_per_channel(:grayscale16),         do: 16
-  def bits_per_channel(:rgb8),                do: 8
-  def bits_per_channel(:rgb16),               do: 16
-  def bits_per_channel(:palette1),            do: 1
-  def bits_per_channel(:palette2),            do: 2
-  def bits_per_channel(:palette4),            do: 4
-  def bits_per_channel(:palette8),            do: 8
-  def bits_per_channel(:grayscale_alpha8),    do: 8
-  def bits_per_channel(:grayscale_alpha16),   do: 16
-  def bits_per_channel(:rgb_alpha8),          do: 8
-  def bits_per_channel(:rgb_alpha16),         do: 16
-
-
-  @doc """
-  Given a color format, tells us how many bytes are needed to store a pixel
-  """
-  def bytes_per_pixel(:grayscale1),         do: 1
-  def bytes_per_pixel(:grayscale2),         do: 1
-  def bytes_per_pixel(:grayscale4),         do: 1
-  def bytes_per_pixel(:grayscale8),         do: 1
-  def bytes_per_pixel(:grayscale16),        do: 2
-  def bytes_per_pixel(:rgb8),               do: 3
-  def bytes_per_pixel(:rgb16),              do: 6
-  def bytes_per_pixel(:palette1),           do: 1
-  def bytes_per_pixel(:palette2),           do: 1
-  def bytes_per_pixel(:palette4),           do: 1
-  def bytes_per_pixel(:palette8),           do: 1
-  def bytes_per_pixel(:grayscale_alpha8),   do: 2
-  def bytes_per_pixel(:grayscale_alpha16),  do: 4
-  def bytes_per_pixel(:rgb_alpha8),         do: 4
-  def bytes_per_pixel(:rgb_alpha16),        do: 8
+  def bytes_per_pixel(:grayscale, 1),         do: 1
+  def bytes_per_pixel(:grayscale, 2),         do: 1
+  def bytes_per_pixel(:grayscale, 4),         do: 1
+  def bytes_per_pixel(:grayscale, 8),         do: 1
+  def bytes_per_pixel(:grayscale, 16),        do: 2
+  def bytes_per_pixel(:rgb, 8),               do: 3
+  def bytes_per_pixel(:rgb, 16),              do: 6
+  def bytes_per_pixel(:palette, 1),           do: 1
+  def bytes_per_pixel(:palette, 2),           do: 1
+  def bytes_per_pixel(:palette, 4),           do: 1
+  def bytes_per_pixel(:palette, 8),           do: 1
+  def bytes_per_pixel(:grayscale_alpha, 8),   do: 2
+  def bytes_per_pixel(:grayscale_alpha, 16),  do: 4
+  def bytes_per_pixel(:rgb_alpha, 8),         do: 4
+  def bytes_per_pixel(:rgb_alpha, 16),        do: 8
 
   @doc """
   Returns the number of channels for a given `color_format`. For example,
-  `:rgb8` and `:rbg16` have 3 channels: one for Red, Green, and Blue.
-  `:rgb_alpha8` and `:rgb_alpha16` each have 4 channels: one for Red, Green,
+  `:rgb` and `:rbg16` have 3 channels: one for Red, Green, and Blue.
+  `:rgb_alpha` and `:rgb_alpha` each have 4 channels: one for Red, Green,
   Blue, and the alpha (transparency) channel.
   """
-  def channels_per_pixel(:palette1),           do: 1
-  def channels_per_pixel(:palette2),           do: 1
-  def channels_per_pixel(:palette4),           do: 1
-  def channels_per_pixel(:palette8),           do: 1
-  def channels_per_pixel(:grayscale1),         do: 1
-  def channels_per_pixel(:grayscale2),         do: 1
-  def channels_per_pixel(:grayscale4),         do: 1
-  def channels_per_pixel(:grayscale8),         do: 1
-  def channels_per_pixel(:grayscale16),        do: 1
-  def channels_per_pixel(:grayscale_alpha8),   do: 2
-  def channels_per_pixel(:grayscale_alpha16),  do: 2
-  def channels_per_pixel(:rgb8),               do: 3
-  def channels_per_pixel(:rgb16),              do: 3
-  def channels_per_pixel(:rgb_alpha8),         do: 4
-  def channels_per_pixel(:rgb_alpha16),        do: 4
+  def channels_per_pixel(:palette),           do: 1
+  def channels_per_pixel(:grayscale),         do: 1
+  def channels_per_pixel(:grayscale_alpha),   do: 2
+  def channels_per_pixel(:rgb),               do: 3
+  def channels_per_pixel(:rgb_alpha),         do: 4
 
 
   @doc """

@@ -45,7 +45,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Background.BackgroundTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :grayscale_alpha8
+    assert image.color_format == :grayscale_alpha
     assert image.compression == :zlib
     assert image.color_type == 4
     assert image.interlace_method == 0
@@ -65,7 +65,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Background.BackgroundTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :grayscale_alpha8
+    assert image.color_format == :grayscale_alpha
     assert image.compression == :zlib
     assert image.color_type == 4
     assert image.interlace_method == 0
@@ -83,14 +83,14 @@ defmodule Imagineer.Image.PNG.PngSuite.Background.BackgroundTest do
   test "16 grayscale with alpha channel, black background" do
     {:ok, image} = Imagineer.load(@test_path <> "bggn4a16.png")
 
-    assert image.color_format == :grayscale_alpha16
+    assert image.color_format == :grayscale_alpha
     assert image.bit_depth == 16
     assert image.background == {43908}
 
     :ok = Imagineer.write(image, @tmp_path <> "bggn4a16_test.png")
     {:ok, image} = Imagineer.load(@tmp_path <> "bggn4a16_test.png")
 
-    assert image.color_format == :grayscale_alpha16
+    assert image.color_format == :grayscale_alpha
     assert image.bit_depth == 16
     assert image.background == {43908}
   end
@@ -98,14 +98,14 @@ defmodule Imagineer.Image.PNG.PngSuite.Background.BackgroundTest do
   test "8 rgb with alpha channel, white background" do
     {:ok, image} = Imagineer.load(@test_path <> "bgwn6a08.png")
 
-    assert image.color_format == :rgb_alpha8
+    assert image.color_format == :rgb_alpha
     assert image.bit_depth == 8
     assert image.background == {255, 255, 255}
 
     :ok = Imagineer.write(image, @tmp_path <> "bgwn6a08_test.png")
     {:ok, image} = Imagineer.load(@tmp_path <> "bgwn6a08_test.png")
 
-    assert image.color_format == :rgb_alpha8
+    assert image.color_format == :rgb_alpha
     assert image.bit_depth == 8
     assert image.background == {255, 255, 255}
   end
@@ -113,14 +113,14 @@ defmodule Imagineer.Image.PNG.PngSuite.Background.BackgroundTest do
   test "16 rgb with alpha channel, yellow background" do
     {:ok, image} = Imagineer.load(@test_path <> "bgyn6a16.png")
 
-    assert image.color_format == :rgb_alpha16
+    assert image.color_format == :rgb_alpha
     assert image.bit_depth == 16
     assert image.background == {65535, 65535, 0}
 
     :ok = Imagineer.write(image, @tmp_path <> "bgyn6a16_test.png")
     {:ok, image} = Imagineer.load(@tmp_path <> "bgyn6a16_test.png")
 
-    assert image.color_format == :rgb_alpha16
+    assert image.color_format == :rgb_alpha
     assert image.bit_depth == 16
     assert image.background == {65535, 65535, 0}
   end

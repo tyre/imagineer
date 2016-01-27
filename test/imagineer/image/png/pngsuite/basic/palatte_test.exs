@@ -44,7 +44,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.PaletteTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :palette1
+    assert image.color_format == :palette
     assert image.compression == :zlib
     assert image.color_type == 3
     assert image.interlace_method == 0
@@ -63,7 +63,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.PaletteTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :palette1
+    assert image.color_format == :palette
     assert image.compression == :zlib
     assert image.color_type == 3
     assert image.interlace_method == 0
@@ -117,7 +117,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.PaletteTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :palette2
+    assert image.color_format == :palette
     assert image.compression == :zlib
     assert image.color_type == 3
     assert image.interlace_method == 0
@@ -136,7 +136,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.PaletteTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :palette2
+    assert image.color_format == :palette
     assert image.compression == :zlib
     assert image.color_type == 3
     assert image.interlace_method == 0
@@ -191,7 +191,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.PaletteTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.compression == :zlib
     assert image.color_type == 3
     assert image.interlace_method == 0
@@ -211,7 +211,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.PaletteTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :palette4
+    assert image.color_format == :palette
     assert image.compression == :zlib
     assert image.color_type == 3
     assert image.interlace_method == 0
@@ -268,7 +268,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.PaletteTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :palette8
+    assert image.color_format == :palette
     assert image.compression == :zlib
     assert image.color_type == 3
     assert image.interlace_method == 0
@@ -287,7 +287,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Basic.PaletteTest do
     assert image.height == 32
     assert image.width == 32
 
-    assert image.color_format == :palette8
+    assert image.color_format == :palette
     assert image.compression == :zlib
     assert image.color_type == 3
     assert image.interlace_method == 0

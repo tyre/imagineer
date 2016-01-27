@@ -17,7 +17,7 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
   ## Example
       iex> alias Imagineer.Image.PNG
       iex> image = %PNG{
-      ...>  color_format: :rgb8,
+      ...>  color_format: :rgb,
       ...>  bit_depth: 8,
       ...>  interlace_method: 0,
       ...>  width: 2,
@@ -140,7 +140,7 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
   end
 
   # Pixels are translated to bytes, sized based on the bit depth of the PNG.
-  # If this leaves an incomplete byte (e.g. :grayscale1), fill the rest with
+  # If this leaves an incomplete byte (e.g. :grayscale), fill the rest with
   # 0s.
   def encode_pixel(pixel, image) do
     encode_pixel_bits(pixel, image.bit_depth)
