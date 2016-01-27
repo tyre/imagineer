@@ -80,6 +80,51 @@ defmodule Imagineer.Image.PNG.PngSuite.Background.BackgroundTest do
     assert_pixels_match(image.pixels, @actual_pixels)
   end
 
+  test "16 grayscale with alpha channel, black background" do
+    {:ok, image} = Imagineer.load(@test_path <> "bggn4a16.png")
+
+    assert image.color_format == :grayscale_alpha16
+    assert image.bit_depth == 16
+    assert image.background == {43908}
+
+    :ok = Imagineer.write(image, @tmp_path <> "bggn4a16_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "bggn4a16_test.png")
+
+    assert image.color_format == :grayscale_alpha16
+    assert image.bit_depth == 16
+    assert image.background == {43908}
+  end
+
+  test "8 rgb with alpha channel, white background" do
+    {:ok, image} = Imagineer.load(@test_path <> "bgwn6a08.png")
+
+    assert image.color_format == :rgb_alpha8
+    assert image.bit_depth == 8
+    assert image.background == {255, 255, 255}
+
+    :ok = Imagineer.write(image, @tmp_path <> "bgwn6a08_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "bgwn6a08_test.png")
+
+    assert image.color_format == :rgb_alpha8
+    assert image.bit_depth == 8
+    assert image.background == {255, 255, 255}
+  end
+
+  test "16 rgb with alpha channel, yellow background" do
+    {:ok, image} = Imagineer.load(@test_path <> "bgyn6a16.png")
+
+    assert image.color_format == :rgb_alpha16
+    assert image.bit_depth == 16
+    assert image.background == {65535, 65535, 0}
+
+    :ok = Imagineer.write(image, @tmp_path <> "bgyn6a16_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "bgyn6a16_test.png")
+
+    assert image.color_format == :rgb_alpha16
+    assert image.bit_depth == 16
+    assert image.background == {65535, 65535, 0}
+  end
+
   defp assert_pixels_match(parsed_pixels, actual_pixels) do
     Enum.zip(parsed_pixels, actual_pixels)
     |> Enum.with_index
