@@ -1,4 +1,4 @@
-defmodule Imagineer.Image.PNG.PngSuite.SmallAndWeirdTest do
+defmodule Imagineer.Image.PNG.PngSuite.Sizes.SmallAndWeirdTest do
   use ExUnit.Case, async: true
 
   @test_path "test/support/images/pngsuite/sizes/"
