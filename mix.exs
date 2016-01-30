@@ -31,13 +31,13 @@ defmodule Imagineer.Mixfile do
 
   defp package do
   [
-    contributors: contributors,
+    maintainers: maintainers,
     links: links,
     licenses: ["MIT"]
   ]
   end
 
-  defp contributors do
+  defp maintainers do
     [
       "Chris Maddox"
     ]
