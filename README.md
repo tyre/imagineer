@@ -66,8 +66,9 @@ You probably only care about the following fields:
   + `format`
   + `palette`
   + `gamma`
+  + `bit_depth`
 
-The color format tells you how pixels are structured. `rgb8` indicates
-that each pixel will be a three value tuple (red, blue, and green channels.) The
-`8` signifies the size of each channel, in this case fitting inside 8 bits,
-translating to values between 0-255.
+The `color_format` tells you how pixels are structured. `:rgb` indicates
+that each pixel will be a three value tuple (red, blue, and green channels.)
+
+The `bit_depth` signifies the size of each channel. For example, a `bit_depth` of `8` says that each chanell is 8 bits, translating to values between 0-255.

@@ -1,5 +1,6 @@
 defmodule Imagineer.Image.PNG.Interlace.Adam7 do
-  alias Imagineer.Image.PNG.Interlace.Adam7
+  alias Imagineer.Image.PNG
+  alias PNG.Interlace.Adam7
 
   @doc """
   Extract scanlines from the given image's decompressed data. The unfiltered
@@ -9,8 +10,14 @@ defmodule Imagineer.Image.PNG.Interlace.Adam7 do
     Adam7.Scanlines.extract(image)
   end
 
-  def extract_pixels(image) do
-    Adam7.Pixels.extract(image)
+  def separate_passes(%PNG{height: height, width: width, pixels: pixels}) do
+    Enum.map(1..7, fn(pass_number) ->
+      Adam7.Pass.extract_pass(pass_number, height, width, pixels)
+    end)
+  end
+
+  def merge_scanlines(%PNG{scanlines: scanlines}) do
+    List.flatten(scanlines)
   end
 
   @doc """

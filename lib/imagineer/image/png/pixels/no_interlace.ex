@@ -100,7 +100,7 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
     encode_pixel_rows(pixels, image)
   end
 
-  defp encode_pixel_rows(pixels, image) do
+  def encode_pixel_rows(pixels, image) do
     encode_pixel_rows(pixels, image, [])
   end
 

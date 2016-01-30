@@ -21,7 +21,9 @@ defmodule Imagineer.Image.PNG.Interlace do
     %PNG{image | decompressed_data: PNG.Interlace.None.encode_scanlines(image)}
   end
 
-  def encode_scanlines(%PNG{interlace_method: 1}) do
-    raise "Encoding for Adam7 scanlines not yet supported"
+  def encode_scanlines(%PNG{interlace_method: 1}=image) do
+    decompressed_data = PNG.Interlace.Adam7.merge_scanlines(image)
+    |> Enum.join
+    %PNG{image | decompressed_data: decompressed_data}
   end
 end

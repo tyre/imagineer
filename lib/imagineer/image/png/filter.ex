@@ -7,8 +7,7 @@ defmodule Imagineer.Image.PNG.Filter do
   for `{row_index, unfiltered_row_binary}`
   """
   def unfilter(%PNG{filter_method: filter_method, interlace_method: interlace_method}=image) do
-    unfiltered_rows = unfilter(filter_method, interlace_method, image)
-    Map.put(image, :unfiltered_rows, unfiltered_rows)
+    %PNG{image | unfiltered_rows: unfilter(filter_method, interlace_method, image)}
   end
 
   # With no interlacing, we can just go line by line
@@ -24,7 +23,18 @@ defmodule Imagineer.Image.PNG.Filter do
     end) |> Enum.reverse
   end
 
-  def filter(%PNG{filter_method: :five_basics, interlace_method: 0}=image) do
-    %PNG{image | scanlines: PNG.Filter.Basic.filter(image)}
+  def filter(%PNG{filter_method: filter_method, interlace_method: interlace_method}=image) do
+    %PNG{image | scanlines: filter(filter_method, interlace_method, image)}
+  end
+
+  def filter(:five_basics, 0, %PNG{unfiltered_rows: unfiltered_rows}=image) do
+    PNG.Filter.Basic.filter(unfiltered_rows, image)
+  end
+
+  def filter(:five_basics, 1, %PNG{unfiltered_rows: unfiltered_passes}=image) do
+    Enum.reduce(unfiltered_passes, [], fn(pass, filtered_passes) ->
+      filtered_pass = PNG.Filter.Basic.filter(pass, image)
+      [filtered_pass | filtered_passes]
+    end) |> Enum.reverse
   end
 end

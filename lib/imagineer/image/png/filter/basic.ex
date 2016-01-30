@@ -62,7 +62,7 @@ defmodule Imagineer.Image.PNG.Filter.Basic do
   @doc """
   Filters scanlines. Right now does a naïve pass (AKA no filtering.)
   """
-  def filter(%PNG{unfiltered_rows: unfiltered_rows}) do
+  def filter(unfiltered_rows, _image) do
     filter_rows(unfiltered_rows)
   end
 

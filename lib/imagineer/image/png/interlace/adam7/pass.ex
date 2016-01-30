@@ -78,6 +78,23 @@ defmodule Imagineer.Image.PNG.Interlace.Adam7.Pass do
     end
   end
 
+  # Extracts the sub image for the given pass
+  #
+  def extract_pass(pass, original_height, original_width, image_pixels) do
+    {x_shift, x_offset, y_shift, y_offset} = multiplier_offset(pass)
+    # If the offset is greater than the height/width, the pass is empty
+    if original_height > y_offset && original_width > x_offset do
+      Enum.slice(image_pixels, y_offset..-1)
+      |> Enum.take_every(1 <<< y_shift)
+      |> Enum.map(fn (row) ->
+        Enum.slice(row, x_offset..-1)
+        |> Enum.take_every(1 <<< x_shift)
+      end)
+    else
+      []
+    end
+  end
+
   # Returns a tuple with the x-shift, x-offset, y-shift and y-offset for the
   # requested pass.
   defp multiplier_offset(1) do
