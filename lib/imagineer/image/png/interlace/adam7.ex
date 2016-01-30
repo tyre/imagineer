@@ -10,9 +10,9 @@ defmodule Imagineer.Image.PNG.Interlace.Adam7 do
     Adam7.Scanlines.extract(image)
   end
 
-  def separate_passes(%PNG{pixels: pixels}) do
+  def separate_passes(%PNG{height: height, width: width, pixels: pixels}) do
     Enum.map(1..7, fn(pass_number) ->
-      Adam7.Pass.extract_pass(pass_number, pixels)
+      Adam7.Pass.extract_pass(pass_number, height, width, pixels)
     end)
   end
 
