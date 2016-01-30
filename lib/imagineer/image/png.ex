@@ -74,12 +74,8 @@ defmodule Imagineer.Image.PNG do
   @color_type_grayscale_with_alpha    4
   @color_type_color_and_alpha         6
 
-  def process(<<@png_signature, rest::binary>>=raw) do
-    process(rest, %PNG{raw: raw})
-  end
-
-  def process(<<@png_signature, rest::binary>>, %PNG{}=image) do
-    process(rest, image)
+  def process(<<@png_signature, rest::binary>>) do
+    process(rest, %PNG{})
   end
 
   # Process the "IEND" chunk
@@ -88,13 +84,6 @@ defmodule Imagineer.Image.PNG do
     PNG.DataContent.process(image)
   end
 
-  # Process the auxillary "iTXt" chunk
-  def process(<<content_length::size(32), @itxt_header, content::binary-size(content_length), _crc::size(32), rest::binary>>, %PNG{}=image) do
-    image = process_text_chunk(image, content)
-    process(rest, image)
-  end
-
-  # For headers that we don't understand, skip them
   def process(<<
       content_length::size(32),
       header::binary-size(4),
@@ -229,46 +218,5 @@ defmodule Imagineer.Image.PNG do
 
   # Check for the filter method. Purposefully raise if not the only one defined
   defp encoded_filter_method(:five_basics), do: @filter_five_basics
-
-  defp process_text_chunk(image, content) do
-    case parse_text_pair(content, <<>>) do
-      {key, value} ->
-        set_text_attribute(image, key, value)
-      false ->
-        image
-    end
-  end
-
-  defp parse_text_pair(<<0, value::binary>>, key) do
-    {String.to_atom(key), strip_null_bytes(value)}
-  end
-
-  defp parse_text_pair(<<key_byte::binary-size(1), rest::binary>>, key) do
-    parse_text_pair(rest, key <> key_byte)
-  end
-
-  defp parse_text_pair(<<>>, _key) do
-    false
-  end
-
-  # Strip all leading null bytes (<<0>>) from the text
-  defp strip_null_bytes(<<0, rest::binary>>) do
-    strip_null_bytes rest
-  end
-
-  defp strip_null_bytes(content) do
-    content
-  end
-
-  # Sets the attribute relevant to whatever is held in the text chunk,
-  # returns the image
-  defp set_text_attribute(image, key, value) do
-    case key do
-      :Comment ->
-        %PNG{image | comment: value}
-      _ ->
-        %PNG{image | attributes: set_attribute(image, key, value)}
-    end
-  end
 
 end

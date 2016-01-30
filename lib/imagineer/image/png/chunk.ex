@@ -1,6 +1,7 @@
 defmodule Imagineer.Image.PNG.Chunk do
-  require Logger
   alias Imagineer.Image.PNG.Chunk
+  require Logger
+  import Chunk.Helpers
 
   # Required headers
   @ihdr_header <<?I, ?H, ?D, ?R>>
@@ -21,18 +22,13 @@ defmodule Imagineer.Image.PNG.Chunk do
     decode_chunk(header, content, image)
   end
 
-  defp decode_chunk(@ihdr_header, content, image),
-    do: Chunk.Header.decode(content, image)
-  defp decode_chunk(@gama_header, content, image),
-    do: Chunk.Gamma.decode(content, image)
-  defp decode_chunk(@phys_header, content, image),
-    do: Chunk.PhysicalPixelDimensions.decode(content, image)
-  defp decode_chunk(@plte_header, content, image),
-    do: Chunk.Palette.decode(content, image)
-  defp decode_chunk(@idat_header, content, image),
-    do: Chunk.DataContent.decode(content, image)
-  defp decode_chunk(@bkgd_header, content, image),
-    do: Chunk.Background.decode(content, image)
+  decode_chunk @ihdr_header, with: Chunk.Header
+  decode_chunk @gama_header, with: Chunk.Gamma
+  decode_chunk @phys_header, with: Chunk.PhysicalPixelDimensions
+  decode_chunk @plte_header, with: Chunk.Palette
+  decode_chunk @idat_header, with: Chunk.DataContent
+  decode_chunk @bkgd_header, with: Chunk.Background
+  decode_chunk @itxt_header, with: Chunk.Text
 
   defp decode_chunk(unknown_header, _content, image) do
     Logger.debug("Skipping unknown header #{unknown_header}")
