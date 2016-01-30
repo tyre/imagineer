@@ -1,10 +1,17 @@
 defmodule Imagineer.Image.PNG.Pixels.Adam7 do
   alias Imagineer.Image.PNG
+  alias PNG.Interlace.Adam7
   import PNG.Helpers, only: [channels_per_pixel: 1]
 
   def extract(%PNG{unfiltered_rows: passes}=image) do
     extract_pixels_from_passes(passes, image)
-    |> PNG.Interlace.Adam7.merge({image.width, image.height})
+    |> Adam7.merge({image.width, image.height})
+  end
+
+  def separate_passes(%PNG{}=image) do
+    Enum.map(Adam7.separate_passes(image), fn (adam_pass) ->
+      PNG.Pixels.NoInterlace.encode_pixel_rows(adam_pass, image)
+    end)
   end
 
   defp extract_pixels_from_passes(passes, image) do

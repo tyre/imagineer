@@ -2,6 +2,7 @@ defmodule Imagineer.Image.PNG.PngSuite.Interlaced.GrayscaleTest do
   use ExUnit.Case, async: true
 
   @test_path "test/support/images/pngsuite/interlaced/"
+  @tmp_path "./tmp/"
 
   @actual_pixels [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
@@ -43,7 +44,26 @@ defmodule Imagineer.Image.PNG.PngSuite.Interlaced.GrayscaleTest do
 
     assert image.height == 32
     assert image.width == 32
+    assert image.color_format == :grayscale
+    assert image.compression == :zlib
+    assert image.color_type == 0
+    assert image.interlace_method == 1
+    assert image.gamma == 1.0
+    assert image.bit_depth == 1
+    assert image.mask == nil
+    assert image.format == :png
+    assert image.mime_type == "image/png"
+    assert image.palette == []
 
+    pixels = extract_single_channel_pixels(image)
+
+    assert_pixels_match(pixels, @actual_pixels)
+
+    :ok = Imagineer.write(image, @tmp_path <> "basi0g01_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "basi0g01_test.png")
+
+    assert image.height == 32
+    assert image.width == 32
     assert image.color_format == :grayscale
     assert image.compression == :zlib
     assert image.color_type == 0
@@ -100,7 +120,24 @@ defmodule Imagineer.Image.PNG.PngSuite.Interlaced.GrayscaleTest do
 
     assert image.height == 32
     assert image.width == 32
+    assert image.color_format == :grayscale
+    assert image.compression == :zlib
+    assert image.color_type == 0
+    assert image.interlace_method == 1
+    assert image.gamma == 1.0
+    assert image.bit_depth == 2
+    assert image.mask == nil
+    assert image.format == :png
+    assert image.mime_type == "image/png"
+    assert image.palette == []
 
+    assert_pixels_match(extract_single_channel_pixels(image), @actual_pixels)
+
+    :ok = Imagineer.write(image, @tmp_path <> "basi0g02_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "basi0g02_test.png")
+
+    assert image.height == 32
+    assert image.width == 32
     assert image.color_format == :grayscale
     assert image.compression == :zlib
     assert image.color_type == 0
@@ -155,7 +192,24 @@ defmodule Imagineer.Image.PNG.PngSuite.Interlaced.GrayscaleTest do
 
     assert image.height == 32
     assert image.width == 32
+    assert image.color_format == :grayscale
+    assert image.compression == :zlib
+    assert image.color_type == 0
+    assert image.interlace_method == 1
+    assert image.gamma == 1.0
+    assert image.bit_depth == 4
+    assert image.mask == nil
+    assert image.format == :png
+    assert image.mime_type == "image/png"
+    assert image.palette == []
 
+    assert_pixels_match(extract_single_channel_pixels(image), @actual_pixels)
+
+    :ok = Imagineer.write(image, @tmp_path <> "basi0g04_test.png")
+    {:ok, image} = Imagineer.load(@tmp_path <> "basi0g04_test.png")
+
+    assert image.height == 32
+    assert image.width == 32
     assert image.color_format == :grayscale
     assert image.compression == :zlib
     assert image.color_type == 0
