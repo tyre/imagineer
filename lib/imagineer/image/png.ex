@@ -47,12 +47,6 @@ defmodule Imagineer.Image.PNG do
   @gama_header <<?g, ?A, ?M, ?A>>
   @trns_header <<?t, ?R, ?N, ?S>>
 
-  # Compression
-  @zlib 0
-
-  # Filter Methods
-  @filter_five_basics 0
-
   # Filter Types
   # http://www.w3.org/TR/PNG-Filters.html
   @filter_0 :none
@@ -78,12 +72,6 @@ defmodule Imagineer.Image.PNG do
     process(rest, %PNG{})
   end
 
-  # Process the "IEND" chunk
-  # The end of the PNG
-  def process(<<_length::size(32), @iend_header, _rest::binary>>, %PNG{}=image) do
-    PNG.DataContent.process(image)
-  end
-
   def process(<<
       content_length::size(32),
       header::binary-size(4),
@@ -92,7 +80,10 @@ defmodule Imagineer.Image.PNG do
       rest::binary
     >>, %PNG{}=image)
   do
-    process(rest, PNG.Chunk.decode(header, content, crc, image))
+    case PNG.Chunk.decode(header, content, crc, image) do
+      {:end, final_image} -> final_image
+      in_process_image -> process(rest, in_process_image)
+    end
   end
 
   def to_binary(%PNG{}=png) do
@@ -101,108 +92,14 @@ defmodule Imagineer.Image.PNG do
 
   def to_binary(bin, png) do
     processed_png = PNG.DataContent.encode(png)
-    write_header(bin, processed_png)
-    |> write_gamma(processed_png)
-    |> write_palette(processed_png)
-    |> write_background(processed_png)
-    |> write_transparency(processed_png)
-    |> write_data_content(processed_png)
-    |> write_end_header
+    PNG.Chunk.encode({bin, processed_png}, @ihdr_header)
+    |> PNG.Chunk.encode(@gama_header)
+    |> PNG.Chunk.encode(@plte_header)
+    |> PNG.Chunk.encode(@bkgd_header)
+    |> PNG.Chunk.encode(@trns_header)
+    |> PNG.Chunk.encode(@idat_header)
+    |> PNG.Chunk.encode(@iend_header)
+    |> Tuple.to_list
+    |> List.first
   end
-
-  # If there is no background, just don't write anything!
-  defp write_background(bin, %PNG{background: nil}), do: bin
-
-  # If there is no background and we are paletting, find that index!
-  defp write_background(bin, %PNG{
-    background: background,
-    color_type: @color_type_palette_and_color,
-    palette: palette}=image)
-  do
-    background_color_index = :array.to_list(palette)
-      |> Enum.find_index(fn (color) -> color == background end)
-    bin <> make_chunk(@bkgd_header,
-      encoded_background_color(image, background_color_index))
-  end
-
-  # Write, the pixel, write write, the pixel!
-  defp write_background(bin, %PNG{background: background}=image) do
-    bin <> make_chunk(@bkgd_header,
-      encoded_background_color(image, background))
-  end
-
-  defp encoded_background_color(image, background_color) do
-    case {image.color_type, background_color} do
-      {@color_type_grayscale, {gray}} ->
-        <<gray::integer-size(16)>>
-      {@color_type_color, {red, green, blue}} ->
-        <<red::size(16), green::size(16), blue::size(16)>>
-      {@color_type_palette_and_color, index} when is_integer(index) ->
-        <<index::integer-size(8)>>
-      {@color_type_grayscale_with_alpha, {gray}} ->
-        <<gray::integer-size(16)>>
-      {@color_type_color_and_alpha, {red, green, blue}} ->
-        <<red::size(16), green::size(16), blue::size(16)>>
-      {color_type, background_color} ->
-        raise "Invalid background color #{inspect(background_color)} for color type #{inspect color_type}"
-    end
-  end
-
-  defp write_transparency(bin, processed_png) do
-    {new_bin, _image} = PNG.Chunk.encode({bin, processed_png}, @trns_header)
-    new_bin
-  end
-
-  defp write_palette(bin, processed_png) do
-    {new_bin, _image} = PNG.Chunk.encode({bin, processed_png}, @plte_header)
-    new_bin
-  end
-
-  defp write_gamma(bin, %PNG{gamma: nil}), do: bin
-  defp write_gamma(bin, %PNG{gamma: gamma}) do
-    normalized_gamma = round(gamma * 100_000)
-    bin <> make_chunk(@gama_header, <<normalized_gamma::integer-size(32)>>)
-  end
-
-  defp write_end_header(bin) do
-    bin <> make_chunk(@iend_header, <<>>)
-  end
-
-  defp write_data_content(bin, %PNG{data_content: data_content}) do
-    bin <> make_chunk(@idat_header, data_content)
-  end
-
-  defp write_header(bin, png) do
-    encoded_compression_format = encoded_compression_format(png.compression)
-    encoded_filter_method = encoded_filter_method(png.filter_method)
-
-    bin <> make_chunk(@ihdr_header, <<
-      png.width::integer-size(32),
-      png.height::integer-size(32),
-      png.bit_depth::integer,
-      png.color_type::integer,
-      encoded_compression_format::integer,
-      encoded_filter_method::integer,
-      png.interlace_method::integer
-    >>)
-  end
-
-  # Private helper functions
-
-  defp make_chunk(header, chunk_content) do
-    content_length = byte_size(chunk_content)
-    cyclic_redundency_check = :erlang.crc32(header <> chunk_content)
-    <<
-      content_length::integer-unit(1)-size(32),
-      header::binary-size(4),
-      chunk_content::binary,
-      cyclic_redundency_check::size(32)
-    >>
-  end
-
-  defp encoded_compression_format(:zlib), do: @zlib
-
-  # Check for the filter method. Purposefully raise if not the only one defined
-  defp encoded_filter_method(:five_basics), do: @filter_five_basics
-
 end

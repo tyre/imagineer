@@ -22,10 +22,11 @@ defmodule Imagineer.Image.PNG.Chunk do
     decode_chunk(header, content, image)
   end
 
-  # Required header
+  # Required headers
   decode_chunk @ihdr_header, with: Chunk.Decoders.Header
   decode_chunk @plte_header, with: Chunk.Decoders.Palette
   decode_chunk @idat_header, with: Chunk.Decoders.DataContent
+  decode_chunk @iend_header, with: Chunk.Decoders.End
 
   # Auxillary headers
   decode_chunk @bkgd_header, with: Chunk.Decoders.Background
@@ -43,8 +44,15 @@ defmodule Imagineer.Image.PNG.Chunk do
     encode_chunk(header, bin, image)
   end
 
-  encode_chunk @trns_header, with: Chunk.Encoders.Transparency
+  # Required headers
+  encode_chunk @ihdr_header, with: Chunk.Encoders.Header
   encode_chunk @plte_header, with: Chunk.Encoders.Palette
+  encode_chunk @idat_header, with: Chunk.Encoders.DataContent
+  encode_chunk @iend_header, with: Chunk.Encoders.DataContent
+
+  encode_chunk @trns_header, with: Chunk.Encoders.Transparency
+  encode_chunk @bkgd_header, with: Chunk.Encoders.Background
+  encode_chunk @gama_header, with: Chunk.Encoders.Gamma
 
   defp verify_crc!(header, content, valid_crc) do
     unless :erlang.crc32(header <> content) == valid_crc do
