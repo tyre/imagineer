@@ -74,12 +74,8 @@ defmodule Imagineer.Image.PNG do
   @color_type_grayscale_with_alpha    4
   @color_type_color_and_alpha         6
 
-  def process(<<@png_signature, rest::binary>>=raw) do
-    process(rest, %PNG{raw: raw})
-  end
-
-  def process(<<@png_signature, rest::binary>>, %PNG{}=image) do
-    process(rest, image)
+  def process(<<@png_signature, rest::binary>>) do
+    process(rest, %PNG{})
   end
 
   # Process the "IEND" chunk
@@ -88,13 +84,6 @@ defmodule Imagineer.Image.PNG do
     PNG.DataContent.process(image)
   end
 
-  # Process the auxillary "iTXt" chunk
-  def process(<<content_length::size(32), @itxt_header, content::binary-size(content_length), _crc::size(32), rest::binary>>, %PNG{}=image) do
-    image = process_text_chunk(image, content)
-    process(rest, image)
-  end
-
-  # For headers that we don't understand, skip them
   def process(<<
       content_length::size(32),
       header::binary-size(4),
@@ -111,11 +100,12 @@ defmodule Imagineer.Image.PNG do
   end
 
   def to_binary(bin, png) do
-    processed_png = build_data_content(png)
+    processed_png = PNG.DataContent.encode(png)
     write_header(bin, processed_png)
     |> write_gamma(processed_png)
     |> write_palette(processed_png)
     |> write_background(processed_png)
+    |> write_transparency(processed_png)
     |> write_data_content(processed_png)
     |> write_end_header
   end
@@ -129,9 +119,10 @@ defmodule Imagineer.Image.PNG do
     color_type: @color_type_palette_and_color,
     palette: palette}=image)
   do
-    background_color = Enum.find_index(palette, background)
+    background_color_index = :array.to_list(palette)
+      |> Enum.find_index(fn (color) -> color == background end)
     bin <> make_chunk(@bkgd_header,
-      encoded_background_color(image, background_color))
+      encoded_background_color(image, background_color_index))
   end
 
   # Write, the pixel, write write, the pixel!
@@ -157,6 +148,11 @@ defmodule Imagineer.Image.PNG do
     end
   end
 
+  defp write_transparency(bin, processed_png) do
+    {new_bin, _image} = PNG.Chunk.encode({bin, processed_png}, @trns_header)
+    new_bin
+  end
+
   defp write_gamma(bin, %PNG{gamma: nil}), do: bin
   defp write_gamma(bin, %PNG{gamma: gamma}) do
     normalized_gamma = round(gamma * 100_000)
@@ -169,10 +165,6 @@ defmodule Imagineer.Image.PNG do
 
   defp write_data_content(bin, %PNG{data_content: data_content}) do
     bin <> make_chunk(@idat_header, data_content)
-  end
-
-  def build_data_content(image) do
-    PNG.DataContent.encode(image)
   end
 
   defp write_header(bin, png) do
@@ -191,12 +183,18 @@ defmodule Imagineer.Image.PNG do
   end
 
   # if the palette is empty, skip the chunk
-  defp write_palette(bin, %PNG{palette: []}) do
+  defp write_palette(bin, %PNG{palette: []}), do: bin
+
+  defp write_palette(bin, %PNG{palette: palette}=image) do
+    write_palette(bin, :array.to_list(palette), image)
+  end
+
+  defp write_palette(bin, [], %PNG{}) do
     bin
   end
 
-  defp write_palette(bin, %PNG{}=png) do
-    bin <> make_chunk(@plte_header, encode_palette(png.palette, <<>>))
+  defp write_palette(bin, palette, %PNG{}=png) do
+    bin <> make_chunk(@plte_header, encode_palette(palette, <<>>))
   end
 
   defp encode_palette([], encoded_palette) do
@@ -209,10 +207,6 @@ defmodule Imagineer.Image.PNG do
   end
 
   # Private helper functions
-
-  defp set_attribute(%PNG{} = image, attribute, value) do
-    Map.put image.attributes, attribute, value
-  end
 
   defp make_chunk(header, chunk_content) do
     content_length = byte_size(chunk_content)
@@ -229,46 +223,5 @@ defmodule Imagineer.Image.PNG do
 
   # Check for the filter method. Purposefully raise if not the only one defined
   defp encoded_filter_method(:five_basics), do: @filter_five_basics
-
-  defp process_text_chunk(image, content) do
-    case parse_text_pair(content, <<>>) do
-      {key, value} ->
-        set_text_attribute(image, key, value)
-      false ->
-        image
-    end
-  end
-
-  defp parse_text_pair(<<0, value::binary>>, key) do
-    {String.to_atom(key), strip_null_bytes(value)}
-  end
-
-  defp parse_text_pair(<<key_byte::binary-size(1), rest::binary>>, key) do
-    parse_text_pair(rest, key <> key_byte)
-  end
-
-  defp parse_text_pair(<<>>, _key) do
-    false
-  end
-
-  # Strip all leading null bytes (<<0>>) from the text
-  defp strip_null_bytes(<<0, rest::binary>>) do
-    strip_null_bytes rest
-  end
-
-  defp strip_null_bytes(content) do
-    content
-  end
-
-  # Sets the attribute relevant to whatever is held in the text chunk,
-  # returns the image
-  defp set_text_attribute(image, key, value) do
-    case key do
-      :Comment ->
-        %PNG{image | comment: value}
-      _ ->
-        %PNG{image | attributes: set_attribute(image, key, value)}
-    end
-  end
 
 end
