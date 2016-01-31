@@ -31,7 +31,7 @@ defmodule Imagineer.Image.PNG do
 
   @behaviour Imagineer.Image
 
-  @png_signature <<137::size(8), ?P, ?N, ?G, ?\r,  ?\n, 26::size(8), ?\n>>
+  @png_signature <<137::size(8), ?P, ?N, ?G, ?\r, ?\n, 26::size(8), ?\n>>
 
   # Required headers
   @ihdr_header <<?I, ?H, ?D, ?R>>
@@ -46,27 +46,6 @@ defmodule Imagineer.Image.PNG do
   @itxt_header <<?i, ?T, ?X, ?t>>
   @gama_header <<?g, ?A, ?M, ?A>>
   @trns_header <<?t, ?R, ?N, ?S>>
-
-  # Filter Types
-  # http://www.w3.org/TR/PNG-Filters.html
-  @filter_0 :none
-  @filter_1 :sub
-  @filter_2 :up
-  @filter_3 :average
-  @filter_4 :paeth
-
-  # Color Types
-  # Color type is a single-byte integer that describes the interpretation of the
-  # image data. Color type codes represent sums of the following values:
-  #   - 1 (palette used)
-  #   - 2 (color used)
-  #   - 4 (alpha channel used)
-  # Valid values are 0, 2, 3, 4, and 6.
-  @color_type_grayscale               0
-  @color_type_color                   2
-  @color_type_palette_and_color       3
-  @color_type_grayscale_with_alpha    4
-  @color_type_color_and_alpha         6
 
   def process(<<@png_signature, rest::binary>>) do
     process(rest, %PNG{})
