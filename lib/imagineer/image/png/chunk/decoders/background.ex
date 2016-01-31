@@ -1,4 +1,4 @@
-defmodule Imagineer.Image.PNG.Chunk.Background do
+defmodule Imagineer.Image.PNG.Chunk.Decoders.Background do
   alias Imagineer.Image.PNG
 
   @moduledoc """

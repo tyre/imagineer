@@ -1,4 +1,4 @@
-defmodule Imagineer.Image.PNG.Chunk.Gamma do
+defmodule Imagineer.Image.PNG.Chunk.Decoders.Gamma do
   alias Imagineer.Image.PNG
 
   def decode(<<gamma::integer-size(32)>>, %PNG{}=image)do

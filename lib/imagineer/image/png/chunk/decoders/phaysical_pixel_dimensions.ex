@@ -1,4 +1,4 @@
-defmodule Imagineer.Image.PNG.Chunk.PhysicalPixelDimensions do
+defmodule Imagineer.Image.PNG.Chunk.Decoders.PhysicalPixelDimensions do
   alias Imagineer.Image.PNG
 
   def decode(content, %PNG{}=image) do

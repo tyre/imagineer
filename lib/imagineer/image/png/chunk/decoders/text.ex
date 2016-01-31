@@ -1,4 +1,4 @@
-defmodule Imagineer.Image.PNG.Chunk.Text do
+defmodule Imagineer.Image.PNG.Chunk.Decoders.Text do
   alias Imagineer.Image.PNG
 
   def decode(content, %PNG{}=image) do

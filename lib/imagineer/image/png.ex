@@ -153,6 +153,11 @@ defmodule Imagineer.Image.PNG do
     new_bin
   end
 
+  defp write_palette(bin, processed_png) do
+    {new_bin, _image} = PNG.Chunk.encode({bin, processed_png}, @plte_header)
+    new_bin
+  end
+
   defp write_gamma(bin, %PNG{gamma: nil}), do: bin
   defp write_gamma(bin, %PNG{gamma: gamma}) do
     normalized_gamma = round(gamma * 100_000)
@@ -180,30 +185,6 @@ defmodule Imagineer.Image.PNG do
       encoded_filter_method::integer,
       png.interlace_method::integer
     >>)
-  end
-
-  # if the palette is empty, skip the chunk
-  defp write_palette(bin, %PNG{palette: []}), do: bin
-
-  defp write_palette(bin, %PNG{palette: palette}=image) do
-    write_palette(bin, :array.to_list(palette), image)
-  end
-
-  defp write_palette(bin, [], %PNG{}) do
-    bin
-  end
-
-  defp write_palette(bin, palette, %PNG{}=png) do
-    bin <> make_chunk(@plte_header, encode_palette(palette, <<>>))
-  end
-
-  defp encode_palette([], encoded_palette) do
-    encoded_palette
-  end
-
-  defp encode_palette([{red, green, blue} | more_palette], encoded_palette) do
-    new_encoded_palette = <<encoded_palette::binary, red::8, green::8, blue::8>>
-    encode_palette(more_palette, new_encoded_palette)
   end
 
   # Private helper functions

@@ -1,4 +1,4 @@
-defmodule Imagineer.Image.PNG.Chunk.DataContent do
+defmodule Imagineer.Image.PNG.Chunk.Decoders.DataContent do
   alias Imagineer.Image.PNG
 
   # Process the "IDAT" chunk

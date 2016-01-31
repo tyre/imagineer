@@ -1,4 +1,4 @@
-defmodule Imagineer.Image.PNG.Chunk.Header do
+defmodule Imagineer.Image.PNG.Chunk.Decoders.Header do
   alias Imagineer.Image.PNG
   import Imagineer.Image.PNG.Helpers, only: [color_format: 1]
 
