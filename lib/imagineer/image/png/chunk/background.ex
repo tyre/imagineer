@@ -25,7 +25,7 @@ defmodule Imagineer.Image.PNG.Chunk.Background do
 
   ## Palette background is the index of a paletted color
   defp decode_background(@color_type_palette_and_color, <<index::size(8)>>, image) do
-    %PNG{image | background: {elem(image.palette, index)} }
+    %PNG{image | background: :array.get(index, image.palette)}
   end
 
   ## Grayscale (any bit depth) contains 2 bytes
