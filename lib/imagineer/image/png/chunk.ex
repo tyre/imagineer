@@ -2,7 +2,7 @@ defmodule Imagineer.Image.PNG.Chunk do
   alias Imagineer.Image.PNG.Chunk.Encoders
   alias Imagineer.Image.PNG.Chunk.Decoders
   require Logger
-  import Chunk.Helpers
+  import Imagineer.Image.PNG.Chunk.Helpers
 
   # Required headers
   @ihdr_header <<?I, ?H, ?D, ?R>>
