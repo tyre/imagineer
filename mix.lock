@@ -1,1 +1,1 @@
-%{"apex": {:hex, :apex, "0.3.3"}}
+%{"apex": {:hex, :apex, "0.5.2", "bc4d44c3f824d70cd295fc2fd395243df34a1c1659f5ef17381f5fbee1c7f00e", [:mix], []}}
