@@ -19,6 +19,7 @@ defmodule Imagineer.Image.PNG.Chunk do
   @trns_header <<?t, ?R, ?N, ?S>>
 
   def decode(header, content, crc, image) do
+    Logger.debug("Decoding #{header} chunk")
     verify_crc!(header, content, crc)
     decode_chunk(header, content, image)
   end
@@ -37,7 +38,7 @@ defmodule Imagineer.Image.PNG.Chunk do
   decode_chunk @trns_header, with: Decoders.Transparency
 
   defp decode_chunk(unknown_header, _content, image) do
-    Logger.debug("Skipping unknown header #{unknown_header}")
+    Logger.debug("Unknown header #{unknown_header}, skipping")
     image
   end
 
