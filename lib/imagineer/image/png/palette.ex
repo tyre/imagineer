@@ -35,14 +35,16 @@ defmodule Imagineer.Image.PNG.Palette do
     palette_map = Enum.reduce(pixels, %{}, fn(pixel_row, palette_map) ->
       Enum.reduce(pixel_row, palette_map, fn(pixel, palette_map) ->
         # The size will be the index in the pixel array
-        Map.put_new(palette_map, pixel, Dict.size(palette_map))
+        Map.put_new(palette_map, pixel, map_size(palette_map))
       end)
     end)
 
     # If there is a background, it could be a color that never appears on the
     # image. If so, we have to ensure it is in the palette
-    if background do
-      palette_map = Map.put_new(palette_map, background, Dict.size(palette_map))
+    palette_map = if background do
+      Map.put_new(palette_map, background, map_size(palette_map))
+    else
+      palette_map
     end
     %PNG{image | palette: palette_map}
   end
@@ -68,7 +70,7 @@ defmodule Imagineer.Image.PNG.Palette do
   end
 
   defp palette_array_from_map(palette_map) do
-    Enum.reduce(palette_map, :array.new(Dict.size(palette_map)), fn ({pixel, index}, palette_array) ->
+    Enum.reduce(palette_map, :array.new(map_size(palette_map)), fn ({pixel, index}, palette_array) ->
       :array.set(index, pixel, palette_array)
     end)
   end
