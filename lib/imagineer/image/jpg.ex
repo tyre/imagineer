@@ -80,6 +80,7 @@ defmodule Imagineer.Image.JPG do
   # We don't care about this (yet.)
   # https://en.wikipedia.org/wiki/Exchangeable_image_file_format#FlashPix_extensions
   defp process(image, <<@app2, rest::binary>>) do
+    IO.puts "Got APP2, skipping"
     {_flash_pix_data, rest} = marker_content(rest)
     process(image, rest)
   end
@@ -91,6 +92,7 @@ defmodule Imagineer.Image.JPG do
   # > because it may affect the appearance of the image.
   # http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/JPEG.html#Adobe
   defp process(image, <<@app14, rest::binary>>) do
+    IO.puts "Got APP14, skipping"
     {_flash_pix_data, rest} = marker_content(rest)
     process(image, rest)
   end
@@ -104,6 +106,7 @@ defmodule Imagineer.Image.JPG do
   # Adobe Photoshop uses the APP13 segment for storing non-graphic information,
   # such as layers, paths, IPTC data, etc. We don't care about this stuff
   defp process(image, <<@app13, rest::binary>>) do
+    IO.puts "Got APP13, skipping"
     {_photoshop_stuff, rest} = marker_content(rest)
     process(image, rest)
   end
@@ -115,6 +118,7 @@ defmodule Imagineer.Image.JPG do
   end
 
   defp process(image, <<@define_huffman_table, rest::binary>>) do
+    IO.puts "Huffman table definition"
     {huffman_content, rest} = marker_content(rest)
     process_huffman_content(huffman_content, image)
     process(image, rest)
