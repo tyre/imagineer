@@ -3,8 +3,8 @@ defmodule Imagineer.Image do
             color_format: nil, uri: nil, format: nil, attributes: %{}, content: <<>>,
             raw: nil, comment: nil, mime_type: nil
   alias Imagineer.Image
-  alias Imagineer.Image.PNG
-  alias Imagineer.Image.JPG
+  alias Image.PNG
+  alias Image.JPEG
 
   @png_signature <<137::size(8), 80::size(8), 78::size(8), 71::size(8),
                 13::size(8), 10::size(8), 26::size(8), 10::size(8)>>
@@ -25,7 +25,7 @@ defmodule Imagineer.Image do
   def process(%Image{raw: raw}=image) when not is_nil(raw) do
     case detect_format(image.raw) do
       :png -> process(%Image{image | format: :png})
-      :jpg -> JPG.process(raw)
+      :jpg -> JPEG.process(raw)
     end
   end
 

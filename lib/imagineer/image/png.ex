@@ -29,8 +29,6 @@ defmodule Imagineer.Image.PNG do
             background: nil,
             transparency: nil
 
-  @behaviour Imagineer.Image
-
   @png_signature <<137::size(8), ?P, ?N, ?G, ?\r, ?\n, 26::size(8), ?\n>>
 
   # Required headers
