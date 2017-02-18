@@ -12,7 +12,7 @@ defmodule Imagineer.Image.PNG.Chunk do
 
   # Auxillary headers
   @bkgd_header <<?b, ?K, ?G, ?D>>
-  @iccp_header <<?i, ?C, ?C, ?P>>
+  # @iccp_header <<?i, ?C, ?C, ?P>>
   @phys_header <<?p, ?H, ?Y, ?s>>
   @itxt_header <<?i, ?T, ?X, ?t>>
   @gama_header <<?g, ?A, ?M, ?A>>

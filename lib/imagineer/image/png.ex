@@ -29,8 +29,6 @@ defmodule Imagineer.Image.PNG do
             background: nil,
             transparency: nil
 
-  @behaviour Imagineer.Image
-
   @png_signature <<137::size(8), ?P, ?N, ?G, ?\r, ?\n, 26::size(8), ?\n>>
 
   # Required headers
@@ -41,9 +39,9 @@ defmodule Imagineer.Image.PNG do
 
   # Auxillary headers
   @bkgd_header <<?b, ?K, ?G, ?D>>
-  @iccp_header <<?i, ?C, ?C, ?P>>
-  @phys_header <<?p, ?H, ?Y, ?s>>
-  @itxt_header <<?i, ?T, ?X, ?t>>
+  # @iccp_header <<?i, ?C, ?C, ?P>>
+  # @phys_header <<?p, ?H, ?Y, ?s>>
+  # @itxt_header <<?i, ?T, ?X, ?t>>
   @gama_header <<?g, ?A, ?M, ?A>>
   @trns_header <<?t, ?R, ?N, ?S>>
 
