@@ -19,7 +19,7 @@ defmodule Imagineer.Mixfile do
 
   defp deps do
     [
-      {:apex, "~>0.5.2", env: :test}
+      {:apex, "~>1.0.0", env: :test}
     ]
   end
 
