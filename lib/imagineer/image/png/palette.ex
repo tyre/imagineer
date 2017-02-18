@@ -46,6 +46,7 @@ defmodule Imagineer.Image.PNG.Palette do
     else
       palette_map
     end
+
     %PNG{image | palette: palette_map}
   end
 
