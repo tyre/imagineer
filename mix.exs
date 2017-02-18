@@ -19,7 +19,8 @@ defmodule Imagineer.Mixfile do
 
   defp deps do
     [
-      {:apex, "~>1.0.0", env: :test}
+      {:apex, "~>1.0.0", env: :test},
+      {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
 
