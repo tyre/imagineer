@@ -50,7 +50,7 @@ defmodule Imagineer.Image.PNG.Chunk do
   encode_chunk @ihdr_header, with: Encoders.Header
   encode_chunk @plte_header, with: Encoders.Palette
   encode_chunk @idat_header, with: Encoders.DataContent
-  encode_chunk @iend_header, with: Encoders.DataContent
+  encode_chunk @iend_header, with: Encoders.End
 
   encode_chunk @trns_header, with: Encoders.Transparency
   encode_chunk @bkgd_header, with: Encoders.Background
