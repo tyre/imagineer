@@ -24,7 +24,7 @@ defmodule Imagineer.Image.PNG.Compression.Zlib do
   def decompress(%PNG{data_content: compressed_data}) do
     zlib_stream = :zlib.open()
     :ok = :zlib.inflateInit(zlib_stream)
-    decompressed_data = Enum.join(:zlib.inflate(zlib_stream, compressed_data), "")
+    decompressed_data = IO.iodata_to_binary(:zlib.inflate(zlib_stream, compressed_data))
     :ok = :zlib.inflateEnd(zlib_stream)
     :ok = :zlib.close(zlib_stream)
     decompressed_data
@@ -39,6 +39,6 @@ defmodule Imagineer.Image.PNG.Compression.Zlib do
     compressed_data = :zlib.deflate(zlib_stream, decompressed_data, :finish)
     :ok = :zlib.deflateEnd(zlib_stream)
     :ok = :zlib.close(zlib_stream)
-    Enum.join compressed_data
+    :binary.list_to_bin(compressed_data)
   end
 end
