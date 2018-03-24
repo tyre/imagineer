@@ -7,7 +7,7 @@ defmodule Imagineer.Mixfile do
       version: "0.3.0",
       elixir: "~> 1.4",
       deps: deps(),
-      source_url: "https://github.com/SenecaSystems/imagineer",
+      source_url: "https://github.com/tyre/imagineer",
       description: description(),
       package: package()
     ]
@@ -46,7 +46,7 @@ defmodule Imagineer.Mixfile do
 
   defp links do
     %{
-      github: "https://github.com/SenecaSystems/imagineer"
+      github: "https://github.com/tyre/imagineer"
     }
   end
 
