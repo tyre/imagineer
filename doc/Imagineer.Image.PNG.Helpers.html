@@ -1,0 +1,318 @@
+    <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.18.3">
+    <title>Imagineer.Image.PNG.Helpers – imagineer v0.3.1</title>
+    <link rel="stylesheet" href="dist/app-480ffdc169.css" />
+    
+    <script src="dist/sidebar_items-c97f47abbb.js"></script>
+    
+    
+    
+    
+  </head>
+  <body data-type="modules">
+    <script>try { if(localStorage.getItem('night-mode')) document.body.className += ' night-mode'; } catch (e) { }</script>
+
+    <div class="main">
+<button class="sidebar-button sidebar-toggle">
+  <span class="icon-menu" aria-hidden="true"></span>
+  <span class="sr-only">Toggle Sidebar</span>
+</button>
+<button class="sidebar-button night-mode-toggle">
+  <span class="icon-theme" aria-hidden="true"></span>
+  <span class="sr-only">Toggle Theme</span>
+</button>
+<section class="sidebar">
+
+  
+  <a href="api-reference.html" class="sidebar-projectLink">
+    <div class="sidebar-projectDetails">
+      <h1 class="sidebar-projectName">
+        imagineer
+      </h1>
+      <h2 class="sidebar-projectVersion">
+        v0.3.1
+      </h2>
+    </div>
+    
+  </a>
+
+  <form class="sidebar-search" action="search.html">
+    <button type="submit" class="search-button">
+      <span class="icon-search" aria-hidden="true"></span>
+    </button>
+    <input name="q" type="text" id="search-list" class="search-input" placeholder="Search" aria-label="Search" autocomplete="off" />
+  </form>
+
+  <ul class="sidebar-listNav">
+    <li><a id="extras-list" href="#full-list">Pages</a></li>
+
+    
+      <li><a id="modules-list" href="#full-list">Modules</a></li>
+    
+
+    
+
+    
+  </ul>
+  <div class="gradient"></div>
+  <ul id="full-list" class="sidebar-fullList"></ul>
+</section>
+
+<section class="content">
+  <div class="content-outer">
+    <div id="content" class="content-inner">
+
+
+      <h1>
+        <small class="visible-xs">imagineer v0.3.1</small>
+        Imagineer.Image.PNG.Helpers
+        
+          <a href="https://github.com/tyre/imagineer/blob/master/lib/imagineer/image/png/helpers.ex#L1" title="View Source" class="view-source" rel="help">
+            <span class="icon-code" aria-hidden="true"></span>
+            <span class="sr-only">View Source</span>
+          </a>
+        
+      </h1>
+
+      
+
+      
+        <section id="summary" class="details-list">
+          <h1 class="section-heading">
+            <a class="hover-link" href="#summary">
+              <span class="icon-link" aria-hidden="true"></span>
+              <span class="sr-only">Link to this section</span>
+            </a>
+            Summary
+          </h1>
+          
+
+          
+  <div class="summary-functions summary">
+    <h2>
+      <a href="#functions">Functions</a>
+    </h2>
+    <div class="summary-row">
+  <div class="summary-signature">
+    <a href="#bytes_per_pixel/2">bytes_per_pixel(atom, int)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Given a color format and bit depth, tells us how many bytes are needed to
+store a pixel</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#bytes_per_row/3">bytes_per_row(atom, int, width)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Given a color format, bit depth, and the width of an image, tells us how many
+bytes are are present per scanline (a row of pixels)</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#channels_per_pixel/1">channels_per_pixel(atom)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Returns the number of channels for a given <code class="inline">color_format</code>. For example,
+<code class="inline">:rgb</code> and <code class="inline">:rbg16</code> have 3 channels: one for Red, Green, and Blue.
+<code class="inline">:rgb_alpha</code> and <code class="inline">:rgb_alpha</code> each have 4 channels: one for Red, Green,
+Blue, and the alpha (transparency) channel</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#color_format/1">color_format(int)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Given a PNG’s color type, returns its color format</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#null_binary/1">null_binary(length)</a>
+  </div>
+  
+    <div class="summary-synopsis"><p>Returns a binary consisting of <code class="inline">length</code> null (<code class="inline">&lt;&lt;0&gt;&gt;</code>) bytes</p>
+</div>
+  
+</div>
+
+  </div>
+
+
+          
+
+        </section>
+      
+
+      
+
+      
+        <section id="functions" class="details-list">
+          <h1 class="section-heading">
+            <a class="hover-link" href="#functions">
+              <span class="icon-link" aria-hidden="true"></span>
+              <span class="sr-only">Link to this section</span>
+            </a>
+            Functions
+          </h1>
+          <div class="detail" id="bytes_per_pixel/2">
+  
+  
+  <div class="detail-header">
+    <a href="#bytes_per_pixel/2" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <span class="signature">bytes_per_pixel(atom, int)</span>
+    
+      <a href="https://github.com/tyre/imagineer/blob/master/lib/imagineer/image/png/helpers.ex#L50" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+    
+    
+    
+  </div>
+  <section class="docstring">
+    <p>Given a color format and bit depth, tells us how many bytes are needed to
+store a pixel</p>
+
+  </section>
+</div>
+<div class="detail" id="bytes_per_row/3">
+  
+  
+  <div class="detail-header">
+    <a href="#bytes_per_row/3" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <span class="signature">bytes_per_row(atom, int, width)</span>
+    
+      <a href="https://github.com/tyre/imagineer/blob/master/lib/imagineer/image/png/helpers.ex#L30" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+    
+    
+    
+  </div>
+  <section class="docstring">
+    <p>Given a color format, bit depth, and the width of an image, tells us how many
+bytes are are present per scanline (a row of pixels).</p>
+
+  </section>
+</div>
+<div class="detail" id="channels_per_pixel/1">
+  
+  
+  <div class="detail-header">
+    <a href="#channels_per_pixel/1" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <span class="signature">channels_per_pixel(atom)</span>
+    
+      <a href="https://github.com/tyre/imagineer/blob/master/lib/imagineer/image/png/helpers.ex#L62" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+    
+    
+    
+  </div>
+  <section class="docstring">
+    <p>Returns the number of channels for a given <code class="inline">color_format</code>. For example,
+<code class="inline">:rgb</code> and <code class="inline">:rbg16</code> have 3 channels: one for Red, Green, and Blue.
+<code class="inline">:rgb_alpha</code> and <code class="inline">:rgb_alpha</code> each have 4 channels: one for Red, Green,
+Blue, and the alpha (transparency) channel.</p>
+
+  </section>
+</div>
+<div class="detail" id="color_format/1">
+  
+  
+  <div class="detail-header">
+    <a href="#color_format/1" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <span class="signature">color_format(int)</span>
+    
+      <a href="https://github.com/tyre/imagineer/blob/master/lib/imagineer/image/png/helpers.ex#L10" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+    
+    
+    
+  </div>
+  <section class="docstring">
+    <p>Given a PNG’s color type, returns its color format</p>
+
+  </section>
+</div>
+<div class="detail" id="null_binary/1">
+  
+  
+  <div class="detail-header">
+    <a href="#null_binary/1" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <span class="signature">null_binary(length)</span>
+    
+      <a href="https://github.com/tyre/imagineer/blob/master/lib/imagineer/image/png/helpers.ex#L68" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+    
+    
+    
+  </div>
+  <section class="docstring">
+    <p>Returns a binary consisting of <code class="inline">length</code> null (<code class="inline">&lt;&lt;0&gt;&gt;</code>) bytes</p>
+
+  </section>
+</div>
+
+        </section>
+      
+
+      
+          <footer class="footer">
+        <p>
+          <span class="line">
+            Built using
+            <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" rel="help" target="_blank">ExDoc</a> (v0.18.3),
+          </span>
+          <span class="line">
+            designed by
+            <a href="https://twitter.com/dignifiedquire" target="_blank" title="@dignifiedquire">Friedel Ziegelmayer</a>.
+            </span>
+        </p>
+      </footer>
+    </div>
+  </div>
+</section>
+</div>
+  <script src="dist/app-9bd040e5e5.js"></script>
+  
+  
+  
+  
+  </body>
+</html>
+
