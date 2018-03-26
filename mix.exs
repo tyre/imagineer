@@ -4,8 +4,8 @@ defmodule Imagineer.Mixfile do
   def project do
     [
       app: :imagineer,
-      version: "0.3.0",
-      elixir: "~> 1.4",
+      version: "0.3.1",
+      elixir: "~> 1.6",
       deps: deps(),
       source_url: "https://github.com/tyre/imagineer",
       description: description(),
