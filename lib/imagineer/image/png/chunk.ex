@@ -16,6 +16,7 @@ defmodule Imagineer.Image.PNG.Chunk do
   @phys_header <<?p, ?H, ?Y, ?s>>
   @itxt_header <<?i, ?T, ?X, ?t>>
   @gama_header <<?g, ?A, ?M, ?A>>
+  @time_header <<?t, ?I, ?M, ?E>>
   @trns_header <<?t, ?R, ?N, ?S>>
 
   def decode(header, content, crc, image) do
@@ -35,6 +36,7 @@ defmodule Imagineer.Image.PNG.Chunk do
   decode_chunk(@phys_header, with: Decoders.PhysicalPixelDimensions)
   decode_chunk(@itxt_header, with: Decoders.Text)
   decode_chunk(@gama_header, with: Decoders.Gamma)
+  decode_chunk(@time_header, with: Decoders.Time)
   decode_chunk(@trns_header, with: Decoders.Transparency)
 
   defp decode_chunk(unknown_header, _content, image) do
@@ -52,6 +54,7 @@ defmodule Imagineer.Image.PNG.Chunk do
   encode_chunk(@idat_header, with: Encoders.DataContent)
   encode_chunk(@iend_header, with: Encoders.End)
 
+  encode_chunk(@time_header, with: Encoders.Time)
   encode_chunk(@trns_header, with: Encoders.Transparency)
   encode_chunk(@bkgd_header, with: Encoders.Background)
   encode_chunk(@gama_header, with: Encoders.Gamma)

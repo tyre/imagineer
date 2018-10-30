@@ -27,7 +27,8 @@ defmodule Imagineer.Image.PNG do
             pixels: [],
             mime_type: @mime_type,
             background: nil,
-            transparency: nil
+            transparency: nil,
+            last_modified: nil
 
   @png_signature <<137::size(8), ?P, ?N, ?G, ?\r, ?\n, 26::size(8), ?\n>>
 
@@ -43,6 +44,7 @@ defmodule Imagineer.Image.PNG do
   # @phys_header <<?p, ?H, ?Y, ?s>>
   # @itxt_header <<?i, ?T, ?X, ?t>>
   @gama_header <<?g, ?A, ?M, ?A>>
+  @time_header <<?t, ?I, ?M, ?E>>
   @trns_header <<?t, ?R, ?N, ?S>>
 
   def process(<<@png_signature, rest::binary>>) do
@@ -73,6 +75,7 @@ defmodule Imagineer.Image.PNG do
     processed_png = PNG.DataContent.encode(png)
 
     PNG.Chunk.encode({bin, processed_png}, @ihdr_header)
+    |> PNG.Chunk.encode(@time_header)
     |> PNG.Chunk.encode(@gama_header)
     |> PNG.Chunk.encode(@plte_header)
     |> PNG.Chunk.encode(@bkgd_header)

@@ -11,38 +11,35 @@ defmodule Imagineer.Image.PNG.Chunk.Encoders.Background do
   def encode(%PNG{background: nil}), do: nil
 
   # If we are paletting, find that index!
-  def encode(%PNG{color_type: @color_type_palette_and_color} = image) do
-    :array.to_list(image.palette)
-    |> Enum.find_index(fn color -> color == image.background end)
-    |> encoded_background_color(image)
+  def encode(%PNG{
+        color_type: @color_type_palette_and_color,
+        palette: palette,
+        background: background
+      }) do
+    background_index =
+      :array.to_list(palette)
+      |> Enum.find_index(fn color -> color == background end)
+
+    <<background_index::integer-size(8)>>
   end
 
-  # Write, the pixel, write write, the pixel!
-  def encode(%PNG{background: background} = image) do
-    encoded_background_color(background, image)
+  def encode(%PNG{color_type: @color_type_grayscale, background: {gray}}) do
+    <<gray::integer-size(16)>>
   end
 
-  defp encoded_background_color(background_color, image) do
-    case {image.color_type, background_color} do
-      {@color_type_grayscale, {gray}} ->
-        <<gray::integer-size(16)>>
+  def encode(%PNG{color_type: @color_type_color, background: {red, green, blue}}) do
+    <<red::size(16), green::size(16), blue::size(16)>>
+  end
 
-      {@color_type_color, {red, green, blue}} ->
-        <<red::size(16), green::size(16), blue::size(16)>>
+  def encode(%PNG{color_type: @color_type_palette_and_color, background: index})
+      when is_integer(index) do
+  end
 
-      {@color_type_palette_and_color, index} when is_integer(index) ->
-        <<index::integer-size(8)>>
+  def encode(%PNG{color_type: @color_type_grayscale_with_alpha, background: {gray}}) do
+    <<gray::integer-size(16)>>
+  end
 
-      {@color_type_grayscale_with_alpha, {gray}} ->
-        <<gray::integer-size(16)>>
-
-      {@color_type_color_and_alpha, {red, green, blue}} ->
-        <<red::size(16), green::size(16), blue::size(16)>>
-
-      {color_type, background_color} ->
-        raise "Invalid background color #{inspect(background_color)} for color type #{
-                inspect(color_type)
-              }"
-    end
+  def encode(%PNG{color_type: @color_type_color_and_alpha, background: {red, green, blue}}) do
+    <<red::size(16), green::size(16), blue::size(16)>>
   end
 end
