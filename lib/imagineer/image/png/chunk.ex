@@ -61,7 +61,7 @@ defmodule Imagineer.Image.PNG.Chunk do
 
   defp verify_crc!(header, content, valid_crc) do
     unless :erlang.crc32(header <> content) == valid_crc do
-      raise("CRC for #{header} is invalid")
+      raise("CRC for #{header} is invalid. Possible data corruption.")
     end
   end
 end
