@@ -41,7 +41,7 @@ defmodule Imagineer.Image.PNG do
   # Auxillary headers
   @bkgd_header <<?b, ?K, ?G, ?D>>
   # @iccp_header <<?i, ?C, ?C, ?P>>
-  # @phys_header <<?p, ?H, ?Y, ?s>>
+  @phys_header <<?p, ?H, ?Y, ?s>>
   # @itxt_header <<?i, ?T, ?X, ?t>>
   @gama_header <<?g, ?A, ?M, ?A>>
   @time_header <<?t, ?I, ?M, ?E>>
@@ -78,6 +78,7 @@ defmodule Imagineer.Image.PNG do
     |> PNG.Chunk.encode(@time_header)
     |> PNG.Chunk.encode(@gama_header)
     |> PNG.Chunk.encode(@plte_header)
+    |> PNG.Chunk.encode(@phys_header)
     |> PNG.Chunk.encode(@bkgd_header)
     |> PNG.Chunk.encode(@trns_header)
     |> PNG.Chunk.encode(@idat_header)
