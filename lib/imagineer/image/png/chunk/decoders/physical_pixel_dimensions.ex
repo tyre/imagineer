@@ -14,11 +14,7 @@ defmodule Imagineer.Image.PNG.Chunk.Decoders.PhysicalPixelDimensions do
       physical_unit(unit)
     }
 
-    set_attribute(image, :pixel_dimensions, pixel_dimensions)
-  end
-
-  defp set_attribute(image, key, value) do
-    %PNG{image | attributes: Map.put(image.attributes, key, value)}
+    %PNG{image | attributes: Map.put(image.attributes, :pixel_dimensions, pixel_dimensions)}
   end
 
   # Physical unit can be 1 (meter) or 0 (unknown).

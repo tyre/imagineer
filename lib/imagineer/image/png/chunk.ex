@@ -55,6 +55,7 @@ defmodule Imagineer.Image.PNG.Chunk do
   encode_chunk(@iend_header, with: Encoders.End)
 
   encode_chunk(@time_header, with: Encoders.Time)
+  encode_chunk(@phys_header, with: Encoders.PhysicalPixelDimensions)
   encode_chunk(@trns_header, with: Encoders.Transparency)
   encode_chunk(@bkgd_header, with: Encoders.Background)
   encode_chunk(@gama_header, with: Encoders.Gamma)
