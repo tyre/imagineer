@@ -1,15 +1,16 @@
 defmodule Imagineer.Image.PNG.Chunk.Decoders.Transparency do
   alias Imagineer.Image.PNG
 
-  @color_type_grayscale               0
-  @color_type_color                   2
-  @color_type_palette_and_color       3
-  @color_type_grayscale_with_alpha    4
-  @color_type_color_and_alpha         6
+  @color_type_grayscale 0
+  @color_type_color 2
+  @color_type_palette_and_color 3
+  @color_type_grayscale_with_alpha 4
+  @color_type_color_and_alpha 6
 
-  @palette_default_opacity 255 # fully opaque
+  # fully opaque
+  @palette_default_opacity 255
 
-  def decode(content, %PNG{color_type: color_type}=image) do
+  def decode(content, %PNG{color_type: color_type} = image) do
     decode_transparency(color_type, content, image)
   end
 
@@ -21,16 +22,20 @@ defmodule Imagineer.Image.PNG.Chunk.Decoders.Transparency do
     raise("tRNS chunk should not appear for images with alpha channels")
   end
 
-  defp decode_transparency(@color_type_grayscale, opacity_bytes, %PNG{bit_depth: bit_depth}=image) do
+  defp decode_transparency(
+         @color_type_grayscale,
+         opacity_bytes,
+         %PNG{bit_depth: bit_depth} = image
+       ) do
     <<opacity::size(bit_depth), _rest::bits>> = opacity_bytes
-    %PNG{image | transparency: {opacity} }
+    %PNG{image | transparency: {opacity}}
   end
 
-  defp decode_transparency(@color_type_color, opacity_bytes, %PNG{bit_depth: bit_depth}=image) do
-    %PNG{image | transparency: decode_rgb(opacity_bytes, bit_depth) }
+  defp decode_transparency(@color_type_color, opacity_bytes, %PNG{bit_depth: bit_depth} = image) do
+    %PNG{image | transparency: decode_rgb(opacity_bytes, bit_depth)}
   end
 
-  defp decode_transparency(@color_type_palette_and_color, opacity_bytes, %PNG{}=image) do
+  defp decode_transparency(@color_type_palette_and_color, opacity_bytes, %PNG{} = image) do
     %PNG{image | transparency: palette_opacities(opacity_bytes)}
   end
 
@@ -53,7 +58,7 @@ defmodule Imagineer.Image.PNG.Chunk.Decoders.Transparency do
   end
 
   defp palette_opacities(<<>>, opacities) do
-    Enum.reverse opacities
+    Enum.reverse(opacities)
   end
 
   defp palette_opacities(<<opacity::size(8), rest::binary>>, opacities) do

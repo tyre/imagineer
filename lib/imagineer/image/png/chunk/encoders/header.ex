@@ -4,7 +4,7 @@ defmodule Imagineer.Image.PNG.Chunk.Encoders.Header do
   @zlib 0
   @filter_five_basics 0
 
-  def encode(%PNG{}=image) do
+  def encode(%PNG{} = image) do
     encoded_compression_format = encoded_compression_format(image.compression)
     encoded_filter_method = encoded_filter_method(image.filter_method)
 

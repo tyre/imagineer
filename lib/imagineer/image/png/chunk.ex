@@ -25,17 +25,17 @@ defmodule Imagineer.Image.PNG.Chunk do
   end
 
   # Required headers
-  decode_chunk @ihdr_header, with: Decoders.Header
-  decode_chunk @plte_header, with: Decoders.Palette
-  decode_chunk @idat_header, with: Decoders.DataContent
-  decode_chunk @iend_header, with: Decoders.End
+  decode_chunk(@ihdr_header, with: Decoders.Header)
+  decode_chunk(@plte_header, with: Decoders.Palette)
+  decode_chunk(@idat_header, with: Decoders.DataContent)
+  decode_chunk(@iend_header, with: Decoders.End)
 
   # Auxillary headers
-  decode_chunk @bkgd_header, with: Decoders.Background
-  decode_chunk @phys_header, with: Decoders.PhysicalPixelDimensions
-  decode_chunk @itxt_header, with: Decoders.Text
-  decode_chunk @gama_header, with: Decoders.Gamma
-  decode_chunk @trns_header, with: Decoders.Transparency
+  decode_chunk(@bkgd_header, with: Decoders.Background)
+  decode_chunk(@phys_header, with: Decoders.PhysicalPixelDimensions)
+  decode_chunk(@itxt_header, with: Decoders.Text)
+  decode_chunk(@gama_header, with: Decoders.Gamma)
+  decode_chunk(@trns_header, with: Decoders.Transparency)
 
   defp decode_chunk(unknown_header, _content, image) do
     Logger.debug("Unknown header #{unknown_header}, skipping")
@@ -47,14 +47,14 @@ defmodule Imagineer.Image.PNG.Chunk do
   end
 
   # Required headers
-  encode_chunk @ihdr_header, with: Encoders.Header
-  encode_chunk @plte_header, with: Encoders.Palette
-  encode_chunk @idat_header, with: Encoders.DataContent
-  encode_chunk @iend_header, with: Encoders.End
+  encode_chunk(@ihdr_header, with: Encoders.Header)
+  encode_chunk(@plte_header, with: Encoders.Palette)
+  encode_chunk(@idat_header, with: Encoders.DataContent)
+  encode_chunk(@iend_header, with: Encoders.End)
 
-  encode_chunk @trns_header, with: Encoders.Transparency
-  encode_chunk @bkgd_header, with: Encoders.Background
-  encode_chunk @gama_header, with: Encoders.Gamma
+  encode_chunk(@trns_header, with: Encoders.Transparency)
+  encode_chunk(@bkgd_header, with: Encoders.Background)
+  encode_chunk(@gama_header, with: Encoders.Gamma)
 
   defp verify_crc!(header, content, valid_crc) do
     unless :erlang.crc32(header <> content) == valid_crc do

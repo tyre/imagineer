@@ -32,12 +32,12 @@ defmodule Imagineer.Image.PNG.Interlace.None do
           <<4, 104, 44, 87, 33, 91, 188>>
         ]
   """
-  def extract_scanlines(%PNG{decompressed_data: decompressed_data, interlace_method: 0}=image) do
+  def extract_scanlines(%PNG{decompressed_data: decompressed_data, interlace_method: 0} = image) do
     extract_scanlines(decompressed_data, bytes_per_scanline(image), [])
   end
 
   defp extract_scanlines(<<>>, _bytes_per_scanline, scanlines) do
-    Enum.reverse scanlines
+    Enum.reverse(scanlines)
   end
 
   defp extract_scanlines(decompressed_data, bytes_per_scanline, scanlines) do

@@ -31,11 +31,11 @@ defmodule Imagineer.Mixfile do
   end
 
   defp package do
-  [
-    maintainers: maintainers(),
-    links: links(),
-    licenses: ["MIT"]
-  ]
+    [
+      maintainers: maintainers(),
+      links: links(),
+      licenses: ["MIT"]
+    ]
   end
 
   defp maintainers do
@@ -49,5 +49,4 @@ defmodule Imagineer.Mixfile do
       github: "https://github.com/tyre/imagineer"
     }
   end
-
 end

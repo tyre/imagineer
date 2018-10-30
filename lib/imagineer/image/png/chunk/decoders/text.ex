@@ -1,7 +1,7 @@
 defmodule Imagineer.Image.PNG.Chunk.Decoders.Text do
   alias Imagineer.Image.PNG
 
-  def decode(content, %PNG{}=image) do
+  def decode(content, %PNG{} = image) do
     decode_text_chunk(image, content)
   end
 
@@ -9,6 +9,7 @@ defmodule Imagineer.Image.PNG.Chunk.Decoders.Text do
     case decode_text_pair(content, <<>>) do
       {key, value} ->
         set_text_attribute(image, key, value)
+
       false ->
         image
     end
@@ -36,13 +37,13 @@ defmodule Imagineer.Image.PNG.Chunk.Decoders.Text do
     case key do
       :Comment ->
         %PNG{image | comment: value}
+
       _ ->
         %PNG{image | attributes: set_attribute(image, key, value)}
     end
   end
 
   defp set_attribute(image, key, value) do
-    Map.put image.attributes, key, value
+    Map.put(image.attributes, key, value)
   end
-
 end

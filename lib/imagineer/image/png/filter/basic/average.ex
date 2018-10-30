@@ -1,5 +1,6 @@
 defmodule Imagineer.Image.PNG.Filter.Basic.Average do
-  import Imagineer.Image.PNG.Helpers, only: [ null_binary: 1 ]
+  import Imagineer.Image.PNG.Helpers, only: [null_binary: 1]
+
   @moduledoc """
   The Average filter computes value for a pixel based on the average between the
   pixel to its left and the pixel directly above it.
@@ -28,32 +29,36 @@ defmodule Imagineer.Image.PNG.Filter.Basic.Average do
   def unfilter(row, prior_row, bytes_per_pixel) do
     # For the first row, the preceding pixel bytes are all zeros
     ghost_pixel = null_binary(bytes_per_pixel)
+
     unfilter(row, prior_row, ghost_pixel, bytes_per_pixel, [])
-    |> Enum.join
+    |> Enum.join()
   end
 
   # In the base case, `unfiltered_pixels` will be a reversed list of lists, each
   # sublist of which contains the unfiltered bytes for that pixel
   defp unfilter(<<>>, <<>>, _prior_pixel, _bytes_per_pixel, unfiltered_pixels) do
-    Enum.reverse unfiltered_pixels
+    Enum.reverse(unfiltered_pixels)
   end
 
   defp unfilter(row, prior_row, prior_pixel, bytes_per_pixel, unfiltered_pixels) do
     <<row_pixel::bytes-size(bytes_per_pixel), row_rest::binary>> = row
     <<prior_row_pixel::bytes-size(bytes_per_pixel), prior_row_rest::binary>> = prior_row
     unfiltered_pixel = unfilter_pixel(row_pixel, prior_row_pixel, prior_pixel)
-    unfilter(row_rest, prior_row_rest, unfiltered_pixel, bytes_per_pixel, [unfiltered_pixel | unfiltered_pixels])
+
+    unfilter(row_rest, prior_row_rest, unfiltered_pixel, bytes_per_pixel, [
+      unfiltered_pixel | unfiltered_pixels
+    ])
   end
 
   defp unfilter_pixel(row_pixel, prior_row_pixel, prior_pixel) do
     unfilter_pixel(row_pixel, prior_row_pixel, prior_pixel, [])
-    |> Enum.join
+    |> Enum.join()
   end
 
   # In the base case, `unfiltered_bytes` is a reveresed list of the unfiltered
   # bytes for this one pixel
   defp unfilter_pixel(<<>>, <<>>, <<>>, unfiltered_bytes) do
-    Enum.reverse unfiltered_bytes
+    Enum.reverse(unfiltered_bytes)
   end
 
   # To unfilter a given pixel's byte, we take the average of the corresponding
@@ -65,15 +70,14 @@ defmodule Imagineer.Image.PNG.Filter.Basic.Average do
   #
   # Who comes up with this shit?
   defp unfilter_pixel(
-    <<row_pixel_byte::integer-size(8), row_pixel_rest::binary>>,
-    <<prior_row_pixel_byte::integer-size(8), prior_row_pixel_rest::binary>>,
-    <<prior_pixel_byte::integer-size(8), prior_pixel_rest::binary>>,
-    unfiltered_bytes)
-  do
+         <<row_pixel_byte::integer-size(8), row_pixel_rest::binary>>,
+         <<prior_row_pixel_byte::integer-size(8), prior_row_pixel_rest::binary>>,
+         <<prior_pixel_byte::integer-size(8), prior_pixel_rest::binary>>,
+         unfiltered_bytes
+       ) do
     # We use `Kernel.trunc` to turn get the floor of the average as an integer
-    unfiltered_byte = row_pixel_byte + trunc((prior_pixel_byte + prior_row_pixel_byte)/2)
+    unfiltered_byte = row_pixel_byte + trunc((prior_pixel_byte + prior_row_pixel_byte) / 2)
     unfiltered_bytes = [<<unfiltered_byte>> | unfiltered_bytes]
     unfilter_pixel(row_pixel_rest, prior_row_pixel_rest, prior_pixel_rest, unfiltered_bytes)
   end
-
 end

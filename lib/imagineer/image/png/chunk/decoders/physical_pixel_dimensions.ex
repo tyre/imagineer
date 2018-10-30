@@ -1,17 +1,19 @@
 defmodule Imagineer.Image.PNG.Chunk.Decoders.PhysicalPixelDimensions do
   alias Imagineer.Image.PNG
 
-  def decode(content, %PNG{}=image) do
+  def decode(content, %PNG{} = image) do
     <<
       x_pixels_per_unit::integer-size(32),
       y_pixels_per_unit::integer-size(32),
       unit::binary-size(1)
     >> = content
+
     pixel_dimensions = {
       x_pixels_per_unit,
       y_pixels_per_unit,
       physical_unit(unit)
     }
+
     set_attribute(image, :pixel_dimensions, pixel_dimensions)
   end
 

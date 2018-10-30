@@ -12,7 +12,7 @@ defmodule Imagineer.Image.PNG.Palette do
   the case? This library author has no idea.
   """
 
-  def unpack(%PNG{color_type: 3, palette: palette, pixels: pixels}=image) do
+  def unpack(%PNG{color_type: 3, palette: palette, pixels: pixels} = image) do
     %PNG{image | pixels: extract_pixels_from_palette(pixels, palette)}
   end
 
@@ -21,7 +21,7 @@ defmodule Imagineer.Image.PNG.Palette do
     image
   end
 
-  def pack(%PNG{color_type: 3}=image) do
+  def pack(%PNG{color_type: 3} = image) do
     build_palette_map(image)
     |> replace_pixels
     |> convert_palette_map_to_array
@@ -31,47 +31,54 @@ defmodule Imagineer.Image.PNG.Palette do
     image
   end
 
-  defp build_palette_map(%PNG{pixels: pixels, background: background}=image) do
-    palette_map = Enum.reduce(pixels, %{}, fn(pixel_row, palette_map) ->
-      Enum.reduce(pixel_row, palette_map, fn(pixel, palette_map) ->
-        # The size will be the index in the pixel array
-        Map.put_new(palette_map, pixel, map_size(palette_map))
+  defp build_palette_map(%PNG{pixels: pixels, background: background} = image) do
+    palette_map =
+      Enum.reduce(pixels, %{}, fn pixel_row, palette_map ->
+        Enum.reduce(pixel_row, palette_map, fn pixel, palette_map ->
+          # The size will be the index in the pixel array
+          Map.put_new(palette_map, pixel, map_size(palette_map))
+        end)
       end)
-    end)
 
     # If there is a background, it could be a color that never appears on the
     # image. If so, we have to ensure it is in the palette
-    palette_map = if background do
-      Map.put_new(palette_map, background, map_size(palette_map))
-    else
-      palette_map
-    end
+    palette_map =
+      if background do
+        Map.put_new(palette_map, background, map_size(palette_map))
+      else
+        palette_map
+      end
 
     %PNG{image | palette: palette_map}
   end
 
-  defp replace_pixels(%PNG{pixels: pixels, palette: palette_map}=image) do
+  defp replace_pixels(%PNG{pixels: pixels, palette: palette_map} = image) do
     %PNG{image | pixels: dereferenced_pixels(pixels, palette_map)}
   end
 
   defp dereferenced_pixels(pixels, palette_map) do
-    Enum.reduce(pixels, [], fn (row, new_pixels) ->
-      new_row = Enum.reduce(row, [], fn (pixel, new_row) ->
-        # We wrap the index in a tuple since it is a pixel
-        [{Map.get(palette_map, pixel)} | new_row]
-      end) |> Enum.reverse
+    Enum.reduce(pixels, [], fn row, new_pixels ->
+      new_row =
+        Enum.reduce(row, [], fn pixel, new_row ->
+          # We wrap the index in a tuple since it is a pixel
+          [{Map.get(palette_map, pixel)} | new_row]
+        end)
+        |> Enum.reverse()
+
       [new_row | new_pixels]
-    end) |> Enum.reverse
+    end)
+    |> Enum.reverse()
   end
 
   # At this point, `palette_map` is a map between pixel values and their index.
   # Now, to place them into an list.
-  defp convert_palette_map_to_array(%PNG{palette: palette_map}=image) do
+  defp convert_palette_map_to_array(%PNG{palette: palette_map} = image) do
     %PNG{image | palette: palette_array_from_map(palette_map)}
   end
 
   defp palette_array_from_map(palette_map) do
-    Enum.reduce(palette_map, :array.new(map_size(palette_map)), fn ({pixel, index}, palette_array) ->
+    Enum.reduce(palette_map, :array.new(map_size(palette_map)), fn {pixel, index},
+                                                                   palette_array ->
       :array.set(index, pixel, palette_array)
     end)
   end

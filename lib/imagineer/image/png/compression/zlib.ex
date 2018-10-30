@@ -24,8 +24,11 @@ defmodule Imagineer.Image.PNG.Compression.Zlib do
   def decompress(%PNG{data_content: compressed_data}) do
     zlib_stream = :zlib.open()
     :ok = :zlib.inflateInit(zlib_stream)
-    decompressed_data = :zlib.inflate(zlib_stream, compressed_data) |>
-      IO.iodata_to_binary
+
+    decompressed_data =
+      :zlib.inflate(zlib_stream, compressed_data)
+      |> IO.iodata_to_binary()
+
     :ok = :zlib.inflateEnd(zlib_stream)
     :ok = :zlib.close(zlib_stream)
     decompressed_data

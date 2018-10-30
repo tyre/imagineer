@@ -18,9 +18,13 @@ defmodule Imagineer.Image.PNG.Interlace.Adam7.Scanlines do
 
   The scanlines should be defiltered before recomposing the pixels.
   """
-  def extract(%PNG{
-    decompressed_data: decompressed_data, width: width, height: height
-  }=image) do
+  def extract(
+        %PNG{
+          decompressed_data: decompressed_data,
+          width: width,
+          height: height
+        } = image
+      ) do
     Pass.sizes(width, height)
     |> extract_passes_scanlines(image, decompressed_data)
   end
@@ -30,7 +34,7 @@ defmodule Imagineer.Image.PNG.Interlace.Adam7.Scanlines do
   end
 
   defp extract_passes_scanlines([], _color_format, _image, passes) do
-    Enum.reverse passes
+    Enum.reverse(passes)
   end
 
   defp extract_passes_scanlines([dimensions | rest_dimensions], image, content, passes) do
@@ -52,7 +56,10 @@ defmodule Imagineer.Image.PNG.Interlace.Adam7.Scanlines do
 
   defp extract_pass_scanlines({pass_width, pass_height}, image, content, scanlines) do
     {scanline, rest_content} = extract_pass_scanline(pass_width, image, content)
-    extract_pass_scanlines({pass_width, pass_height-1}, image, rest_content, [scanline | scanlines])
+
+    extract_pass_scanlines({pass_width, pass_height - 1}, image, rest_content, [
+      scanline | scanlines
+    ])
   end
 
   defp extract_pass_scanline(pass_width, image, content) do

@@ -49,26 +49,29 @@ defmodule Imagineer.Image.PNG do
     process(rest, %PNG{})
   end
 
-  def process(<<
-      content_length::size(32),
-      header::binary-size(4),
-      content::binary-size(content_length),
-      crc::size(32),
-      rest::binary
-    >>, %PNG{}=image)
-  do
+  def process(
+        <<
+          content_length::size(32),
+          header::binary-size(4),
+          content::binary-size(content_length),
+          crc::size(32),
+          rest::binary
+        >>,
+        %PNG{} = image
+      ) do
     case PNG.Chunk.decode(header, content, crc, image) do
       {:end, final_image} -> final_image
       in_process_image -> process(rest, in_process_image)
     end
   end
 
-  def to_binary(%PNG{}=png) do
+  def to_binary(%PNG{} = png) do
     to_binary(<<@png_signature>>, png)
   end
 
   def to_binary(bin, png) do
     processed_png = PNG.DataContent.encode(png)
+
     PNG.Chunk.encode({bin, processed_png}, @ihdr_header)
     |> PNG.Chunk.encode(@gama_header)
     |> PNG.Chunk.encode(@plte_header)
@@ -76,7 +79,7 @@ defmodule Imagineer.Image.PNG do
     |> PNG.Chunk.encode(@trns_header)
     |> PNG.Chunk.encode(@idat_header)
     |> PNG.Chunk.encode(@iend_header)
-    |> Tuple.to_list
-    |> List.first
+    |> Tuple.to_list()
+    |> List.first()
   end
 end

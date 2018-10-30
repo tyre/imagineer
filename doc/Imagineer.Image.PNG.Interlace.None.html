@@ -1,24 +1,18 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="ExDoc v0.18.3">
-    <title>Imagineer.Image.PNG.Interlace.None – imagineer v0.3.2</title>
-    <link rel="stylesheet" href="dist/app-480ffdc169.css" />
-    
+    <meta name="generator" content="ExDoc v0.19.1">
+    <title>Imagineer.Image.PNG.Interlace.None – imagineer v0.3.3</title>
+    <link rel="stylesheet" href="dist/app-240d7fc7e5.css" />
       <link rel="canonical" href="https://hexdocs.pm/imagineer/Imagineer.Image.PNG.Interlace.None.html" />
-    
     <script src="dist/sidebar_items-c97f47abbb.js"></script>
-    
-    
-    
     
   </head>
   <body data-type="modules">
     <script>try { if(localStorage.getItem('night-mode')) document.body.className += ' night-mode'; } catch (e) { }</script>
-
     <div class="main">
 <button class="sidebar-button sidebar-toggle">
   <span class="icon-menu" aria-hidden="true"></span>
@@ -30,17 +24,14 @@
 </button>
 <section class="sidebar">
 
-  
   <a href="api-reference.html" class="sidebar-projectLink">
     <div class="sidebar-projectDetails">
       <h1 class="sidebar-projectName">
-        imagineer
-      </h1>
+imagineer      </h1>
       <h2 class="sidebar-projectVersion">
-        v0.3.2
+        v0.3.3
       </h2>
     </div>
-    
   </a>
 
   <form class="sidebar-search" action="search.html">
@@ -53,13 +44,9 @@
   <ul class="sidebar-listNav">
     <li><a id="extras-list" href="#full-list">Pages</a></li>
 
-    
       <li><a id="modules-list" href="#full-list">Modules</a></li>
-    
 
-    
 
-    
   </ul>
   <div class="gradient"></div>
   <ul id="full-list" class="sidebar-fullList"></ul>
@@ -71,19 +58,16 @@
 
 
       <h1>
-        <small class="visible-xs">imagineer v0.3.2</small>
-        Imagineer.Image.PNG.Interlace.None
-        
+        <small class="visible-xs">imagineer v0.3.3</small>
+Imagineer.Image.PNG.Interlace.None        
           <a href="https://github.com/tyre/imagineer/blob/master/lib/imagineer/image/png/interlace/none.ex#L1" title="View Source" class="view-source" rel="help">
             <span class="icon-code" aria-hidden="true"></span>
             <span class="sr-only">View Source</span>
           </a>
-        
       </h1>
 
-      
 
-      
+
         <section id="summary" class="details-list">
           <h1 class="section-heading">
             <a class="hover-link" href="#summary">
@@ -93,43 +77,32 @@
             Summary
           </h1>
           
-
-          
   <div class="summary-functions summary">
     <h2>
       <a href="#functions">Functions</a>
     </h2>
-    <div class="summary-row">
+<div class="summary-row">
   <div class="summary-signature">
     <a href="#encode_scanlines/1">encode_scanlines(png)</a>
   </div>
-  
 </div>
 <div class="summary-row">
   <div class="summary-signature">
     <a href="#extract_scanlines/1">extract_scanlines(image)</a>
   </div>
-  
     <div class="summary-synopsis"><p>Takes in a PNG whose decompressed data is not interlaced and splits up the
 individual scanlines, returning scanlines.
 A scanline is 1 byte containing the filter followed by the binary
 representation of that row of pixels (as filtered through the filter indicated
 by the first byte.)</p>
 </div>
-  
 </div>
-
   </div>
-
-
           
-
         </section>
-      
 
-      
 
-      
+
         <section id="functions" class="details-list">
           <h1 class="section-heading">
             <a class="hover-link" href="#functions">
@@ -138,48 +111,35 @@ by the first byte.)</p>
             </a>
             Functions
           </h1>
-          <div class="detail" id="encode_scanlines/1">
-  
-  
-  <div class="detail-header">
+<div class="detail" id="encode_scanlines/1">
+    <div class="detail-header">
     <a href="#encode_scanlines/1" class="detail-link" title="Link to this function">
       <span class="icon-link" aria-hidden="true"></span>
       <span class="sr-only">Link to this function</span>
     </a>
     <span class="signature">encode_scanlines(png)</span>
-    
       <a href="https://github.com/tyre/imagineer/blob/master/lib/imagineer/image/png/interlace/none.ex#L54" class="view-source" rel="help" title="View Source">
        <span class="icon-code" aria-hidden="true"></span>
        <span class="sr-only">View Source</span>
      </a>
-    
-    
-    
-  </div>
+          </div>
   <section class="docstring">
-    
   </section>
 </div>
 <div class="detail" id="extract_scanlines/1">
-  
-  
-  <div class="detail-header">
+    <div class="detail-header">
     <a href="#extract_scanlines/1" class="detail-link" title="Link to this function">
       <span class="icon-link" aria-hidden="true"></span>
       <span class="sr-only">Link to this function</span>
     </a>
     <span class="signature">extract_scanlines(image)</span>
-    
       <a href="https://github.com/tyre/imagineer/blob/master/lib/imagineer/image/png/interlace/none.ex#L35" class="view-source" rel="help" title="View Source">
        <span class="icon-code" aria-hidden="true"></span>
        <span class="sr-only">View Source</span>
      </a>
-    
-    
-    
-  </div>
+          </div>
   <section class="docstring">
-    <p>Takes in a PNG whose decompressed data is not interlaced and splits up the
+<p>Takes in a PNG whose decompressed data is not interlaced and splits up the
 individual scanlines, returning scanlines.
 A scanline is 1 byte containing the filter followed by the binary
 representation of that row of pixels (as filtered through the filter indicated
@@ -189,43 +149,39 @@ by the first byte.)</p>
   Example
 </h2>
 
-<pre><code class="iex elixir">iex&gt; alias Imagineer.Image.PNG
-  iex&gt; decompressed_data = &lt;&lt;1, 127, 138, 255, 20, 21, 107, 0, 233, 1, 77,
-  ...&gt; 78, 191, 144, 2, 1, 77, 16, 234, 234, 154, 3, 67, 123, 98, 142,
-  ...&gt; 117, 3, 4, 104, 44, 87, 33, 91, 188&gt;&gt;
-  iex&gt; %PNG{
-  ...&gt;   decompressed_data: decompressed_data,
-  ...&gt;   color_format: :rgb,
-  ...&gt;   bit_depth: 8,
-  ...&gt;   width: 2,
-  ...&gt;   height: 5,
-  ...&gt;   interlace_method: 0
-  ...&gt; } |&gt;
-  ...&gt; PNG.Interlace.None.extract_scanlines()
-  [
-    &lt;&lt;1, 127, 138, 255, 20, 21, 107&gt;&gt;,
-    &lt;&lt;0, 233, 1, 77, 78, 191, 144&gt;&gt;,
-    &lt;&lt;2, 1, 77, 16, 234, 234, 154&gt;&gt;,
-    &lt;&lt;3, 67, 123, 98, 142, 117, 3&gt;&gt;,
-    &lt;&lt;4, 104, 44, 87, 33, 91, 188&gt;&gt;
-  ]</code></pre>
-
+<pre><code class="nohighlight makeup elixir"><span class="w">  </span><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Imagineer.Image.PNG</span><span class="w">
+  </span><span class="gp unselectable">iex&gt; </span><span class="n">decompressed_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="5597564015-1">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">127</span><span class="p">,</span><span class="w"> </span><span class="mi">138</span><span class="p">,</span><span class="w"> </span><span class="mi">255</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="mi">107</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">233</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">77</span><span class="p">,</span><span class="w">
+  </span><span class="gp unselectable">...&gt; </span><span class="mi">78</span><span class="p">,</span><span class="w"> </span><span class="mi">191</span><span class="p">,</span><span class="w"> </span><span class="mi">144</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">77</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">234</span><span class="p">,</span><span class="w"> </span><span class="mi">234</span><span class="p">,</span><span class="w"> </span><span class="mi">154</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">67</span><span class="p">,</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span><span class="w"> </span><span class="mi">98</span><span class="p">,</span><span class="w"> </span><span class="mi">142</span><span class="p">,</span><span class="w">
+  </span><span class="gp unselectable">...&gt; </span><span class="mi">117</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">104</span><span class="p">,</span><span class="w"> </span><span class="mi">44</span><span class="p">,</span><span class="w"> </span><span class="mi">87</span><span class="p">,</span><span class="w"> </span><span class="mi">33</span><span class="p">,</span><span class="w"> </span><span class="mi">91</span><span class="p">,</span><span class="w"> </span><span class="mi">188</span><span class="p" data-group-id="5597564015-1">&gt;&gt;</span><span class="w">
+  </span><span class="gp unselectable">iex&gt; </span><span class="p" data-group-id="5597564015-2">%</span><span class="nc" data-group-id="5597564015-2">PNG</span><span class="p" data-group-id="5597564015-2">{</span><span class="w">
+  </span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">decompressed_data</span><span class="p">:</span><span class="w"> </span><span class="n">decompressed_data</span><span class="p">,</span><span class="w">
+  </span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">color_format</span><span class="p">:</span><span class="w"> </span><span class="ss">:rgb</span><span class="p">,</span><span class="w">
+  </span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">bit_depth</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+  </span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">width</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+  </span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">height</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
+  </span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">interlace_method</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
+  </span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="5597564015-2">}</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="gp unselectable">...&gt; </span><span class="nc">PNG.Interlace.None</span><span class="o">.</span><span class="n">extract_scanlines</span><span class="p" data-group-id="5597564015-3">(</span><span class="p" data-group-id="5597564015-3">)</span><span class="w">
+  </span><span class="p" data-group-id="5597564015-4">[</span><span class="w">
+    </span><span class="p" data-group-id="5597564015-5">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">127</span><span class="p">,</span><span class="w"> </span><span class="mi">138</span><span class="p">,</span><span class="w"> </span><span class="mi">255</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="mi">107</span><span class="p" data-group-id="5597564015-5">&gt;&gt;</span><span class="p">,</span><span class="w">
+    </span><span class="p" data-group-id="5597564015-6">&lt;&lt;</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">233</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">77</span><span class="p">,</span><span class="w"> </span><span class="mi">78</span><span class="p">,</span><span class="w"> </span><span class="mi">191</span><span class="p">,</span><span class="w"> </span><span class="mi">144</span><span class="p" data-group-id="5597564015-6">&gt;&gt;</span><span class="p">,</span><span class="w">
+    </span><span class="p" data-group-id="5597564015-7">&lt;&lt;</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">77</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">234</span><span class="p">,</span><span class="w"> </span><span class="mi">234</span><span class="p">,</span><span class="w"> </span><span class="mi">154</span><span class="p" data-group-id="5597564015-7">&gt;&gt;</span><span class="p">,</span><span class="w">
+    </span><span class="p" data-group-id="5597564015-8">&lt;&lt;</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">67</span><span class="p">,</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span><span class="w"> </span><span class="mi">98</span><span class="p">,</span><span class="w"> </span><span class="mi">142</span><span class="p">,</span><span class="w"> </span><span class="mi">117</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="5597564015-8">&gt;&gt;</span><span class="p">,</span><span class="w">
+    </span><span class="p" data-group-id="5597564015-9">&lt;&lt;</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">104</span><span class="p">,</span><span class="w"> </span><span class="mi">44</span><span class="p">,</span><span class="w"> </span><span class="mi">87</span><span class="p">,</span><span class="w"> </span><span class="mi">33</span><span class="p">,</span><span class="w"> </span><span class="mi">91</span><span class="p">,</span><span class="w"> </span><span class="mi">188</span><span class="p" data-group-id="5597564015-9">&gt;&gt;</span><span class="w">
+  </span><span class="p" data-group-id="5597564015-4">]</span></code></pre>
   </section>
 </div>
-
         </section>
-      
 
-      
           <footer class="footer">
         <p>
           <span class="line">
             Built using
-            <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" rel="help" target="_blank">ExDoc</a> (v0.18.3),
+            <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener">ExDoc</a> (v0.19.1),
           </span>
           <span class="line">
             designed by
-            <a href="https://twitter.com/dignifiedquire" target="_blank" title="@dignifiedquire">Friedel Ziegelmayer</a>.
+            <a href="https://twitter.com/dignifiedquire" target="_blank" rel="noopener" title="@dignifiedquire">Friedel Ziegelmayer</a>.
             </span>
         </p>
       </footer>
@@ -233,10 +189,7 @@ by the first byte.)</p>
   </div>
 </section>
 </div>
-  <script src="dist/app-9bd040e5e5.js"></script>
-  
-  
-  
+  <script src="dist/app-a0c90688fa.js"></script>
   
   </body>
 </html>

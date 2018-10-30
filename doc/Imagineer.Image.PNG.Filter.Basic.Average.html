@@ -1,24 +1,18 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="ExDoc v0.18.3">
-    <title>Imagineer.Image.PNG.Filter.Basic.Average – imagineer v0.3.2</title>
-    <link rel="stylesheet" href="dist/app-480ffdc169.css" />
-    
+    <meta name="generator" content="ExDoc v0.19.1">
+    <title>Imagineer.Image.PNG.Filter.Basic.Average – imagineer v0.3.3</title>
+    <link rel="stylesheet" href="dist/app-240d7fc7e5.css" />
       <link rel="canonical" href="https://hexdocs.pm/imagineer/Imagineer.Image.PNG.Filter.Basic.Average.html" />
-    
     <script src="dist/sidebar_items-c97f47abbb.js"></script>
-    
-    
-    
     
   </head>
   <body data-type="modules">
     <script>try { if(localStorage.getItem('night-mode')) document.body.className += ' night-mode'; } catch (e) { }</script>
-
     <div class="main">
 <button class="sidebar-button sidebar-toggle">
   <span class="icon-menu" aria-hidden="true"></span>
@@ -30,17 +24,14 @@
 </button>
 <section class="sidebar">
 
-  
   <a href="api-reference.html" class="sidebar-projectLink">
     <div class="sidebar-projectDetails">
       <h1 class="sidebar-projectName">
-        imagineer
-      </h1>
+imagineer      </h1>
       <h2 class="sidebar-projectVersion">
-        v0.3.2
+        v0.3.3
       </h2>
     </div>
-    
   </a>
 
   <form class="sidebar-search" action="search.html">
@@ -53,13 +44,9 @@
   <ul class="sidebar-listNav">
     <li><a id="extras-list" href="#full-list">Pages</a></li>
 
-    
       <li><a id="modules-list" href="#full-list">Modules</a></li>
-    
 
-    
 
-    
   </ul>
   <div class="gradient"></div>
   <ul id="full-list" class="sidebar-fullList"></ul>
@@ -71,25 +58,20 @@
 
 
       <h1>
-        <small class="visible-xs">imagineer v0.3.2</small>
-        Imagineer.Image.PNG.Filter.Basic.Average
-        
+        <small class="visible-xs">imagineer v0.3.3</small>
+Imagineer.Image.PNG.Filter.Basic.Average        
           <a href="https://github.com/tyre/imagineer/blob/master/lib/imagineer/image/png/filter/basic/average.ex#L1" title="View Source" class="view-source" rel="help">
             <span class="icon-code" aria-hidden="true"></span>
             <span class="sr-only">View Source</span>
           </a>
-        
       </h1>
 
-      
+
         <section id="moduledoc">
-          <p>The Average filter computes value for a pixel based on the average between the
+<p>The Average filter computes value for a pixel based on the average between the
 pixel to its left and the pixel directly above it.</p>
-
         </section>
-      
 
-      
         <section id="summary" class="details-list">
           <h1 class="section-heading">
             <a class="hover-link" href="#summary">
@@ -99,35 +81,25 @@ pixel to its left and the pixel directly above it.</p>
             Summary
           </h1>
           
-
-          
   <div class="summary-functions summary">
     <h2>
       <a href="#functions">Functions</a>
     </h2>
-    <div class="summary-row">
+<div class="summary-row">
   <div class="summary-signature">
     <a href="#unfilter/3">unfilter(row, prior_row, bytes_per_pixel)</a>
   </div>
-  
     <div class="summary-synopsis"><p>Takes in the uncompressed binary for an average-filtered row of pixels, the
 unfiltered binary of the preceding row, and the number of bytes per pixel. It
 returns the a binary of the row as unfiltered pixel data</p>
 </div>
-  
 </div>
-
   </div>
-
-
           
-
         </section>
-      
 
-      
 
-      
+
         <section id="functions" class="details-list">
           <h1 class="section-heading">
             <a class="hover-link" href="#functions">
@@ -136,26 +108,20 @@ returns the a binary of the row as unfiltered pixel data</p>
             </a>
             Functions
           </h1>
-          <div class="detail" id="unfilter/3">
-  
-  
-  <div class="detail-header">
+<div class="detail" id="unfilter/3">
+    <div class="detail-header">
     <a href="#unfilter/3" class="detail-link" title="Link to this function">
       <span class="icon-link" aria-hidden="true"></span>
       <span class="sr-only">Link to this function</span>
     </a>
     <span class="signature">unfilter(row, prior_row, bytes_per_pixel)</span>
-    
       <a href="https://github.com/tyre/imagineer/blob/master/lib/imagineer/image/png/filter/basic/average.ex#L28" class="view-source" rel="help" title="View Source">
        <span class="icon-code" aria-hidden="true"></span>
        <span class="sr-only">View Source</span>
      </a>
-    
-    
-    
-  </div>
+          </div>
   <section class="docstring">
-    <p>Takes in the uncompressed binary for an average-filtered row of pixels, the
+<p>Takes in the uncompressed binary for an average-filtered row of pixels, the
 unfiltered binary of the preceding row, and the number of bytes per pixel. It
 returns the a binary of the row as unfiltered pixel data.</p>
 <p>For more information, see the PNG Filter <a href="http://www.w3.org/TR/PNG-Filters.html#Filter-type-3-Average">documentation for the Average filter type
@@ -165,32 +131,28 @@ returns the a binary of the row as unfiltered pixel data.</p>
   Example
 </h2>
 
-<pre><code class="iex elixir">iex&gt; filtered = &lt;&lt;13, 191, 74, 228, 149, 158&gt;&gt;
-iex&gt; prior_unfiltered_row = &lt;&lt;8, 215, 35, 113, 28, 112&gt;&gt;
-iex&gt; Imagineer.Image.PNG.Filter.Basic.Average.unfilter(filtered, prior_unfiltered_row, 3)
-&lt;&lt;17, 42, 91, 37, 184, 3&gt;&gt;
+<pre><code class="nohighlight makeup elixir"><span class="gp unselectable">iex&gt; </span><span class="n">filtered</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="6869721595-1">&lt;&lt;</span><span class="mi">13</span><span class="p">,</span><span class="w"> </span><span class="mi">191</span><span class="p">,</span><span class="w"> </span><span class="mi">74</span><span class="p">,</span><span class="w"> </span><span class="mi">228</span><span class="p">,</span><span class="w"> </span><span class="mi">149</span><span class="p">,</span><span class="w"> </span><span class="mi">158</span><span class="p" data-group-id="6869721595-1">&gt;&gt;</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">prior_unfiltered_row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="6869721595-2">&lt;&lt;</span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">215</span><span class="p">,</span><span class="w"> </span><span class="mi">35</span><span class="p">,</span><span class="w"> </span><span class="mi">113</span><span class="p">,</span><span class="w"> </span><span class="mi">28</span><span class="p">,</span><span class="w"> </span><span class="mi">112</span><span class="p" data-group-id="6869721595-2">&gt;&gt;</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Imagineer.Image.PNG.Filter.Basic.Average</span><span class="o">.</span><span class="n">unfilter</span><span class="p" data-group-id="6869721595-3">(</span><span class="n">filtered</span><span class="p">,</span><span class="w"> </span><span class="n">prior_unfiltered_row</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="6869721595-3">)</span><span class="w">
+</span><span class="p" data-group-id="6869721595-4">&lt;&lt;</span><span class="mi">17</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="mi">91</span><span class="p">,</span><span class="w"> </span><span class="mi">37</span><span class="p">,</span><span class="w"> </span><span class="mi">184</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="6869721595-4">&gt;&gt;</span><span class="w">
 
-iex&gt; filtered = &lt;&lt;13, 191, 74, 228, 149, 158&gt;&gt;
-iex&gt; prior_unfiltered_row = &lt;&lt;8, 215, 35, 113, 28, 112&gt;&gt;
-iex&gt; Imagineer.Image.PNG.Filter.Basic.Average.unfilter(filtered, prior_unfiltered_row, 2)
-&lt;&lt;17, 42, 100, 49, 213, 238&gt;&gt;</code></pre>
-
+</span><span class="gp unselectable">iex&gt; </span><span class="n">filtered</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="6869721595-5">&lt;&lt;</span><span class="mi">13</span><span class="p">,</span><span class="w"> </span><span class="mi">191</span><span class="p">,</span><span class="w"> </span><span class="mi">74</span><span class="p">,</span><span class="w"> </span><span class="mi">228</span><span class="p">,</span><span class="w"> </span><span class="mi">149</span><span class="p">,</span><span class="w"> </span><span class="mi">158</span><span class="p" data-group-id="6869721595-5">&gt;&gt;</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">prior_unfiltered_row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="6869721595-6">&lt;&lt;</span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">215</span><span class="p">,</span><span class="w"> </span><span class="mi">35</span><span class="p">,</span><span class="w"> </span><span class="mi">113</span><span class="p">,</span><span class="w"> </span><span class="mi">28</span><span class="p">,</span><span class="w"> </span><span class="mi">112</span><span class="p" data-group-id="6869721595-6">&gt;&gt;</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Imagineer.Image.PNG.Filter.Basic.Average</span><span class="o">.</span><span class="n">unfilter</span><span class="p" data-group-id="6869721595-7">(</span><span class="n">filtered</span><span class="p">,</span><span class="w"> </span><span class="n">prior_unfiltered_row</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6869721595-7">)</span><span class="w">
+</span><span class="p" data-group-id="6869721595-8">&lt;&lt;</span><span class="mi">17</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">49</span><span class="p">,</span><span class="w"> </span><span class="mi">213</span><span class="p">,</span><span class="w"> </span><span class="mi">238</span><span class="p" data-group-id="6869721595-8">&gt;&gt;</span></code></pre>
   </section>
 </div>
-
         </section>
-      
 
-      
           <footer class="footer">
         <p>
           <span class="line">
             Built using
-            <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" rel="help" target="_blank">ExDoc</a> (v0.18.3),
+            <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener">ExDoc</a> (v0.19.1),
           </span>
           <span class="line">
             designed by
-            <a href="https://twitter.com/dignifiedquire" target="_blank" title="@dignifiedquire">Friedel Ziegelmayer</a>.
+            <a href="https://twitter.com/dignifiedquire" target="_blank" rel="noopener" title="@dignifiedquire">Friedel Ziegelmayer</a>.
             </span>
         </p>
       </footer>
@@ -198,10 +160,7 @@ iex&gt; Imagineer.Image.PNG.Filter.Basic.Average.unfilter(filtered, prior_unfilt
   </div>
 </section>
 </div>
-  <script src="dist/app-9bd040e5e5.js"></script>
-  
-  
-  
+  <script src="dist/app-a0c90688fa.js"></script>
   
   </body>
 </html>

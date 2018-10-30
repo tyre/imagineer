@@ -1,5 +1,5 @@
 defmodule Imagineer.Image.PNG.Filter.Basic.Paeth do
-  import Imagineer.Image.PNG.Helpers, only: [ null_binary: 1 ]
+  import Imagineer.Image.PNG.Helpers, only: [null_binary: 1]
 
   @doc """
   Takes in the uncompressed binary representation of a row, the unfiltered row
@@ -25,6 +25,7 @@ defmodule Imagineer.Image.PNG.Filter.Basic.Paeth do
     # For the first pixel, which has no upper left or left, we fill them in as
     # null-filled binaries (`<<0>>`.)
     upper_left_ghost_pixel = left_ghost_pixel = null_binary(bytes_per_pixel)
+
     unfilter(row, prior_row, left_ghost_pixel, upper_left_ghost_pixel, bytes_per_pixel, [])
     |> Enum.join()
   end
@@ -32,14 +33,17 @@ defmodule Imagineer.Image.PNG.Filter.Basic.Paeth do
   # In the base case, we'll have a reversed list of binaries, each containing
   # the unfiltered bytes of their respective pixel
   defp unfilter(<<>>, <<>>, _left_pixel, _upper_left_pixel, _bytes_per_pixel, unfiltered_pixels) do
-    Enum.reverse unfiltered_pixels
+    Enum.reverse(unfiltered_pixels)
   end
 
   defp unfilter(row, prior_row, left_pixel, upper_left_pixel, bytes_per_pixel, unfiltered_pixels) do
     <<row_pixel::bytes-size(bytes_per_pixel), row_rest::binary>> = row
     <<above_pixel::bytes-size(bytes_per_pixel), prior_row_rest::binary>> = prior_row
     unfiltered_pixel = unfilter_pixel(row_pixel, left_pixel, above_pixel, upper_left_pixel)
-    unfilter(row_rest, prior_row_rest, unfiltered_pixel, above_pixel, bytes_per_pixel, [unfiltered_pixel | unfiltered_pixels])
+
+    unfilter(row_rest, prior_row_rest, unfiltered_pixel, above_pixel, bytes_per_pixel, [
+      unfiltered_pixel | unfiltered_pixels
+    ])
   end
 
   defp unfilter_pixel(row_pixel, left_pixel, above_pixel, upper_left_pixel) do
@@ -50,20 +54,21 @@ defmodule Imagineer.Image.PNG.Filter.Basic.Paeth do
   # In the base case, we'll have run through each of the bytes and have a
   # reversed list of unfiltered bytes
   defp unfilter_pixel(<<>>, <<>>, <<>>, <<>>, unfiltered_pixel_bytes) do
-    Enum.reverse unfiltered_pixel_bytes
+    Enum.reverse(unfiltered_pixel_bytes)
   end
 
-# Paeth(x) + PaethPredictor(Raw(x-bpp), Prior(x), Prior(x-bpp))
+  # Paeth(x) + PaethPredictor(Raw(x-bpp), Prior(x), Prior(x-bpp))
 
   defp unfilter_pixel(
-    <<filtered_pixel_byte::integer-size(8), filtered_pixel_rest::binary>>,
-    <<left_pixel_byte::integer-size(8), left_pixel_rest::binary>>,
-    <<above_pixel_byte::integer-size(8), above_pixel_rest::binary>>,
-    <<upper_left_pixel_byte::integer-size(8), upper_left_pixel_rest::binary>>,
-    unfiltered_pixel_bytes)
-  do
+         <<filtered_pixel_byte::integer-size(8), filtered_pixel_rest::binary>>,
+         <<left_pixel_byte::integer-size(8), left_pixel_rest::binary>>,
+         <<above_pixel_byte::integer-size(8), above_pixel_rest::binary>>,
+         <<upper_left_pixel_byte::integer-size(8), upper_left_pixel_rest::binary>>,
+         unfiltered_pixel_bytes
+       ) do
     nearest_byte = predictor(left_pixel_byte, above_pixel_byte, upper_left_pixel_byte)
     unfiltered_byte = <<filtered_pixel_byte + nearest_byte>>
+
     unfilter_pixel(
       filtered_pixel_rest,
       left_pixel_rest,
@@ -98,15 +103,13 @@ defmodule Imagineer.Image.PNG.Filter.Basic.Paeth do
   end
 
   defp nearest_to_prediction(prediction, left, above, upper_left)
-    when abs(prediction - left) <= abs(prediction - above)
-    and abs(prediction - left) <= abs(prediction - upper_left)
-  do
+       when abs(prediction - left) <= abs(prediction - above) and
+              abs(prediction - left) <= abs(prediction - upper_left) do
     left
   end
 
   defp nearest_to_prediction(prediction, _left, above, upper_left)
-    when abs(prediction - above) <= abs(prediction - upper_left)
-  do
+       when abs(prediction - above) <= abs(prediction - upper_left) do
     above
   end
 
@@ -114,4 +117,3 @@ defmodule Imagineer.Image.PNG.Filter.Basic.Paeth do
     upper_left
   end
 end
-

@@ -23,9 +23,11 @@ defmodule Imagineer.Image.PNGTest do
     assert length(image.pixels) == image.height
 
     # each row of pixel should be equal to the width in length
-    Enum.each(image.pixels, fn (pixel_row) -> assert length(pixel_row) == image.width end)
+    Enum.each(image.pixels, fn pixel_row -> assert length(pixel_row) == image.width end)
 
-    xmp_text_chunk = "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"XMP Core 5.4.0\">\n   <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n      <rdf:Description rdf:about=\"\"\n            xmlns:exif=\"http://ns.adobe.com/exif/1.0/\">\n         <exif:PixelXDimension>96</exif:PixelXDimension>\n         <exif:PixelYDimension>96</exif:PixelYDimension>\n      </rdf:Description>\n   </rdf:RDF>\n</x:xmpmeta>\n"
+    xmp_text_chunk =
+      "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"XMP Core 5.4.0\">\n   <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n      <rdf:Description rdf:about=\"\"\n            xmlns:exif=\"http://ns.adobe.com/exif/1.0/\">\n         <exif:PixelXDimension>96</exif:PixelXDimension>\n         <exif:PixelYDimension>96</exif:PixelYDimension>\n      </rdf:Description>\n   </rdf:RDF>\n</x:xmpmeta>\n"
+
     assert image.attributes[:"XML:com.adobe.xmp"] == xmp_text_chunk,
            "it should pull arbitrary text chunks into attributes"
   end
