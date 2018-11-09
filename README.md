@@ -1,5 +1,4 @@
-Imagineer
-=========
+# Imagineer
 
 Image parsing in Elixir. No external dependencies.
 
@@ -59,16 +58,16 @@ Imagineer.Image.PNG.to_binary(png)
 
 You probably only care about the following fields:
 
-  + `width`
-  + `height`
-  + `pixels`
-  + `color_format`
-  + `format`
-  + `palette`
-  + `gamma`
-  + `bit_depth`
+* `width`
+* `height`
+* `pixels`
+* `color_format`
+* `format`
+* `palette`
+* `gamma`
+* `bit_depth`
 
 The `color_format` tells you how pixels are structured. `:rgb` indicates
 that each pixel will be a three value tuple (red, blue, and green channels.)
 
-The `bit_depth` signifies the size of each channel. For example, a `bit_depth` of `8` says that each chanell is 8 bits, translating to values between 0-255.
+The `bit_depth` signifies the size of each channel. For example, a `bit_depth` of `8` says that each channel is 8 bits, translating to values between 0-255.

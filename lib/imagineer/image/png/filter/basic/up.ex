@@ -29,7 +29,7 @@ defmodule Imagineer.Image.PNG.Filter.Basic.Up do
   """
   def unfilter(row, prior_row) do
     unfilter(row, prior_row, [])
-    |> Enum.join
+    |> Enum.join()
   end
 
   # In the base case, we'll have a reversed list of a bunch of unfiltered bytes
@@ -38,11 +38,11 @@ defmodule Imagineer.Image.PNG.Filter.Basic.Up do
   end
 
   defp unfilter(
-    <<row_byte::integer-size(8), row_rest::binary>>,
-    <<prior_byte::integer-size(8), prior_row_rest::binary>>,
-    unfiltered_pixels)
-  do
-      unfiltered_byte = <<row_byte + prior_byte>>
-      unfilter(row_rest, prior_row_rest, [ unfiltered_byte | unfiltered_pixels])
+         <<row_byte::integer-size(8), row_rest::binary>>,
+         <<prior_byte::integer-size(8), prior_row_rest::binary>>,
+         unfiltered_pixels
+       ) do
+    unfiltered_byte = <<row_byte + prior_byte>>
+    unfilter(row_rest, prior_row_rest, [unfiltered_byte | unfiltered_pixels])
   end
 end

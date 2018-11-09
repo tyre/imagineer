@@ -2,13 +2,13 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
   alias Imagineer.Image.PNG
   import PNG.Helpers, only: [channels_per_pixel: 1]
 
-  @single_null_bit  <<0::1>>
+  @single_null_bit <<0::1>>
   @double_null_bits <<0::2>>
   @triple_null_bits <<0::3>>
-  @quad_null_bits   <<0::4>>
-  @quint_null_bits  <<0::5>>
-  @hex_null_bits    <<0::6>>
-  @sept_null_bits   <<0::7>>
+  @quad_null_bits <<0::4>>
+  @quint_null_bits <<0::5>>
+  @hex_null_bits <<0::6>>
+  @sept_null_bits <<0::7>>
 
   @doc """
   Extracts the pixels from all of the unfiltered rows. Sets the `pixels` field
@@ -40,7 +40,7 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
       ]
 
   """
-  def extract(%PNG{unfiltered_rows: unfiltered_rows}=image) do
+  def extract(%PNG{unfiltered_rows: unfiltered_rows} = image) do
     extract_pixels(unfiltered_rows, image)
   end
 
@@ -54,6 +54,7 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
 
   defp extract_pixels([row | unfiltered_rows], width, channels_per_pixel, bit_depth, pixel_rows) do
     pixel_row = extract_pixels_from_row(row, width, channels_per_pixel, bit_depth)
+
     extract_pixels(unfiltered_rows, width, channels_per_pixel, bit_depth, [pixel_row | pixel_rows])
   end
 
@@ -67,13 +68,16 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
   # of pixels because some pixels (e.g. 1 bit grayscale) do not always fill an
   # entire byte.
   defp extract_pixels_from_row(_row, 0, _channels_per_pixel, _bit_depth, _pixel_size, pixels) do
-    Enum.reverse pixels
+    Enum.reverse(pixels)
   end
 
   defp extract_pixels_from_row(row, width, channels_per_pixel, bit_depth, pixel_size, pixels) do
     <<pixel_bits::bits-size(pixel_size), rest_of_row::bits>> = row
     pixel = extract_pixel(pixel_bits, bit_depth, channels_per_pixel)
-    extract_pixels_from_row(rest_of_row, width - 1, channels_per_pixel, bit_depth, pixel_size, [pixel | pixels])
+
+    extract_pixels_from_row(rest_of_row, width - 1, channels_per_pixel, bit_depth, pixel_size, [
+      pixel | pixels
+    ])
   end
 
   def extract_pixel(pixel_bits, bit_depth, channels_per_pixel) do
@@ -82,7 +86,7 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
 
   # In the base case, we have no more channels to parse and we are done!
   defp extract_pixel(<<>>, _bit_depth, channel_list, 0) do
-    List.to_tuple Enum.reverse channel_list
+    List.to_tuple(Enum.reverse(channel_list))
   end
 
   defp extract_pixel(pixel_bits, bit_depth, channel_list, channels) do
@@ -96,7 +100,7 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
   Encodes each row of pixels into a scanline. For no interlace, that really just
   means putting all of the channels for a row into a binary.
   """
-  def encode(%PNG{pixels: pixels}=image) do
+  def encode(%PNG{pixels: pixels} = image) do
     encode_pixel_rows(pixels, image)
   end
 
@@ -106,7 +110,7 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
 
   # In the base case, we are out of pixel rows and are finished!
   defp encode_pixel_rows([], _image, unfiltered_rows) do
-    Enum.reverse unfiltered_rows
+    Enum.reverse(unfiltered_rows)
   end
 
   defp encode_pixel_rows([pixel_row | rest_rows], image, unfiltered_rows) do
@@ -150,7 +154,8 @@ defmodule Imagineer.Image.PNG.Pixels.NoInterlace do
   defp encode_pixel_bits({one}, bit_depth) do
     <<one::integer-size(bit_depth)>>
   end
-# {:ok, png} = Imagineer.load("./test/support/images/png/baby_octopus.png")
+
+  # {:ok, png} = Imagineer.load("./test/support/images/png/baby_octopus.png")
   # Two channel pixel (e.g. grayscale + alpha)
   defp encode_pixel_bits({one, two}, bit_depth) do
     <<one::integer-size(bit_depth), two::integer-size(bit_depth)>>

@@ -9,21 +9,23 @@ defmodule Imagineer.Image.PNG.Interlace do
   @doc """
   Extracts scanlines for an image based on its interlace method.
   """
-  def extract_pixels(%PNG{interlace_method: 0}=image) do
+  def extract_pixels(%PNG{interlace_method: 0} = image) do
     %PNG{image | scanlines: PNG.Interlace.None.extract_scanlines(image)}
   end
 
-  def extract_pixels(%PNG{interlace_method: 1}=image) do
+  def extract_pixels(%PNG{interlace_method: 1} = image) do
     %PNG{image | scanlines: PNG.Interlace.Adam7.extract_scanlines(image)}
   end
 
-  def encode_scanlines(%PNG{interlace_method: 0}=image) do
+  def encode_scanlines(%PNG{interlace_method: 0} = image) do
     %PNG{image | decompressed_data: PNG.Interlace.None.encode_scanlines(image)}
   end
 
-  def encode_scanlines(%PNG{interlace_method: 1}=image) do
-    decompressed_data = PNG.Interlace.Adam7.merge_scanlines(image)
-    |> Enum.join
+  def encode_scanlines(%PNG{interlace_method: 1} = image) do
+    decompressed_data =
+      PNG.Interlace.Adam7.merge_scanlines(image)
+      |> Enum.join()
+
     %PNG{image | decompressed_data: decompressed_data}
   end
 end

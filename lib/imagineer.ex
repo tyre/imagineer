@@ -12,11 +12,13 @@ defmodule Imagineer do
     case File.read(uri) do
       {:ok, file} ->
         detect_type_and_process(file)
-      {:error, reason} -> {:error, "Could not open #{uri} #{file_error_description(reason)}" }
+
+      {:error, reason} ->
+        {:error, "Could not open #{uri} #{file_error_description(reason)}"}
     end
   end
 
-  def write(image, destination) do
+  def write(image, destination) when is_binary(destination) do
     image_module = image.__struct__
     File.write(destination, image_module.to_binary(image))
   end
@@ -25,6 +27,7 @@ defmodule Imagineer do
     case FormatDetector.detect(content) do
       :png ->
         {:ok, PNG.process(content)}
+
       :unknown ->
         {:error, "Unknown or unsupported image format."}
     end

@@ -17,15 +17,15 @@ defmodule Imagineer.Image.PNG.Chunk.Decoders.Header do
     >> = content
 
     %PNG{
-      image |
-      width: width,
-      height: height,
-      bit_depth: bit_depth,
-      color_format: color_format(color_type),
-      color_type: color_type,
-      compression: compression_format(compression),
-      filter_method: filter_method(filter_method),
-      interlace_method: interlace_method
+      image
+      | width: width,
+        height: height,
+        bit_depth: bit_depth,
+        color_format: color_format(color_type),
+        color_type: color_type,
+        compression: compression_format(compression),
+        filter_method: filter_method(filter_method),
+        interlace_method: interlace_method
     }
   end
 

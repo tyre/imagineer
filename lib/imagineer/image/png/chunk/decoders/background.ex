@@ -12,14 +12,14 @@ defmodule Imagineer.Image.PNG.Chunk.Decoders.Background do
   #   - 2 (color used)
   #   - 4 (alpha channel used)
   # Valid values are 0, 2, 3, 4, and 6.
-  @color_type_grayscale               0
-  @color_type_color                   2
-  @color_type_palette_and_color       3
-  @color_type_grayscale_with_alpha    4
-  @color_type_color_and_alpha         6
+  @color_type_grayscale 0
+  @color_type_color 2
+  @color_type_palette_and_color 3
+  @color_type_grayscale_with_alpha 4
+  @color_type_color_and_alpha 6
 
   ## Indexed color has 1 byte containing the index in the palette
-  def decode(content, %PNG{color_type: color_type}=image) do
+  def decode(content, %PNG{color_type: color_type} = image) do
     decode_background(color_type, content, image)
   end
 
@@ -30,21 +30,29 @@ defmodule Imagineer.Image.PNG.Chunk.Decoders.Background do
 
   ## Grayscale (any bit depth) contains 2 bytes
   defp decode_background(@color_type_grayscale, <<gray::size(16)>>, image) do
-    %PNG{image | background: {gray} }
+    %PNG{image | background: {gray}}
   end
 
   ## Grayscale with alpha (any bit depth) contains 2 bytes
   defp decode_background(@color_type_grayscale_with_alpha, <<gray::size(16)>>, image) do
-    %PNG{image | background: {gray} }
+    %PNG{image | background: {gray}}
   end
 
   ## RGB has 3 2-byte colors
-  defp decode_background(@color_type_color, <<red::size(16), green::size(16), blue::size(16)>>, image) do
+  defp decode_background(
+         @color_type_color,
+         <<red::size(16), green::size(16), blue::size(16)>>,
+         image
+       ) do
     %PNG{image | background: {red, green, blue}}
   end
 
   ## RGB with alpha has 3 2-byte colors
-  defp decode_background(@color_type_color_and_alpha, <<red::size(16), green::size(16), blue::size(16)>>, image) do
+  defp decode_background(
+         @color_type_color_and_alpha,
+         <<red::size(16), green::size(16), blue::size(16)>>,
+         image
+       ) do
     %PNG{image | background: {red, green, blue}}
   end
 end

@@ -11,6 +11,7 @@ defmodule Imagineer.Image.PNG.Chunk.Encoders.Palette do
 
   # if the palette is empty, skip the chunk
   defp build_palette([]), do: nil
+
   defp build_palette(palette) do
     encode_palette(palette, <<>>)
   end

@@ -27,7 +27,8 @@ defmodule Imagineer.Image.PNG do
             pixels: [],
             mime_type: @mime_type,
             background: nil,
-            transparency: nil
+            transparency: nil,
+            last_modified: nil
 
   @png_signature <<137::size(8), ?P, ?N, ?G, ?\r, ?\n, 26::size(8), ?\n>>
 
@@ -40,43 +41,49 @@ defmodule Imagineer.Image.PNG do
   # Auxillary headers
   @bkgd_header <<?b, ?K, ?G, ?D>>
   # @iccp_header <<?i, ?C, ?C, ?P>>
-  # @phys_header <<?p, ?H, ?Y, ?s>>
+  @phys_header <<?p, ?H, ?Y, ?s>>
   # @itxt_header <<?i, ?T, ?X, ?t>>
   @gama_header <<?g, ?A, ?M, ?A>>
+  @time_header <<?t, ?I, ?M, ?E>>
   @trns_header <<?t, ?R, ?N, ?S>>
 
   def process(<<@png_signature, rest::binary>>) do
     process(rest, %PNG{})
   end
 
-  def process(<<
-      content_length::size(32),
-      header::binary-size(4),
-      content::binary-size(content_length),
-      crc::size(32),
-      rest::binary
-    >>, %PNG{}=image)
-  do
+  def process(
+        <<
+          content_length::size(32),
+          header::binary-size(4),
+          content::binary-size(content_length),
+          crc::size(32),
+          rest::binary
+        >>,
+        %PNG{} = image
+      ) do
     case PNG.Chunk.decode(header, content, crc, image) do
       {:end, final_image} -> final_image
       in_process_image -> process(rest, in_process_image)
     end
   end
 
-  def to_binary(%PNG{}=png) do
+  def to_binary(%PNG{} = png) do
     to_binary(<<@png_signature>>, png)
   end
 
   def to_binary(bin, png) do
     processed_png = PNG.DataContent.encode(png)
+
     PNG.Chunk.encode({bin, processed_png}, @ihdr_header)
+    |> PNG.Chunk.encode(@time_header)
     |> PNG.Chunk.encode(@gama_header)
     |> PNG.Chunk.encode(@plte_header)
+    |> PNG.Chunk.encode(@phys_header)
     |> PNG.Chunk.encode(@bkgd_header)
     |> PNG.Chunk.encode(@trns_header)
     |> PNG.Chunk.encode(@idat_header)
     |> PNG.Chunk.encode(@iend_header)
-    |> Tuple.to_list
-    |> List.first
+    |> Tuple.to_list()
+    |> List.first()
   end
 end

@@ -5,7 +5,10 @@ defmodule Imagineer.Image.PNG.Interlace.Adam7.ScanlinesTest do
 
   test "extracting scanlines from interlaced image content" do
     # Test 3x3 RGB image with bit-depth of 8. Each scanline is Paeth filtered
-    test_image_content = <<4,0,0,0,4,2,0,0,4,0,2,0,2,2,0,4,1,0,0,4,1,2,0,4,0,1,0,1,1,0,2,1,0>>
+    test_image_content =
+      <<4, 0, 0, 0, 4, 2, 0, 0, 4, 0, 2, 0, 2, 2, 0, 4, 1, 0, 0, 4, 1, 2, 0, 4, 0, 1, 0, 1, 1, 0,
+        2, 1, 0>>
+
     test_image = %PNG{
       width: 3,
       height: 3,
@@ -13,15 +16,16 @@ defmodule Imagineer.Image.PNG.Interlace.Adam7.ScanlinesTest do
       color_format: :rgb,
       bit_depth: 8
     }
+
     assert Adam7.Scanlines.extract(test_image) == [
-      [<<4,0,0,0>>],
-      [],
-      [],
-      [<<4,2,0,0>>],
-      [<<4,0,2,0,2,2,0>>],
-      [<<4,1,0,0>>, <<4,1,2,0>>],
-      [<<4,0,1,0,1,1,0,2,1,0>>]
-    ]
+             [<<4, 0, 0, 0>>],
+             [],
+             [],
+             [<<4, 2, 0, 0>>],
+             [<<4, 0, 2, 0, 2, 2, 0>>],
+             [<<4, 1, 0, 0>>, <<4, 1, 2, 0>>],
+             [<<4, 0, 1, 0, 1, 1, 0, 2, 1, 0>>]
+           ]
   end
 
   # @unfiltered_rows [

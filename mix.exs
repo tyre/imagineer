@@ -4,12 +4,12 @@ defmodule Imagineer.Mixfile do
   def project do
     [
       app: :imagineer,
-      version: "0.3.0",
-      elixir: "~> 1.4",
-      deps: deps,
-      source_url: "https://github.com/SenecaSystems/imagineer",
-      description: description,
-      package: package
+      version: "0.3.3",
+      elixir: "~> 1.6",
+      deps: deps(),
+      source_url: "https://github.com/tyre/imagineer",
+      description: description(),
+      package: package()
     ]
   end
 
@@ -31,11 +31,11 @@ defmodule Imagineer.Mixfile do
   end
 
   defp package do
-  [
-    maintainers: maintainers,
-    links: links,
-    licenses: ["MIT"]
-  ]
+    [
+      maintainers: maintainers(),
+      links: links(),
+      licenses: ["MIT"]
+    ]
   end
 
   defp maintainers do
@@ -46,8 +46,7 @@ defmodule Imagineer.Mixfile do
 
   defp links do
     %{
-      github: "https://github.com/SenecaSystems/imagineer"
+      github: "https://github.com/tyre/imagineer"
     }
   end
-
 end

@@ -4,5 +4,4 @@ defmodule Imagineer.Image.PNG.Interlace.Adam7Test do
   use ExUnit.Case, async: true
 
   doctest Adam7
-
 end
