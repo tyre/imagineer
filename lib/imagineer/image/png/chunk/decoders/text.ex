@@ -23,9 +23,7 @@ defmodule Imagineer.Image.PNG.Chunk.Decoders.Text do
     decode_text_pair(rest, key <> key_byte)
   end
 
-  defp decode_text_pair(<<>>, _key) do
-    false
-  end
+  defp decode_text_pair(<<>>, _key), do: false
 
   # Strip all leading null bytes (<<0>>) from the text
   defp strip_null_bytes(<<0, rest::binary>>), do: strip_null_bytes(rest)
